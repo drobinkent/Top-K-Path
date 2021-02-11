@@ -1,0 +1,36 @@
+[02-11 00:14:30] p10172 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:82} INFO - Old index of port 4 is: 4 and new index is: 2
+[02-11 00:14:30] p10172 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:83} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 00:34:58] p12347 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:78} INFO - Old rank of port 6 is: 1 and new rank is: 2
+[02-11 00:34:58] p12347 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:79} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 00:36:16] p12377 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:78} INFO - Old rank of port 6 is: 1 and new rank is: 2
+[02-11 00:36:16] p12377 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:79} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 00:39:35] p12580 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:78} INFO - Old rank of port 13 is: 2 and new rank is: 8
+[02-11 00:39:35] p12580 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:79} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 00:40:15] p12622 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:78} INFO - Old rank of port 13 is: 2 and new rank is: 8
+[02-11 00:40:15] p12622 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:79} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:16:16] p15165 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:74} ERROR - given  rank is more than the system's available rank. so can't insert the port
+[02-11 01:16:36] p15181 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:81} INFO - Old rank of port 4 is: 0 and new rank is: 5
+[02-11 01:16:36] p15181 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:82} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:17:46] p15276 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:90} INFO - Old index of port 4 is: 0 and new index is: 1
+[02-11 01:17:46] p15276 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:91} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:17:58] p15290 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:81} INFO - Old rank of port 4 is: 0 and new rank is: 5
+[02-11 01:17:58] p15290 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:82} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:18:09] p15296 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:81} INFO - Old rank of port 4 is: 0 and new rank is: 5
+[02-11 01:18:09] p15296 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:82} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:27:54] p16220 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:81} INFO - Old rank of port 13 is: 0 and new rank is: 2
+[02-11 01:27:54] p16220 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:82} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:30:17] p16289 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:90} INFO - Old index of port 13 is: 1 and new index is: 2
+[02-11 01:30:17] p16289 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:91} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:31:32] p16324 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:90} INFO - Old index of port 13 is: 1 and new index is: 2
+[02-11 01:31:32] p16324 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:91} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:31:55] p16376 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:90} INFO - Old index of port 13 is: 1 and new index is: 2
+[02-11 01:31:55] p16376 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:91} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:34:36] p16501 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:90} INFO - Old index of port 13 is: 1 and new index is: 2
+[02-11 01:34:36] p16501 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:91} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:40:27] p16722 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:90} INFO - Old index of port 13 is: 1 and new index is: 2
+[02-11 01:40:27] p16722 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:91} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:42:05] p16766 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:90} INFO - Old index of port 13 is: 0 and new index is: 2
+[02-11 01:42:05] p16766 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:91} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 01:42:42] p16781 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:90} INFO - Old index of port 13 is: 0 and new index is: 2
+[02-11 01:42:42] p16781 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:91} INFO - This can not happen. Please Debug. Exiting the thread!!!!
+[02-11 02:08:11] p19048 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:85} INFO - The port is already in rank-5
