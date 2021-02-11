@@ -141,6 +141,8 @@ struct local_metadata_t {
     bit<48> flowlet_last_pkt_seen_time;
     bit<9> flowlet_last_used_path;
 
+    bit <16> path_rank;
+
 
 
 }

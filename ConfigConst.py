@@ -189,6 +189,5 @@ LINUX_CC_ALGORITHM_CUBIC = "cubic"
 
 
 #=======================configurations for TOP_K_PATH algorithm
-
-
+INVALID = -1
 

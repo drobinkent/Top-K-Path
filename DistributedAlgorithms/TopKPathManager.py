@@ -36,19 +36,18 @@ class TopKPathManager:
 
     def __init__(self, dev, k):
         self.p4dev = dev
-        self.k = k
+        self.maxRank = k
         self.portToRankMap = {}
         self.rankToCounterMap = {} #init needed
         self.rankToPortAtMaxIndexMap = {} #init needed
         self.portToIndexAtCurrentRankMap = {}
-        self.bitamsk = ba.bitarray(self.k)
-        self.rankToPort2dMap = {} # we technically do not need this in CP. But still keeping it
-        for i in range(0, self.k+1):
-            self.rankToCounterMap[i] = 0 #index k+1 because in our system 0'th rank is invalid for us. Our rank starts form 1. but we keep 0'th entry to maintain when there is no port ina group. and
-            #go upto k+1. range (k+1) actualyy goes upto k
-            self.rankToPortAtMaxIndexMap[i+1] = 0 #same as previous
+        self.bitamsk = ba.bitarray(self.maxRank)
+        self.rankToPort2dMap = {}
+        for i in range(0, self.maxRank):
+            self.rankToCounterMap[i] = ConfConst.INVALID
+            self.rankToPortAtMaxIndexMap[i] = ConfConst.INVALID
             portList = []
-            for j in range(0, self.k+1):
+            for j in range(0, self.maxRank):
                 portList.append(0)
             self.rankToPort2dMap[i] = portList
         pass
@@ -59,7 +58,7 @@ class TopKPathManager:
         print("rankToPortAtMaxIndexMap is :",self.rankToPortAtMaxIndexMap)
         print("portToIndexAtCurrentRankMap is ",self.portToIndexAtCurrentRankMap)
         print("rankToPort2dMap is ")
-        for i in range (0, self.k+1):
+        for i in range (0, self.maxRank):
             print(self.rankToPort2dMap[i])
         pass
 
@@ -70,18 +69,18 @@ class TopKPathManager:
         :param k:
         :return:
         '''
-        if(k>self.k):
+        if(k>self.maxRank):
             logger.error("given  rank is more than the system's available rank. so can't insert the port")
             return False
-        if(self.rankToCounterMap[k] >= self.k):
+        if(self.rankToCounterMap[k] >= self.maxRank):
             print("Already k memebers in the group. Yoo may enter the port into next group")
             return False
         oldRank = self.portToRankMap.get(port)
-        if((oldRank != None) and (oldRank> 0) and  (oldRank!=k)):
+        if((oldRank != None) and (oldRank > ConfConst.INVALID) and  (oldRank != k)):
             logger.info("Old rank of port "+str(port)+" is: "+str(oldRank)+" and new rank is: "+str(k))
             logger.info("This can not happen. Please Debug. Exiting the thread!!!!")
             exit(1)
-        if((oldRank != None) and (oldRank> 0) and  (oldRank==k)):
+        if((oldRank != None) and (oldRank > ConfConst.INVALID) and  (oldRank==k)):
             logger.info("The port is already in rank-"+str(k))
             print("The port is already in rank-",k)
             return True
@@ -113,21 +112,21 @@ class TopKPathManager:
             logger.info("Old rank of port to be deleted("+str(port)+") is None. If you are deleting a port before inserting it then you are ok. otherwise There is some bug.")
             logger.info("To ensure consistency we are exiting.")
             exit(1)
-            oldIndex = self.portToIndexAtCurrentRankMap[port]
+        oldIndex = self.portToIndexAtCurrentRankMap[port]
         if((oldIndex == None) ):
             logger.info("Old index of port "+str(port)+" to be deleted is None. This means the port is already not existing ")
             logger.info("This can not happen. Please Debug. Exiting the thread!!!!")
             exit(1)
-        self.portToRankMap[port] = 0
+        self.portToRankMap[port] = ConfConst.INVALID
         self.rankToCounterMap[oldRank] = self.rankToCounterMap[oldRank] - 1
         portAtMaxIndex = self.rankToPortAtMaxIndexMap.get(oldRank)
         newMaxIndexOfTheRank = self.portToIndexAtCurrentRankMap.get(portAtMaxIndex)-1
-        self.portToIndexAtCurrentRankMap[port] = 0
+        self.portToIndexAtCurrentRankMap[port] = ConfConst.INVALID
         self.rankToPort2dMap[oldRank][oldIndex] = portAtMaxIndex
         #TODO special case when we delete a port from a group. the port itself was the last port in the group. Need s[ecial test for that
         if(port == self.rankToPortAtMaxIndexMap[oldRank]):
-            self.portToRankMap[port] = 0
-            self.portToIndexAtCurrentRankMap[portAtMaxIndex] = 0  #This is necessary because we are shifting it's location
+            self.portToRankMap[port] = ConfConst.INVALID
+            self.portToIndexAtCurrentRankMap[portAtMaxIndex] = ConfConst.INVALID #this case means we are deleting the last port of the group
         else:
             self.portToIndexAtCurrentRankMap[portAtMaxIndex] = oldIndex  #This is necessary because we are shifting it's location
         self.rankToPortAtMaxIndexMap[oldRank] = self.rankToPort2dMap[oldRank][newMaxIndexOfTheRank]
@@ -152,7 +151,7 @@ def testDriverFunction():
     mgr.insertPort(port = 12, k =1)
     mgr.insertPort(port = 13, k =2)
     mgr.deletePort(port = 7)
-    mgr.insertPort(port = 14, k =8)
+    mgr.insertPort(port = 14, k =7)
     mgr.deletePort(port = 12)
     mgr.deletePort(port = 13)
     mgr.insertPort(port = 23, k =2)

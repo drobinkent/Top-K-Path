@@ -7,8 +7,9 @@
 #include "parser.p4"
 
 
-
-control top-k-path(inout parsed_headers_t    hdr,
+#ifndef TOP_K_PATH
+#define TOP_K_PATH
+control top_k_path(inout parsed_headers_t    hdr,
                         inout local_metadata_t    local_metadata,
                         inout standard_metadata_t standard_metadata)
 {
@@ -77,7 +78,7 @@ control top-k-path(inout parsed_headers_t    hdr,
 
 
 
-
+#endif
 
 
 
