@@ -1,6 +1,6 @@
 import InternalConfig
 import P4Runtime.shell as sh
-import P4Runtime.JsonParser as jp
+import P4Runtime.P4DeviceManager as jp
 import logging
 import logging.handlers
 import  ConfigConst as ConfConst

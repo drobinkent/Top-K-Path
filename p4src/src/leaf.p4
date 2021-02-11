@@ -30,7 +30,6 @@
 #include "my_station.p4"
 #include "l2_ternary.p4"
 #include "leaf_downstream_routing.p4"
-#include "dp_only_load_balancer.p4"
 control VerifyChecksumImpl(inout parsed_headers_t hdr,
                            inout local_metadata_t meta)
 {
@@ -73,9 +72,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     upstream_routing() upstream_ecmp_routing_control_block;
 
 
-    #ifdef DP_ALGO_CLB
-    dp_only_load_balancing() dp_only_load_balancing_control_block;
-    #endif
+
 
     apply {
     local_metadata.flag_hdr.do_l3_l2=true;
@@ -86,35 +83,10 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
        // Remove the packet-out header...
        hdr.packet_out.setInvalid();
        // Exit the pipeline here, no need to go through other tables.
-       log_msg("LB: found a control packet");
-       //exit;
-
-       //process control packet here -- header format for ctrtIn --> counterReset= yes or no,
-       if(hdr.packet_out.clb_flags[7:7] == (bit<1>)1){
-           bit<32> load_counter_value = 0;
-           load_counter.write(0, load_counter_value); //Reset the counter
-           log_msg("LB: Control Message for reset counter found");
-           mark_to_drop(standard_metadata);
-           exit;
-       }
-       else if(hdr.packet_out.clb_flags[6:6] == (bit<1>)1){ //This is a control packet
-           stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[BITMASK_LENGTH - 1 :0]);
-           level_to_link_store.write( (bit<32>)hdr.packet_out.level_to_link_id_store_index, hdr.packet_out.link_id);
-           log_msg("LB: Control Message for path control:: linkID--{},  bitmask--{} level_to_link_id_store_index--{}",
-                                          {hdr.packet_out.link_id, hdr.packet_out.bitmask[BITMASK_LENGTH - 1 :0], hdr.packet_out.level_to_link_id_store_index});
-       }else{
-           log_msg("LB: The CLB flag is unsupported --{}", {hdr.packet_out.clb_flags});
-           log_msg("LB: Control Message for path control:: linkID--{},  bitmask--{} level_to_link_id_store_index--{}",
-                                                     {hdr.packet_out.link_id, hdr.packet_out.bitmask[BITMASK_LENGTH - 1 :0], hdr.packet_out.level_to_link_id_store_index});
-       }
-    }else if (hdr.packet_in.isValid() && IS_RECIRCULATED(standard_metadata)) {  //This means this packet is replicated from egress to setup
-        //log_msg("Found a recirculated packet");
-        local_metadata.flag_hdr.do_l3_l2 = false; //thie means . this packet doesn;t need normal forwarding processing. It wil only be used for updating the internal routing related information
-        mark_to_drop(standard_metadata);
-   }else{ //This means these packets are normal packets and they will generate the events
-
-
+       exit;
     }
+
+
 
     #ifdef ENABLE_DEBUG_TABLES
     debug_std_meta_ingress_start.apply(hdr, local_metadata, standard_metadata);
@@ -144,22 +116,12 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
             }else{
                 //Route the packet to upstream paths
                 local_metadata.flag_hdr.is_pkt_toward_host = false;
-                local_metadata.flag_hdr.found_multi_criteria_paths = true;
                 #ifdef DP_ALGO_ECMP
-                local_metadata.flag_hdr.found_multi_criteria_paths = false; // this means we must need to use ecmp path
+                upstream_ecmp_routing_control_block.apply(hdr, local_metadata, standard_metadata);
                 #endif
-
-
-                #ifdef DP_ALGO_CLB
-                dp_only_load_balancing_control_block.apply(hdr, local_metadata, standard_metadata);
+                #ifdef DP_ALGO_TOP_K_PATH
 
                 #endif
-                if ( local_metadata.flag_hdr.found_multi_criteria_paths  == false){ // this means in multicriteria table we have not found any paths. This may be due to lack of proper traffic class or IP predix in those tables
-                    upstream_ecmp_routing_control_block.apply(hdr, local_metadata, standard_metadata);
-                    //simply Call the new block here
-                    log_msg("LB: Load balanced path not found. USing ECMP");
-                    load_balancer_missed_counter.count((bit<32>)0);
-                }
                 //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
             }
         }

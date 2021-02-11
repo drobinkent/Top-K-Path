@@ -1,6 +1,6 @@
 import logging
 import logging.handlers
-import P4Runtime.JsonParser as jp
+import P4Runtime.P4DeviceManager as jp
 import P4Runtime.leafSwitchUtils as leafUtils
 import P4Runtime.spineSwitchUtils as  spineUtils
 import P4Runtime.superSpineSwitchUtils as  superSpineUtils
@@ -48,34 +48,12 @@ class ECMPRouting:
         #     pass
         # elif self.p4dev.fabric_device_config.switch_type == jp.SwitchType.SUPER_SPINE:
         #     pass
+        self.p4dev.setupECMPUpstreamRouting()
         return
 
     def processFeedbackPacket(self, parsedPkt, dev):
         #print("Called the algo")
         #TODO: for each of the different types of the packet, we have to write a separate function to process them
-        # self.ingress_port= packet.metadata[0];
-        # self._pad= packet.metadata[1];
-        # self.ingress_queue_event= packet.metadata[2];   -- type 1
-        # self.ingress_queue_event_data= packet.metadata[3];
-        # self.egress_queue_event= packet.metadata[4];  -- type 2
-        # self.egress_queue_event_data= packet.metadata[5];
-        # self.ingress_traffic_color= packet.metadata[6];  --   -- type 3 . if color is 0 then green, then we may not need to do anything. Here color itself shows the event
-        # self.ingress_rate_event_data= packet.metadata[7];
-        # self.egress_traffic_color= packet.metadata[8];   -- same as ingress traffic color
-        # self.egress_rate_event_data= packet.metadata[9];
-        # self.path_delay_event_type= packet.metadata[11];  # -- type 4 delay event
-        # self.delay_event_src_type= packet.metadata[10];
-        # self.path_delay_event_data= packet.metadata[12];
-        # self.dest_IPv6_address= packet.metadata[13];
-        # if parsedPkt.ingress_queue_event >0:
-        #     print("Valid ingress_queue_event :"+str(parsedPkt.ingress_queue_event))
-        # if parsedPkt.egress_queue_event >0:
-        #     print("Valid egress_queue_event"+str(parsedPkt.egress_queue_event))
-        # if parsedPkt.ingress_traffic_color >0:
-        #     print("Valid ingress_traffic_color :"+ str(parsedPkt.ingress_traffic_color))
-        # if parsedPkt.egress_traffic_color >0:
-        #     print("Valid ingress_traffic_color :"+str(parsedPkt.egress_traffic_color))
-        # if parsedPkt.path_delay_event_type >0:
-        #     print("Valid path_delay_event_type :"+str(parsedPkt.path_delay_event_type))
+
         pass
 

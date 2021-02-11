@@ -168,10 +168,7 @@ const bit<8> WINDOW_INCREASE_RATIO = 8;
 
 
 //===============================================CLB Related Constants
-@name("load_counter")register<bit<32>>(1) load_counter;
-@name("stored_bitmask")register<bit<BITMASK_LENGTH>>(1) stored_bitmask;
-@name("level_to_link_store")register<bit<32>>(BITMASK_LENGTH) level_to_link_store;
-const bit<32> ALL_ONE_BIT_MASK= 0b11111111111111111111111111111111;
+
 counter((bit<32>)1, CounterType.packets) load_balancer_missed_counter;
 
 #endif

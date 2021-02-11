@@ -15,19 +15,19 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
 logging.StreamHandler(stream=None)
 logger.setLevel(logging.INFO)
-def modifyBit( n,  p,  b):
+def modifyBit(n, position, b):
     '''
     # Python3 program to modify a bit at position
 # p in n to b.
 
 # Returns modified n.
     :param n:
-    :param p:
+    :param position:
     :param b:
     :return:
     '''
-    mask = 1 << p
-    return (n & ~mask) | ((b << p) & mask)
+    mask = 1 << position
+    return (n & ~mask) | ((b << position) & mask)
 
 class LoadBalanacer:
 

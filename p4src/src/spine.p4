@@ -131,10 +131,12 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 //if (local_metadata.m_color >1) {drop();}
                 if(hdr.ipv6.hop_limit == 0) { drop(); }
             }else{
-            //Route the packet to upstream paths
-
+                #ifdef DP_ALGO_ECMP
                 upstream_ecmp_routing_control_block.apply(hdr, local_metadata, standard_metadata);
+                #endif
+                #ifdef DP_ALGO_TOP_K_PATH
 
+                #endif
             //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
             }
         }

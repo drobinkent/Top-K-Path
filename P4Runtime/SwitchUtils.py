@@ -2,11 +2,11 @@
 #import CentralizedAlgorithms as centrAlgo
 import DistributedAlgorithms.ECMPRouting as ecmpRouting
 import math
-
+import DistributedAlgorithms.TopKPathRouting as topKPathRouting
 import InternalConfig
 import P4Runtime.shell as sh
 import ConfigConst as ConfConst
-import  P4Runtime.JsonParser as jp
+import  P4Runtime.P4DeviceManager as jp
 import P4Runtime.shell as sh
 import logging
 # logger = logging.getLogger('DCNTEController')
@@ -285,6 +285,8 @@ def getAlgo(dev, dpAlgo):
     # TODO : Can we make an array in config and write them there. This function will only read the arrray and load relevant classses??
     if (dpAlgo == ConfConst.DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP) :
         return ecmpRouting.ECMPRouting(dev = dev)
+    elif (dpAlgo == ConfConst.DataplnaeAlgorithm.DP_ALGO_TOP_K_PATH) :
+        return topKPathRouting.TopKPathRouting(dev = dev)
 
     pass
 

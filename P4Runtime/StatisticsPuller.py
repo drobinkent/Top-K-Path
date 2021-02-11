@@ -12,7 +12,7 @@ import P4Runtime.spineSwitchUtils as spineUtils
 import P4Runtime.superSpineSwitchUtils as superSpineUtils
 import P4Runtime.SwitchUtils as swUtils
 import ConfigConst as ConfConst
-import P4Runtime.JsonParser as jp
+import P4Runtime.P4DeviceManager as jp
 import P4Runtime.PortStatistics as ps
 import P4Runtime.packetUtils as pktUtil
 import P4Runtime.StatisticsJsonWrapper as statJsonWrapper

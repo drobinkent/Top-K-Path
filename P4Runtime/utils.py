@@ -4,7 +4,7 @@ import re
 # See https://stackoverflow.com/a/32997046
 
 
-import P4Runtime.JsonParser as jp
+import P4Runtime.P4DeviceManager as jp
 
 
 def my_partialmethod(func, *args1, **kwargs1):

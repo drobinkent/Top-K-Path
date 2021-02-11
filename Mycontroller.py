@@ -1,21 +1,10 @@
 #from p4.v1 import p4runtime_pb2
 import P4Runtime.leafSwitchUtils
 import P4Runtime.StatisticsPuller
-#sys.path.append("./P4Runtime/JsonParser")
-# sys.path.append("./P4Runtime/JsonParser")
-import json
-import logging
-import sys
-
-import ConfigConst as ConfConst
 import P4Runtime.StatisticsPuller
 import P4Runtime.SwitchUtils as swUtils
 import P4Runtime.leafSwitchUtils
-from P4Runtime import JsonParser as jp
-from P4Runtime.JsonParser import DeviceType
-from P4Runtime.utils import getDeviceTypeFromName, reverseAndCreateNewLink
-# sys.path.append("./P4Runtime/JsonParser")
-# sys.path.append("./P4Runtime/JsonParser")
+
 import json
 import logging
 import logging.config
@@ -28,8 +17,8 @@ import P4Runtime.StatisticsPuller
 import P4Runtime.SwitchUtils as swUtils
 import P4Runtime.leafSwitchUtils
 import P4Runtime.leafSwitchUtils
-from P4Runtime import JsonParser as jp
-from P4Runtime.JsonParser import DeviceType
+from P4Runtime import P4DeviceManager as jp
+from P4Runtime.P4DeviceManager import DeviceType
 from P4Runtime.utils import getDeviceTypeFromName, reverseAndCreateNewLink
 from DistributedAlgorithms import LoadBalancer
 
@@ -187,7 +176,7 @@ class MyP4Controller():
         # this method will pull various counter and register values from the switches and plot data accordingly.
         #Also save the collected statitstics for each device in corresponding data structure.
         self.statisticsPuller = P4Runtime.StatisticsPuller.StatisticsPuller(self.nameToSwitchMap)
-        self.loadBalancerTester = LoadBalancer.LoadBalanacer(allLinksAsList = [5,6,7,8],  bitMaskLength=ConfConst.BITMASK_LENGTH, nameToSwitchMap = self.nameToSwitchMap)
+
 
 
 

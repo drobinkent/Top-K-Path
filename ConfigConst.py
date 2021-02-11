@@ -102,9 +102,10 @@ PORT_STATISTICS_HISTORY_LENGTH = 1000 # this means the history will be
 #======================= Different Test Scenarios
 class DataplnaeAlgorithm(Enum):
     DP_ALGO_BASIC_ECMP = "ecmp"
-    DP_ALGO_CP_ASSISTED_POLICY_ROUTING = "DP_ALGO_CP_ASSISTED_POLICY_ROUTING"
+    DP_ALGO_TOP_K_PATH = "DP_ALGO_TOP_K_PATH"
 
-ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP  #For CLB it will be always ECMP
+#ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP
+ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_TOP_K_PATH
 
 
 queueRateForHostFacingPortsOfLeafSwitch = 18
@@ -187,16 +188,7 @@ LINUX_CC_ALGORITHM_CUBIC = "cubic"
 
 
 
-#=======================configurations for CLB
-CPU_PORT = 255
-CLB_TESTER_DEVICE_NAME = "p0l0" # As out target is only testing algorithm we will only run the CLB from one switch.
-#This parameter defines that name. The algorithm will be only run with that device
-LOAD_DISTRIBUTION_1 = [(5,2),(6,12),(7,1),(8,3)]
-LOAD_DISTRIBUTION_2 = [(5,7),(6,1),(7,6),(8,2)]
-
-DISTRO1_INSTALL_DELAY = 0   # Weight distribution 1 will be installed after 50 second of the controller thread starts
-DISTRO2_INSTALL_DELAY = 125  # Weight distribution 2 will be installed after 50 second of the controller thread starts
+#=======================configurations for TOP_K_PATH algorithm
 
 
-BITMASK_LENGTH = 16
 
