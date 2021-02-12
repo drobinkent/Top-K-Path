@@ -546,7 +546,8 @@ class Device:
         self.packetOutLock.release()
 
     def send_already_built_control_packet_for_top_k_path(self, packet_out_req):
-        self.stream_out_q.put(packet_out_req)
+        if(packet_out_req != None):
+            self.stream_out_q.put(packet_out_req)
 
     def send_control_packet_for_load_balancer(self, pktInRaw, port, clnt):
         self.packetOutLock.acquire(blocking=True)

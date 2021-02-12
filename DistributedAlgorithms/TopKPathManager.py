@@ -45,7 +45,6 @@ class TopKPathManager:
         self.rankToCounterMap = {} #init needed
         self.rankToPortAtMaxIndexMap = {} #init needed
         self.portToIndexAtCurrentRankMap = {}
-        self.bitamsk = ba.bitarray(self.maxRank)
         self.rankToPort2dMap = {}
         for i in range(0, self.maxRank):
             self.rankToCounterMap[i] = ConfConst.INVALID
@@ -149,26 +148,27 @@ class TopKPathManager:
         if(k>self.maxRank):
             logger.error("given  rank is more than the system's available rank. so can't insert the port")
             return None
-        if((self.rankToCounterMap.get(k) != None) and (self.rankToCounterMap.get(k) != None) and  (self.rankToCounterMap.get(k) >= self.maxRank)):
+        if((self.rankToCounterMap.get(k) != None) and (self.rankToCounterMap.get(k) != None) and  (self.rankToCounterMap.get(k) >= (self.maxRank-1))):
             print("Already k memebers in the group. Yoo may enter the port into next group")
             return None
         oldRank = self.portToRankMap.get(port)
         if((oldRank != None) and (oldRank > ConfConst.INVALID) and  (oldRank != k)):
             logger.info("Old rank of port "+str(port)+" is: "+str(oldRank)+" and new rank is: "+str(k))
-            logger.info("This can not happen. Please Debug. Exiting the thread!!!!")
-            exit(1)
+            logger.info("This can not happen. Please Debug. !!!!")
+            return None
         if((oldRank != None) and (oldRank > ConfConst.INVALID) and  (oldRank==k)):
             logger.info("The port is already in rank-"+str(k))
             print("The port is already in rank-",k)
             return None
-        self.portToRankMap[port] = k
-        self.rankToCounterMap[k] = self.rankToCounterMap.get(k) + 1
-        self.rankToPortAtMaxIndexMap[k] = port
+
         oldIndex = self.portToIndexAtCurrentRankMap.get(port)
-        if((oldIndex != None) and (oldIndex >0) and (oldIndex!=self.rankToCounterMap[k])):
+        if((oldIndex != None) and (oldIndex >0) and (oldIndex!= (self.rankToCounterMap[k] + 1))):
             logger.info("Old index of port "+str(port)+" is: "+str(oldIndex)+" and new index is: "+str(self.rankToCounterMap.get(k)))
             logger.info("This can not happen. Please Debug. Exiting the thread!!!!")
             exit(1)
+        self.portToRankMap[port] = k
+        self.rankToCounterMap[k] = self.rankToCounterMap.get(k) + 1
+        self.rankToPortAtMaxIndexMap[k] = port
         self.portToIndexAtCurrentRankMap[port] = self.rankToCounterMap.get(k)
         self.rankToPort2dMap.get(k)[self.rankToCounterMap.get(k)] = port
         #next we need to build the control message
@@ -202,16 +202,16 @@ class TopKPathManager:
         :param port:
         :return:
         '''
-        oldRank = self.portToRankMap[port]
+        oldRank = self.portToRankMap.get(port)
         if(oldRank == None):
             logger.info("Old rank of port to be deleted("+str(port)+") is None. If you are deleting a port before inserting it then you are ok. otherwise There is some bug.")
             logger.info("To ensure consistency we are exiting.")
-            exit(1)
-        oldIndex = self.portToIndexAtCurrentRankMap[port]
+            return None
+        oldIndex = self.portToIndexAtCurrentRankMap.get(port)
         if((oldIndex == None) ):
             logger.info("Old index of port "+str(port)+" to be deleted is None. This means the port is already not existing ")
-            logger.info("This can not happen. Please Debug. Exiting the thread!!!!")
-            exit(1)
+            logger.info("This can not happen. Please Debug. !!!!")
+            return None
         self.portToRankMap[port] = ConfConst.INVALID
         self.rankToCounterMap[oldRank] = self.rankToCounterMap.get(oldRank) - 1
         portAtMaxIndex = self.rankToPortAtMaxIndexMap.get(oldRank)
@@ -225,6 +225,7 @@ class TopKPathManager:
         else:
             self.portToIndexAtCurrentRankMap[portAtMaxIndex] = oldIndex  #This is necessary because we are shifting it's location
         self.rankToPortAtMaxIndexMap[oldRank] = self.rankToPort2dMap.get(oldRank)[newMaxIndexOfTheRank]
+        del self.portToRankMap[port]
         #row = oldRank, column = self.rankToCounterMap[k] --> in this location write self.rankToPortAtMaxIndexMap[oldRank]
         # if elements in oldRank is -1 then bit will be 0
         #When we delete the only element of the rank then newMaxIndexOfTheRank weill be -1. But we do not consider this as special case, because p4 programs will automatically
