@@ -4,8 +4,8 @@
       "name" : "scalars_0",
       "id" : 0,
       "fields" : [
-        ["tmp", 8, false],
-        ["tmp_0", 8, false],
+        ["tmp", 16, false],
+        ["tmp_0", 16, false],
         ["ndp_processing_control_block_host_ipv6_tmp", 128, false],
         ["tmp_1", 32, false],
         ["userMetadata.l4_src_port", 16, false],
@@ -17,9 +17,9 @@
         ["userMetadata.flow_inter_packet_gap", 48, false],
         ["userMetadata.flowlet_last_pkt_seen_time", 48, false],
         ["userMetadata.flowlet_last_used_path", 9, false],
-        ["userMetadata.best_path_selector_bitmask", 8, false],
-        ["userMetadata.worst_path_selector_bitmask", 8, false],
-        ["userMetadata.kth_path_selector_bitmask", 8, false],
+        ["userMetadata.best_path_selector_bitmask", 16, false],
+        ["userMetadata.worst_path_selector_bitmask", 16, false],
+        ["userMetadata.kth_path_selector_bitmask", 16, false],
         ["userMetadata.path_rank", 16, false],
         ["userMetadata.best_path_rank", 16, false],
         ["userMetadata.worst_path_rank", 16, false],
@@ -715,11 +715,11 @@
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
         "line" : 174,
-        "column" : 43,
-        "source_fragment" : "@name(\\\"stored_bitmask\\\")register<bit<8>>(1) stored_bitmask;"
+        "column" : 44,
+        "source_fragment" : "@name(\\\"stored_bitmask\\\")register<bit<16>>(1) stored_bitmask;"
       },
       "size" : 1,
-      "bitwidth" : 8
+      "bitwidth" : 16
     },
     {
       "name" : "rank_to_max_index",
@@ -727,10 +727,10 @@
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
         "line" : 175,
-        "column" : 47,
-        "source_fragment" : "@name(\\\"rank_to_max_index\\\")register<bit<32>>(8) rank_to_max_index;"
+        "column" : 48,
+        "source_fragment" : "@name(\\\"rank_to_max_index\\\")register<bit<32>>(16) rank_to_max_index;"
       },
-      "size" : 8,
+      "size" : 16,
       "bitwidth" : 32
     },
     {
@@ -739,10 +739,10 @@
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
         "line" : 176,
-        "column" : 47,
-        "source_fragment" : "@name(\\\"rank_to_min_index\\\")register<bit<32>>(8) rank_to_min_index;"
+        "column" : 48,
+        "source_fragment" : "@name(\\\"rank_to_min_index\\\")register<bit<32>>(16) rank_to_min_index;"
       },
-      "size" : 8,
+      "size" : 16,
       "bitwidth" : 32
     },
     {
@@ -751,10 +751,10 @@
       "source_info" : {
         "filename" : "p4src/src/leaf.p4",
         "line" : 22,
-        "column" : 51,
-        "source_fragment" : "@name(\\\"level_to_link_store\\\")register<bit<32>>(8*8) rank_to_port_map;"
+        "column" : 53,
+        "source_fragment" : "@name(\\\"level_to_link_store\\\")register<bit<32>>(16*16) rank_to_port_map;"
       },
-      "size" : 64,
+      "size" : 256,
       "bitwidth" : 32
     }
   ],
@@ -1408,7 +1408,7 @@
                   },
                   "right" : {
                     "type" : "hexstr",
-                    "value" : "0xff"
+                    "value" : "0xffff"
                   }
                 }
               }
@@ -1418,7 +1418,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 21,
             "column" : 46,
-            "source_fragment" : "hdr.packet_out.bitmask[8 - 1 :0]"
+            "source_fragment" : "hdr.packet_out.bitmask[16 - 1 :0]"
           }
         },
         {
@@ -1441,7 +1441,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 21,
             "column" : 12,
-            "source_fragment" : "stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[8 - 1 :0])"
+            "source_fragment" : "stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[16 - 1 :0])"
           }
         },
         {
@@ -1603,7 +1603,7 @@
                   },
                   "right" : {
                     "type" : "hexstr",
-                    "value" : "0xff"
+                    "value" : "0xffff"
                   }
                 }
               }
@@ -1613,7 +1613,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 32,
             "column" : 46,
-            "source_fragment" : "hdr.packet_out.bitmask[8 - 1 :0]"
+            "source_fragment" : "hdr.packet_out.bitmask[16 - 1 :0]"
           }
         },
         {
@@ -1636,7 +1636,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 32,
             "column" : 12,
-            "source_fragment" : "stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[8 - 1 :0])"
+            "source_fragment" : "stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[16 - 1 :0])"
           }
         },
         {

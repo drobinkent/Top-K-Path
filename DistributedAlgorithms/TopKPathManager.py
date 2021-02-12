@@ -175,15 +175,15 @@ class TopKPathManager:
         #row = k, column = self.rankToCounterMap[k]
         #kth bit in bitmask will be 1
         pktForInsertPort = self.buildMetadataBasedPacketOut(isDelete=False,   rank = k, port = port, rankMinIndex=self.getMinIndex(k),
-                        rankMaxIndex = self.getMaxIndex(rank=k), newPortIndex=self.rankToCounterMap.get(k),bitmask = self.getBitmask())
+                        rankMaxIndex = self.getMaxIndex(rank=k), newPortIndex=self.getMaxIndex(rank=k),bitmask = self.getBitmask())
         return pktForInsertPort
 
     def getBitmask(self):
-        bmsk = 0
+        bmask = 0
         for k in self.rankToCounterMap.keys():
             if self.rankToCounterMap.get(k) >-1:
-                modifyBit(bmsk, k, 1)
-        return bmsk
+                bmask = modifyBit(bmask, k, 1)
+        return bmask
     def getMinIndex(self, rank):
         if self.rankToCounterMap.get(rank)> -1:
             return rank * self.maxRank

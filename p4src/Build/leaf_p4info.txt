@@ -1162,7 +1162,7 @@ registers {
   type_spec {
     bitstring {
       bit {
-        bitwidth: 8
+        bitwidth: 16
       }
     }
   }
@@ -1181,7 +1181,7 @@ registers {
       }
     }
   }
-  size: 8
+  size: 16
 }
 registers {
   preamble {
@@ -1196,7 +1196,7 @@ registers {
       }
     }
   }
-  size: 8
+  size: 16
 }
 registers {
   preamble {
@@ -1211,7 +1211,7 @@ registers {
       }
     }
   }
-  size: 64
+  size: 256
 }
 type_info {
 }
