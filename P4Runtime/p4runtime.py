@@ -13,22 +13,18 @@
 # limitations under the License.
 #
 
-from functools import wraps
-import google.protobuf.text_format
-from google.rpc import status_pb2, code_pb2
-import grpc
-import logging
-import queue
+import logging.handlers
 import sys
-import threading
-import time
+from functools import wraps
 
+import google.protobuf.text_format
+import grpc
+from google.rpc import status_pb2, code_pb2
 from p4.v1 import p4runtime_pb2
 from p4.v1 import p4runtime_pb2_grpc
 
-import logging
-import logging.handlers
-import  ConfigConst as ConfConst
+import ConfigConst as ConfConst
+
 logger = logging.getLogger('P4Runtime')
 logger.handlers = []
 hdlr = logging.handlers.RotatingFileHandler(ConfConst.CONTROLLER_LOG_FILE_PATH, maxBytes = ConfConst.MAX_LOG_FILE_SIZE , backupCount= ConfConst.MAX_LOG_FILE_BACKUP_COUNT)

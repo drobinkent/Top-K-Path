@@ -30,7 +30,7 @@
 #include "my_station.p4"
 #include "l2_ternary.p4"
 #include "spine_downstream_routing.p4"
-
+#include "top_k_path_control_message_processor.p4"
 // *** V1MODEL
 //
 // V1Model is a P4_16 architecture that defines 7 processing blocks.
@@ -94,7 +94,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
         //upstream_routing() upstream_ecmp_routing_control_block;
         //#endif
     upstream_routing() upstream_ecmp_routing_control_block;
-
+    top_k_path_control_message_processor() top_k_path_control_message_processor_control_block;
 
     // *** APPLY BLOCK STATEMENT
     apply {
@@ -104,6 +104,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
        // Set the egress port to that found in the packet-out metadata...
        standard_metadata.egress_spec = hdr.packet_out.egress_port;
        // Remove the packet-out header...
+       top_k_path_control_message_processor_control_block.apply(hdr, local_metadata, standard_metadata);
        hdr.packet_out.setInvalid();
        // Exit the pipeline here, no need to go through other tables.
        exit;

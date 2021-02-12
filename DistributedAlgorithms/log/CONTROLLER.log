@@ -35,3 +35,4 @@
 [02-11 01:42:42] p16781 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:91} INFO - This can not happen. Please Debug. Exiting the thread!!!!
 [02-11 02:08:11] p19048 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:85} INFO - The port is already in rank-5
 [02-11 03:03:07] p21930 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:84} INFO - The port is already in rank-5
+[02-11 19:34:42] p68438 {/home/deba/Desktop/Top-K-Path/DistributedAlgorithms/TopKPathManager.py:84} INFO - The port is already in rank-5

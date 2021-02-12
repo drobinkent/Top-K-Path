@@ -1,13 +1,10 @@
+import logging.handlers
 import math
 
+import ConfigConst as ConfConst
 import InternalConfig
 import P4Runtime.shell as sh
-import logging
-import logging.handlers
 
-from P4Runtime.context import P4Type
-
-import  ConfigConst as ConfConst
 logger = logging.getLogger('LeafSwitchUtils')
 logger.handlers = []
 hdlr = logging.handlers.RotatingFileHandler(ConfConst.CONTROLLER_LOG_FILE_PATH, maxBytes = ConfConst.MAX_LOG_FILE_SIZE , backupCount= ConfConst.MAX_LOG_FILE_BACKUP_COUNT)

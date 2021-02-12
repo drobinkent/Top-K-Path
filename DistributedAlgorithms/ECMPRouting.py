@@ -1,14 +1,9 @@
-import logging
 import logging.handlers
-import P4Runtime.P4DeviceManager as jp
-import P4Runtime.leafSwitchUtils as leafUtils
-import P4Runtime.spineSwitchUtils as  spineUtils
-import P4Runtime.superSpineSwitchUtils as  superSpineUtils
-import P4Runtime.SwitchUtils as swUtils
-import InternalConfig
-import P4Runtime.shell as sh
-from DistributedAlgorithms.RoutingInfo import RoutingInfo
+import logging.handlers
+
 import ConfigConst as ConfConst
+from DistributedAlgorithms.RoutingInfo import RoutingInfo
+
 logger = logging.getLogger('Shell')
 logger.handlers = []
 hdlr = logging.handlers.RotatingFileHandler(ConfConst.CONTROLLER_LOG_FILE_PATH, maxBytes = ConfConst.MAX_LOG_FILE_SIZE , backupCount= ConfConst.MAX_LOG_FILE_BACKUP_COUNT)

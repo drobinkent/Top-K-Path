@@ -12,21 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import sys
-from imp import load_source
 
 
-
-from collections import Counter
 import enum
-from functools import partialmethod
-import logging
-
 import importlib.util
-
-import importlib as importlib
-
-import spec as spec
+import logging
+from logging.handlers import RotatingFileHandler
+from collections import Counter
+from functools import partialmethod
 
 spec = importlib.util.spec_from_file_location("ConfigConst", "./ConfigConst.py")
 ConfConst = importlib.util.module_from_spec(spec)
@@ -34,7 +27,7 @@ spec.loader.exec_module(ConfConst)
 #import  ConfigConst as ConfConst
 logger = logging.getLogger('Context')
 logger.handlers = []
-hdlr = logging.handlers.RotatingFileHandler(ConfConst.CONTROLLER_LOG_FILE_PATH, maxBytes = ConfConst.MAX_LOG_FILE_SIZE , backupCount= ConfConst.MAX_LOG_FILE_BACKUP_COUNT)
+hdlr = RotatingFileHandler(ConfConst.CONTROLLER_LOG_FILE_PATH, maxBytes = ConfConst.MAX_LOG_FILE_SIZE, backupCount= ConfConst.MAX_LOG_FILE_BACKUP_COUNT)
 hdlr.setLevel(logging.INFO)
 formatter = logging.Formatter('[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s','%m-%d %H:%M:%S')
 hdlr.setFormatter(formatter)

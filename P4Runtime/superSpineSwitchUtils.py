@@ -1,9 +1,9 @@
-import InternalConfig
-import P4Runtime.shell as sh
-import P4Runtime.P4DeviceManager as jp
-import logging
 import logging.handlers
 import  ConfigConst as ConfConst
+import logging.handlers
+
+import ConfigConst as ConfConst
+
 logger = logging.getLogger('SuperSpineSwitchUtils')
 logger.handlers = []
 hdlr = logging.handlers.RotatingFileHandler(ConfConst.CONTROLLER_LOG_FILE_PATH, maxBytes = ConfConst.MAX_LOG_FILE_SIZE , backupCount= ConfConst.MAX_LOG_FILE_BACKUP_COUNT)

@@ -1,26 +1,22 @@
 #from p4.v1 import p4runtime_pb2
-import P4Runtime.leafSwitchUtils
-import P4Runtime.StatisticsPuller
-import P4Runtime.StatisticsPuller
-import P4Runtime.SwitchUtils as swUtils
-import P4Runtime.leafSwitchUtils
-
 import json
-import logging
-import logging.config
 import logging.handlers
 import sys
 
 import ConfigConst as ConfConst
+import InternalConfig as intCoonfig
+import P4Runtime.StatisticsPuller
+import P4Runtime.StatisticsPuller
 import P4Runtime.StatisticsPuller
 import P4Runtime.StatisticsPuller
 import P4Runtime.SwitchUtils as swUtils
+import P4Runtime.leafSwitchUtils
+import P4Runtime.leafSwitchUtils
 import P4Runtime.leafSwitchUtils
 import P4Runtime.leafSwitchUtils
 from P4Runtime import P4DeviceManager as jp
 from P4Runtime.P4DeviceManager import DeviceType
 from P4Runtime.utils import getDeviceTypeFromName, reverseAndCreateNewLink
-from DistributedAlgorithms import LoadBalancer
 
 logger = logging.getLogger('DCNTEController')
 logger.handlers = []
@@ -148,11 +144,11 @@ class MyP4Controller():
             logger.info("Setting up Queue rate for all switch. This is equavalent to setup line rate setup in bmv2 devices")
 
             # #s = Device()
-            if (s.fabric_device_config.switch_type == jp.SwitchType.LEAF ):
+            if (s.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF ):
                 s.queueRateSetupForLeafSwitch(queueRateForHostFacingPortsOfLeafSwitch, queueRateForSpineFacingPortsOfLeafSwitch,queueRateToDepthFactor)
-            if (s.fabric_device_config.switch_type == jp.SwitchType.SPINE ):
+            if (s.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE ):
                 s.queueRateSetupForSpineSwitch(queueRateForLeafSwitchFacingPortsOfSpineSwitch, queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch, queueRateToDepthFactor)
-            if (s.fabric_device_config.switch_type == jp.SwitchType.SUPER_SPINE ):
+            if (s.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE ):
                 s.queueRateSetupForSuperspineSwitch(queueRateForSpineSwitchFacingPortsOfSuperSpineSwitch, queueRateForExternalInternetFacingPortsOfSuperSpineSwitch, queueRateToDepthFactor)
             swUtils.addCloneSessionForEachPort(s, s.maxPort)
             #TODO : need to save the metric level in device. So that we4 can later use dynamic scale up for metrices

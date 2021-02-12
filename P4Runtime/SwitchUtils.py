@@ -1,23 +1,22 @@
 
 #import CentralizedAlgorithms as centrAlgo
-import DistributedAlgorithms.ECMPRouting as ecmpRouting
-import math
-import DistributedAlgorithms.TopKPathRouting as topKPathRouting
-import InternalConfig
-import P4Runtime.shell as sh
-import ConfigConst as ConfConst
-import  P4Runtime.P4DeviceManager as jp
-import P4Runtime.shell as sh
 import logging
+import logging.handlers
+import math
+
+import ConfigConst as ConfConst
+import DistributedAlgorithms.ECMPRouting as ecmpRouting
+import DistributedAlgorithms.TopKPathRouting as topKPathRouting
+import InternalConfig as intCoonfig
+import P4Runtime.P4DeviceManager as jp
+import P4Runtime.shell as sh
+
 # logger = logging.getLogger('DCNTEController')
 # hdlr = logging.FileHandler('./log/controller.log')
 # formatter = logging.Formatter('[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s','%m-%d %H:%M:%S')
 # hdlr.setFormatter(formatter)
 # logger.addHandler(hdlr) \n  logging.StreamHandler(stream=None)
 # logger.setLevel(logging.INFO)
-
-import logging
-import logging.handlers
 logger = logging.getLogger('SwitchUtils')
 logger.handlers = []
 
@@ -50,17 +49,17 @@ def setupFlowtypeBasedIngressRateMonitoring(dev):
     # if switch is super spine type  -- find sum of total packet processing rates for spine facing ports
     downwardPortList = []
     upwardPortList = []
-    if (dev.fabric_device_config.switch_type == jp.SwitchType.LEAF ):
+    if (dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF ):
         totalRateOfDownWardPorts = getTotalPacketProcessingRatesForPortList(dev, list(dev.portToHostMap.keys()))
         downwardPortList= list(dev.portToHostMap.keys())
         totalRateOfUpwordPorts = getTotalPacketProcessingRatesForPortList(dev, list(dev.portToSpineSwitchMap.keys()))
         upwardPortList = list(dev.portToSpineSwitchMap.keys())
-    elif (dev.fabric_device_config.switch_type == jp.SwitchType.SPINE ):
+    elif (dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE ):
         totalRateOfDownWardPorts = getTotalPacketProcessingRatesForPortList(dev, list(dev.portToLeafSwitchMap.keys()))
         downwardPortList = list(dev.portToLeafSwitchMap.keys())
         upwardPortList =list(dev.portToSuperSpineSwitchMap.keys())
         totalRateOfUpwordPorts = getTotalPacketProcessingRatesForPortList(dev, list(dev.portToSuperSpineSwitchMap.keys()))
-    elif (dev.fabric_device_config.switch_type == jp.SwitchType.SUPER_SPINE ):
+    elif (dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE ):
         totalRateOfDownWardPorts = getTotalPacketProcessingRatesForPortList(dev, list(dev.portToSpineSwitchMap.keys()))
         downwardPortList = list(dev.portToSpineSwitchMap.keys())
         upwardPortList = []   #For super spine we are not working for connectivity toward internet
@@ -133,7 +132,7 @@ def setupEgressQueueDepthMetricsLevelCalculatorTables(dev, egressQueueDepthMetri
         #te.match[matachField2] = str(low)+".."+str(high)    # "0..1024"
         te.action["delay_level"] = str(metricsLevel.level)
         te.action["weight"] = str(metricsLevel.weight)
-        te.priority = int(InternalConfig.DEFAULT_PRIORITY)
+        te.priority = int(intCoonfig.DEFAULT_PRIORITY)
         te.insert()
     return
 
@@ -144,7 +143,7 @@ def setupPortToPortDelayMetricsLevelCalculatorTables(dev, egressQueueDepthMetric
         #te.match[matachField2] = str(low)+".."+str(high)    # "0..1024"
         te.action["delay_level"] = str(metricsLevel.level)
         te.action["weight"] = str(metricsLevel.weight)
-        te.priority = int(InternalConfig.DEFAULT_PRIORITY)
+        te.priority = int(intCoonfig.DEFAULT_PRIORITY)
         te.insert()
     return
 
@@ -212,13 +211,13 @@ def addCloneSessionForEachPort(dev, maxPort):
         dev.addMultiCastGroup(listOfPorts= [i], mcastGroupId= i)
 
         cmdString = cmdString+  "mirroring_add_mc "+ str(i)+" "+str(i)+" \n"
-        if(i!= InternalConfig.CPU_PORT):   # no need to add CPU port twice
-            dev.addMultiCastGroup(listOfPorts= [i,InternalConfig.CPU_PORT], mcastGroupId= i+ConfConst.MAX_PORT_NUMBER)
+        if(i!= intCoonfig.CPU_PORT):   # no need to add CPU port twice
+            dev.addMultiCastGroup(listOfPorts= [i,intCoonfig.CPU_PORT], mcastGroupId= i+ConfConst.MAX_PORT_NUMBER)
             cmdString = cmdString+  "mirroring_add_mc "+ str(i+ConfConst.MAX_PORT_NUMBER)+" "+str(i+ConfConst.MAX_PORT_NUMBER)+" \n"
             # cmdString = cmdString+  "mirroring_add "+ str(i+ConfConst.MAX_PORT_NUMBER)+" "+str(i)+" \n"
             # cmdString = cmdString+  "mirroring_add "+ str(i+ConfConst.MAX_PORT_NUMBER)+" "+str(InternalConfig.CPU_PORT)+" \n"
-        if(i!= InternalConfig.CPU_PORT):   # no need to add CPU port twice
-            dev.addMultiCastGroup(listOfPorts= [i,InternalConfig.CPU_PORT, 0], mcastGroupId= i+ (2 * ConfConst.MAX_PORT_NUMBER))
+        if(i!= intCoonfig.CPU_PORT):   # no need to add CPU port twice
+            dev.addMultiCastGroup(listOfPorts= [i,intCoonfig.CPU_PORT, 0], mcastGroupId= i+ (2 * ConfConst.MAX_PORT_NUMBER))
             cmdString = cmdString+  "mirroring_add_mc "+ str(i+ (2 * ConfConst.MAX_PORT_NUMBER))+" "+str(i+ (2 * ConfConst.MAX_PORT_NUMBER))+" \n"
             # cmdString = cmdString+  "mirroring_add "+ str(i+ (2* ConfConst.MAX_PORT_NUMBER))+" "+str(i)+" \n"
             # cmdString = cmdString+  "mirroring_add "+ str(i+ (2* ConfConst.MAX_PORT_NUMBER))+" "+str(InternalConfig.CPU_PORT)+" \n"

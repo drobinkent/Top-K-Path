@@ -141,7 +141,15 @@ struct local_metadata_t {
     bit<48> flowlet_last_pkt_seen_time;
     bit<9> flowlet_last_used_path;
 
+    //all these 3 will be of length k
+    bit <K> best_path_selector_bitmask;
+    bit <K> worst_path_selector_bitmask;
+    bit <K> kth_path_selector_bitmask;
+
     bit <16> path_rank;
+    bit <16> best_path_rank;
+    bit <16> worst_path_rank;
+    bit <16> kth_path_rank;
 
 
 
@@ -195,20 +203,24 @@ header packet_out_t {
     port_num_t  egress_port;
     bit<7>      _pad;
     //Previous all fields are not necessary for CLB. TODO  at sometime we will trey to clean up them. But at this moment we are not focusing on that
-    bit<8> clb_flags; //Here we will keep various falgs for CLB
-    //--------bit-7--------|| If this bit is set then reet the counter
-    //--------bit-6--------|| If this bit is set then this is a port delete packet
-    //--------bit-5--------|| If this bit is set then this is a port insert packet
-    //--------bit-4--------|| Other bits are ununsed at this moment
+    bit<8> top_k_path_flags; //Here we will keep various falgs for topKpath
+    //--------bit-7--------|| If this bit is set then this is a delete port else this is a add port insturction
+    //--------bit-6--------|| others are not used at this moment
+    //--------bit-5--------||
+    //--------bit-4--------||
     //--------bit-3--------||
     //--------bit-2--------||
     //--------bit-1--------||
     //--------bit-0--------||
 
+    bit<32> bitmask;  //It shoudl not be 32 bit . It should be acutally K bit, But to ease of implementation we are using 32 bit assuming that
+    //K will be always less then 32 for our tests. In real life just need to make it K bit
+    bit<32> rank;
+    bit<32> port;
+    bit<32> rank_max_index;
+    bit<32> rank_min_index;
+    bit<32> new_port_index;
 
-    bit<32> link_id;
-    bit<32> bitmask; //Here we are keeping all 32 bit to avoid compile time configuration complexity. At apply blo0ck we will slice necesssary bits.
-    bit<32> level_to_link_id_store_index;  //
 }
 
 // Header for sensing peer to peer feedback

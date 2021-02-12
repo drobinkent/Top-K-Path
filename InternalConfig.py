@@ -1,3 +1,5 @@
+from enum import Enum
+
 DCN_CORE_IPv6_PREFIX = "2001:1:1:1:0:0:0:0"
 DCN_CORE_IPv6_PREFIX_LENGTH = 80
 DCN_CORE_IPv6_PREFIX_TEST0 = "1:0:0:0:0:0:0:0"
@@ -164,3 +166,10 @@ EGRESS_QUEUE_DEPTH_THRESHOLD = 3
 #For Super SPine Switch
 
 #***********************************************Template Config param End**********************************************************
+
+
+
+class SwitchType(Enum):
+    LEAF = "Leaf"
+    SPINE = "Spine"
+    SUPER_SPINE = "SuperSpine"

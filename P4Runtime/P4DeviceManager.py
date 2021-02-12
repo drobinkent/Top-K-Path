@@ -9,9 +9,6 @@
 import math
 import queue
 import sys
-import traceback
-
-from DistributedAlgorithms.RoutingInfo import RoutingInfo
 
 print(sys.path)
 import threading
@@ -28,7 +25,7 @@ import ConfigConst as ConfConst
 import subprocess
 import InternalConfig
 import P4Runtime.shell as sh
-from P4Runtime.context import Context, P4RuntimeEntity
+from P4Runtime.context import Context
 from P4Runtime.p4runtime import P4RuntimeClient, P4RuntimeException, parse_p4runtime_error
 import P4Runtime.leafSwitchUtils as leafUtils
 import P4Runtime.spineSwitchUtils as spineUtils
@@ -36,11 +33,9 @@ import P4Runtime.superSpineSwitchUtils as superSpineUtils
 import P4Runtime.SwitchUtils as swUtils
 import ConfigConst
 import P4Runtime.packetUtils as pktUtil
-import P4Runtime.PortStatistics as ps
 
 import collections as collections
 # logger.basicConfig(level=logger.DEBUG)
-import logging
 import logging.handlers
 logger = logging.getLogger('P4DeviceManager')
 logger.handlers = []
@@ -187,30 +182,27 @@ class DeviceBasic:
         return result
 
 
-class SwitchType(Enum):
-    LEAF = "Leaf"
-    SPINE = "Spine"
-    SUPER_SPINE = "SuperSpine"
+
 
 
 @dataclass
 class FabricDeviceConfig:
     my_station_mac: str
-    switch_type: SwitchType
+    switch_type: InternalConfig.SwitchType
     switch_host_subnet_prefix: str
 
     @staticmethod
     def from_dict(obj: Any) -> 'FabricDeviceConfig':
         assert isinstance(obj, dict)
         my_station_mac = from_str(obj.get("myStationMac"))
-        switch_type = SwitchType(obj.get("switchType"))
+        switch_type = InternalConfig.SwitchType(obj.get("switchType"))
         switch_host_subnet_prefix = from_str(obj.get("switchHostSubnetPrefix"))
         return FabricDeviceConfig(my_station_mac, switch_type, switch_host_subnet_prefix)
 
     def to_dict(self) -> dict:
         result: dict = {}
         result["myStationMac"] = from_str(self.my_station_mac)
-        result["switchType"] = to_enum(SwitchType, self.switch_type)
+        result["switchType"] = to_enum(InternalConfig.SwitchType, self.switch_type)
         result["switchHostSubnetPrefix"] = from_str(self.switch_host_subnet_prefix)
         return result
 
@@ -358,13 +350,13 @@ class Device:
         self.portStatisticsCollection = collections.deque(maxlen=ConfigConst.PORT_STATISTICS_HISTORY_LENGTH)
         self.dpAlgorithm = dpAlgo
         self.ctrlPlaneLogic = swUtils.getAlgo(self, self.dpAlgorithm)
-        if (fabric_device_config.switch_type == SwitchType.LEAF):
+        if (fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF):
             self.p4infoFilePath = ConfConst.LEAF_P4_INFO_FILE_PATH
             self.bmv2_json_file_path = ConfConst.LEAF_BMV2_JSON_FILE_PATH
-        elif (fabric_device_config.switch_type == SwitchType.SPINE):
+        elif (fabric_device_config.switch_type == InternalConfig.SwitchType.SPINE):
             self.p4infoFilePath = ConfConst.SPINE_P4_INFO_FILE_PATH
             self.bmv2_json_file_path = ConfConst.SPINE_BMV2_JSON_FILE_PATH
-        elif (fabric_device_config.switch_type == SwitchType.SUPER_SPINE):
+        elif (fabric_device_config.switch_type == InternalConfig.SwitchType.SUPER_SPINE):
             self.p4infoFilePath = ConfConst.SUPER_SPINE_P4_INFO_FILE_PATH
             self.bmv2_json_file_path = ConfConst.SUPER_SPINE_BMV2_JSON_FILE_PATH
         else:
@@ -553,7 +545,7 @@ class Device:
         clnt.stream_out_q.put(packet_out_req)
         self.packetOutLock.release()
 
-    def send_already_built_control_packet_for_load_balancer(self, packet_out_req):
+    def send_already_built_control_packet_for_top_k_path(self, packet_out_req):
         self.stream_out_q.put(packet_out_req)
 
     def send_control_packet_for_load_balancer(self, pktInRaw, port, clnt):
@@ -589,7 +581,7 @@ class Device:
 
     def hostDiscoverySetup(self):
         # This function only works for leaf switch. and is necessary for NDP setup. So irrespective of any test scenario we have this is mandatory
-        if self.fabric_device_config.switch_type == SwitchType.LEAF:
+        if self.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
             self.addMultiCastGroup(list(self.portToHostMap.keys()), InternalConfig.LEAF_SWITCH_HOST_MULTICAST_GROUP)
             leafUtils.addL2TernaryEntryForMulticast(self)
             self.addExactMatchEntryNoAction(
@@ -666,7 +658,7 @@ class Device:
         This function setup all the relevant stuffs for running the algorithm
         '''
 
-        if self.fabric_device_config.switch_type == SwitchType.LEAF:
+        if self.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
             leafUtils.addUpStreamRoutingGroupForLeafSwitch(self, list(
                 self.portToSpineSwitchMap.keys()))  # this creates a group for upstream routing with  group_id=InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP
             self.addLPMMatchEntryWithGroupAction(
@@ -677,7 +669,7 @@ class Device:
                 actionParamName=None, actionParamValue=None,
                 groupID=InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP, priority=None)
             return
-        elif self.fabric_device_config.switch_type == SwitchType.SPINE:
+        elif self.fabric_device_config.switch_type == InternalConfig.SwitchType.SPINE:
             spineUtils.addUpStreamRoutingGroupForSpineSwitch(self, list(
                 self.portToSuperSpineSwitchMap.keys()))  # this creates a group for upstream routing with  group_id=InternalConfig.SPINE_SWITCH_UPSTREAM_PORTS_GROUP
             if (len(list(self.portToSuperSpineSwitchMap.keys()))<=0):
@@ -691,7 +683,7 @@ class Device:
                     actionParamName=None, actionParamValue=None,
                     groupID=InternalConfig.SPINE_SWITCH_UPSTREAM_PORTS_GROUP, priority=None)
             pass
-        elif self.fabric_device_config.switch_type == SwitchType.SUPER_SPINE:
+        elif self.fabric_device_config.switch_type == InternalConfig.SwitchType.SUPER_SPINE:
             pass
         return
 
@@ -699,7 +691,7 @@ class Device:
         '''This funciotn setup dataplane entries for various muslticast grousp and NDP entries and downstream routing in each switch. Irrespective of
         Dataplane algorithms these tasks are common.
         '''
-        if self.fabric_device_config.switch_type == SwitchType.LEAF:
+        if self.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
             self.addMultiCastGroup(list(self.portToHostMap.keys()), InternalConfig.LEAF_SWITCH_HOST_MULTICAST_GROUP)
             leafUtils.addL2TernaryEntryForMulticast(self)
             self.addExactMatchEntryNoAction(
@@ -707,9 +699,9 @@ class Device:
                 fieldName="hdr.ethernet.dst_addr", fieldValue=self.fabric_device_config.my_station_mac)
             leafUtils.addNDPentries(self)
             leafUtils.addDownstreamRoutingRuleForLeafSwitch(self)
-        elif self.fabric_device_config.switch_type == SwitchType.SPINE:
+        elif self.fabric_device_config.switch_type == InternalConfig.SwitchType.SPINE:
             spineUtils.addDownstreamRoutingRuleForSpineSwitch(self)
-        elif self.fabric_device_config.switch_type == SwitchType.SUPER_SPINE:
+        elif self.fabric_device_config.switch_type == InternalConfig.SwitchType.SUPER_SPINE:
             superSpineUtils.addDownstreamRoutingRuleForSuperSpineSwitch(self)
 
 

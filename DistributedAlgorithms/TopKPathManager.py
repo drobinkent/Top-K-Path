@@ -1,7 +1,11 @@
-import logging
 import logging.handlers
+import logging.handlers
+
 import bitarray as ba
+from p4.v1 import p4runtime_pb2
+
 import ConfigConst as ConfConst
+
 logger = logging.getLogger('TopKPathManager')
 logger.handlers = []
 hdlr = logging.handlers.RotatingFileHandler(ConfConst.CONTROLLER_LOG_FILE_PATH, maxBytes = ConfConst.MAX_LOG_FILE_SIZE , backupCount= ConfConst.MAX_LOG_FILE_BACKUP_COUNT)
@@ -61,6 +65,79 @@ class TopKPathManager:
         for i in range (0, self.maxRank):
             print(self.rankToPort2dMap[i])
         pass
+    def buildMetadataBasedPacketOut(self,  isDelete,   rank, port, rankMinIndex, rankMaxIndex, newPortIndex,bitmask, packet_out_port = 255):
+        '''
+
+        port_num_t  egress_port;
+        bit<7>      _pad;
+        //Previous all fields are not necessary for CLB. TODO  at sometime we will trey to clean up them. But at this moment we are not focusing on that
+        bit<8> top_k_path_flags; //Here we will keep various falgs for CLB
+        //--------bit-7--------|| If this bit is set then reet the counter
+        //--------bit-6--------|| If this bit is set then this is a port delete packet
+        //--------bit-5--------|| If this bit is set then this is a port insert packet
+        //--------bit-4--------|| Other bits are ununsed at this moment
+        //--------bit-3--------||
+        //--------bit-2--------||
+        //--------bit-1--------||
+        //--------bit-0--------||
+
+        bit<K> bitmask;
+        bit<32> rank;
+        bit<32> port;
+        bit<32> rank_max_index;
+        bit<32> rank_min_index;
+        bit<32> new_port_index;
+        '''
+
+        rawPktContent = (255).to_bytes(2,'big') # first 2 byte egressport and padding
+        if(isDelete == True):
+            rawPktContent = rawPktContent + (128).to_bytes(1,'big')
+            topKPathFalgs = 128
+        else:
+            rawPktContent = rawPktContent + (0).to_bytes(1,'big')
+            topKPathFalgs = 0
+        # rawPktContent = rawPktContent + (linkID).to_bytes(4,'big')
+        # rawPktContent = rawPktContent + (bitmask).to_bytes(4,'big')
+        # rawPktContent = rawPktContent + (level_to_link_id_store_index).to_bytes(4,'big')
+
+        packet_out_req = p4runtime_pb2.StreamMessageRequest()
+        packet_out_port_hex = packet_out_port.to_bytes(length=2, byteorder="big")
+        packet_out = p4runtime_pb2.PacketOut()
+        egress_physical_port = packet_out.metadata.add()
+        egress_physical_port.metadata_id = 1
+        egress_physical_port.value = packet_out_port_hex
+
+        topKPathFalgs_metadata_field = packet_out.metadata.add()
+        topKPathFalgs_metadata_field.metadata_id = 3
+        topKPathFalgs_metadata_field.value = (topKPathFalgs).to_bytes(1,'big')
+
+        bitmask_metadata_field = packet_out.metadata.add()
+        bitmask_metadata_field.metadata_id = 4
+        bitmask_metadata_field.value = (bitmask).to_bytes(4,'big')
+
+        rank_metadata_field = packet_out.metadata.add()
+        rank_metadata_field.metadata_id = 5
+        rank_metadata_field.value = (rank).to_bytes(4,'big')
+
+        port_metadata_field = packet_out.metadata.add()
+        port_metadata_field.metadata_id = 6
+        port_metadata_field.value = (port).to_bytes(4,'big')
+
+        rankMaxIndex_metadata_field = packet_out.metadata.add()
+        rankMaxIndex_metadata_field.metadata_id = 7
+        rankMaxIndex_metadata_field.value = (rankMaxIndex).to_bytes(4,'big')
+
+        rankMinIndex_metadata_field = packet_out.metadata.add()
+        rankMinIndex_metadata_field.metadata_id = 8
+        rankMinIndex_metadata_field.value = (rankMinIndex).to_bytes(4,'big')
+
+        newPortIndex_metadata_field = packet_out.metadata.add()
+        newPortIndex_metadata_field.metadata_id = 9
+        newPortIndex_metadata_field.value = (newPortIndex).to_bytes(4,'big')
+
+        packet_out.payload = rawPktContent
+        packet_out_req.packet.CopyFrom(packet_out)
+        return packet_out_req
 
     def insertPort(self, port, k):
         '''
@@ -71,10 +148,10 @@ class TopKPathManager:
         '''
         if(k>self.maxRank):
             logger.error("given  rank is more than the system's available rank. so can't insert the port")
-            return False
-        if(self.rankToCounterMap[k] >= self.maxRank):
+            return None
+        if((self.rankToCounterMap.get(k) != None) and (self.rankToCounterMap.get(k) != None) and  (self.rankToCounterMap.get(k) >= self.maxRank)):
             print("Already k memebers in the group. Yoo may enter the port into next group")
-            return False
+            return None
         oldRank = self.portToRankMap.get(port)
         if((oldRank != None) and (oldRank > ConfConst.INVALID) and  (oldRank != k)):
             logger.info("Old rank of port "+str(port)+" is: "+str(oldRank)+" and new rank is: "+str(k))
@@ -83,19 +160,40 @@ class TopKPathManager:
         if((oldRank != None) and (oldRank > ConfConst.INVALID) and  (oldRank==k)):
             logger.info("The port is already in rank-"+str(k))
             print("The port is already in rank-",k)
-            return True
+            return None
         self.portToRankMap[port] = k
-        self.rankToCounterMap[k] = self.rankToCounterMap[k] + 1
+        self.rankToCounterMap[k] = self.rankToCounterMap.get(k) + 1
         self.rankToPortAtMaxIndexMap[k] = port
         oldIndex = self.portToIndexAtCurrentRankMap.get(port)
         if((oldIndex != None) and (oldIndex >0) and (oldIndex!=self.rankToCounterMap[k])):
-            logger.info("Old index of port "+str(port)+" is: "+str(oldIndex)+" and new index is: "+str(self.rankToCounterMap[k]))
+            logger.info("Old index of port "+str(port)+" is: "+str(oldIndex)+" and new index is: "+str(self.rankToCounterMap.get(k)))
             logger.info("This can not happen. Please Debug. Exiting the thread!!!!")
             exit(1)
-        self.portToIndexAtCurrentRankMap[port] = self.rankToCounterMap[k]
-        self.rankToPort2dMap[k][self.rankToCounterMap[k]] = port
+        self.portToIndexAtCurrentRankMap[port] = self.rankToCounterMap.get(k)
+        self.rankToPort2dMap.get(k)[self.rankToCounterMap.get(k)] = port
         #next we need to build the control message
-        return True
+        #row = k, column = self.rankToCounterMap[k]
+        #kth bit in bitmask will be 1
+        pktForInsertPort = self.buildMetadataBasedPacketOut(isDelete=False,   rank = k, port = port, rankMinIndex=self.getMinIndex(k),
+                        rankMaxIndex = self.getMaxIndex(rank=k), newPortIndex=self.rankToCounterMap.get(k),bitmask = self.getBitmask())
+        return pktForInsertPort
+
+    def getBitmask(self):
+        bmsk = 0
+        for k in self.rankToCounterMap.keys():
+            if self.rankToCounterMap.get(k) >-1:
+                modifyBit(bmsk, k, 1)
+        return bmsk
+    def getMinIndex(self, rank):
+        if self.rankToCounterMap.get(rank)> -1:
+            return rank * self.maxRank
+        else:
+            return -1
+    def getMaxIndex(self, rank):
+        if self.rankToCounterMap.get(rank)> -1:
+            return rank * self.maxRank + self.rankToCounterMap.get(rank)
+        else:
+            return -1
 
     def deletePort(self, port):
         '''
@@ -104,9 +202,6 @@ class TopKPathManager:
         :param port:
         :return:
         '''
-
-
-
         oldRank = self.portToRankMap[port]
         if(oldRank == None):
             logger.info("Old rank of port to be deleted("+str(port)+") is None. If you are deleting a port before inserting it then you are ok. otherwise There is some bug.")
@@ -118,7 +213,7 @@ class TopKPathManager:
             logger.info("This can not happen. Please Debug. Exiting the thread!!!!")
             exit(1)
         self.portToRankMap[port] = ConfConst.INVALID
-        self.rankToCounterMap[oldRank] = self.rankToCounterMap[oldRank] - 1
+        self.rankToCounterMap[oldRank] = self.rankToCounterMap.get(oldRank) - 1
         portAtMaxIndex = self.rankToPortAtMaxIndexMap.get(oldRank)
         newMaxIndexOfTheRank = self.portToIndexAtCurrentRankMap.get(portAtMaxIndex)-1
         self.portToIndexAtCurrentRankMap[port] = ConfConst.INVALID
@@ -129,37 +224,68 @@ class TopKPathManager:
             self.portToIndexAtCurrentRankMap[portAtMaxIndex] = ConfConst.INVALID #this case means we are deleting the last port of the group
         else:
             self.portToIndexAtCurrentRankMap[portAtMaxIndex] = oldIndex  #This is necessary because we are shifting it's location
-        self.rankToPortAtMaxIndexMap[oldRank] = self.rankToPort2dMap[oldRank][newMaxIndexOfTheRank]
-        #next we need to build the control message
+        self.rankToPortAtMaxIndexMap[oldRank] = self.rankToPort2dMap.get(oldRank)[newMaxIndexOfTheRank]
+        #row = oldRank, column = self.rankToCounterMap[k] --> in this location write self.rankToPortAtMaxIndexMap[oldRank]
+        # if elements in oldRank is -1 then bit will be 0
+        #When we delete the only element of the rank then newMaxIndexOfTheRank weill be -1. But we do not consider this as special case, because p4 programs will automatically
+        #overlook those exception. so we do not think about that. but for other cases, this wil not be -1. so we are okay.
+        pktForDeletePort = self.buildMetadataBasedPacketOut(isDelete=True, rank = oldRank, port = portAtMaxIndex,
+                            rankMinIndex=self.getMinIndex(oldRank), rankMaxIndex = self.getMaxIndex(rank=oldRank),
+                                                            newPortIndex= (oldRank * self.maxRank )+oldIndex,bitmask = self.getBitmask())
+        return pktForDeletePort
 
-        pass
 
 
 def testDriverFunction():
     mgr = TopKPathManager(dev = None, k=8)
-    mgr.insertPort(port = 4, k =1)
     mgr.printDS()
-    mgr.insertPort(port = 5, k =1)
-    mgr.insertPort(port = 6, k =1)
+    # mgr.insertPort(port = 4, k =1)
+    # mgr.insertPort(port = 5, k =1)
+    # mgr.deletePort(port = 4)
     mgr.printDS()
-    mgr.deletePort(port = 5)
-    mgr.insertPort(port = 7, k =1)
-    mgr.insertPort(port = 8, k =1)
-    mgr.insertPort(port = 9, k =1)
-    mgr.insertPort(port = 10, k =1)
-    mgr.insertPort(port = 11, k =1)
-    mgr.insertPort(port = 12, k =1)
-    mgr.insertPort(port = 13, k =2)
-    mgr.deletePort(port = 7)
-    mgr.insertPort(port = 14, k =7)
-    mgr.deletePort(port = 12)
-    mgr.deletePort(port = 13)
-    mgr.insertPort(port = 23, k =2)
-    mgr.insertPort(port = 13, k =2)
-    mgr.deletePort(port = 8)
-    mgr.deletePort(port = 4)
-    mgr.insertPort(port=4, k = 5)
-    mgr.insertPort(port=4, k = 5)
-    mgr.printDS()
+    # mgr.insertPort(port = 5, k =1)
+    # mgr.insertPort(port = 6, k =1)
+    # mgr.printDS()
+    # mgr.deletePort(port = 5)
+    # mgr.insertPort(port = 7, k =1)
+    # mgr.insertPort(port = 8, k =1)
+    # mgr.insertPort(port = 9, k =1)
+    # mgr.insertPort(port = 10, k =1)
+    # mgr.insertPort(port = 11, k =1)
+    # mgr.insertPort(port = 12, k =1)
+    # mgr.insertPort(port = 13, k =2)
+    # mgr.deletePort(port = 7)
+    # mgr.insertPort(port = 14, k =7)
+    # mgr.deletePort(port = 12)
+    # mgr.deletePort(port = 13)
+    # mgr.insertPort(port = 23, k =2)
+    # mgr.insertPort(port = 13, k =2)
+    # mgr.deletePort(port = 8)
+    # mgr.deletePort(port = 4)
+    # mgr.insertPort(port=4, k = 5)
+    # mgr.insertPort(port=4, k = 5)
+    # mgr.printDS()
 
-testDriverFunction()
+# testDriverFunction()
+
+
+# port insert contro message
+# ----- btimask --simply if rankTocounterMap of rank is >=0 thenset bit 1
+# ----- rank, counter value -- only on which rank the port was added. at dp at rank'th location' the counter value will be written
+# ----- (row column port) and port value index to write the port in 2D map. row is already given as rank, just provide the column location. maxindex of the rank is that location and port is port
+#
+# port delete control message
+# ----- btimask --simply if rankTocounterMap of rank is >=0 thenset bit 1
+# ----- rank, counter value -- only from which rank the port was deleted. at dp at rank'th colcation' the counter value will be written
+# ----- (row column) index to write the port in 2D map. row is already given as rank, just provide the column location. new maxindex of the rank is that location and port is the port that was replaced from maxlocation
+#
+
+
+# Test case:
+# insert only one port in a rank -- then delete it
+# insert max number of ports in a rank and then delete the last element
+# insert max number of ports in a rank and then delete the first element
+#
+#
+# due to necessity of write of bitmask and rank to countermao we can not only paralllize only the last step of 2d map writing. we also need to parallelieze the
+# ranktocounter value wirintg. so in one step we can only achieve 10 writing.

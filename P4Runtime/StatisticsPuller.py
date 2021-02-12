@@ -1,27 +1,14 @@
-import logging
+import json
+import logging.handlers
+import math
 import threading
 import time
-import os
-import subprocess
-import InternalConfig
-import P4Runtime.shell as sh
-from P4Runtime.context import Context
-from P4Runtime.p4runtime import P4RuntimeClient, P4RuntimeException, parse_p4runtime_error
-import P4Runtime.leafSwitchUtils as leafUtils
-import P4Runtime.spineSwitchUtils as spineUtils
-import P4Runtime.superSpineSwitchUtils as superSpineUtils
-import P4Runtime.SwitchUtils as swUtils
-import ConfigConst as ConfConst
-import P4Runtime.P4DeviceManager as jp
-import P4Runtime.PortStatistics as ps
-import P4Runtime.packetUtils as pktUtil
-import P4Runtime.StatisticsJsonWrapper as statJsonWrapper
-import matplotlib.pyplot as plot
-import numpy as np
-import math
-import json
 
-import logging.handlers
+import ConfigConst as ConfConst
+import InternalConfig as intCoonfig
+import P4Runtime.PortStatistics as ps
+import P4Runtime.StatisticsJsonWrapper as statJsonWrapper
+import P4Runtime.SwitchUtils as swUtils
 
 logger = logging.getLogger('StatisticsPuller')
 logger.handlers = []
@@ -63,10 +50,10 @@ class StatisticsPuller:
         while(self.isRunning):
             time.sleep(ConfConst.STATISTICS_PULLING_INTERVAL)
             index=0
-            hostObject = self.nameToSwitchMap.get(ConfConst.CLB_TESTER_DEVICE_NAME)
-            statJson = self.pullStatsFromSwitch(dev=hostObject)
-            hostObject.controllerStatsFile.write(json.dumps(statJson, cls=statJsonWrapper.PortStatisticsJSONWrapper))
-            hostObject.controllerStatsFile.flush()
+            # hostObject = self.nameToSwitchMap.get(ConfConst.CLB_TESTER_DEVICE_NAME)
+            # statJson = self.pullStatsFromSwitch(dev=hostObject)
+            # hostObject.controllerStatsFile.write(json.dumps(statJson, cls=statJsonWrapper.PortStatisticsJSONWrapper))
+            # hostObject.controllerStatsFile.flush()
 
     logger.info("Thread %s: finishing", "StatisticsPuller")
 
@@ -111,7 +98,7 @@ class StatisticsPuller:
         # if(dev.devName == "device:p0l0"):
         #     print("Gotcha")
         # tempPortStats = ps.PortStatistics()
-        if (dev.fabric_device_config.switch_type == jp.SwitchType.LEAF ):
+        if (dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF ):
             for sPort in dev.portToSpineSwitchMap:
                 egressPortCounterValueForSpine =egressPortStats.get(sPort)
                 portStatistics.setUpwardPortEgressPacketCounter(sPort,egressPortCounterValueForSpine)

@@ -15,7 +15,7 @@
 
 import argparse
 import enum
-import logging
+import logging.handlers
 from collections import Counter, namedtuple, OrderedDict
 
 import google.protobuf.text_format
@@ -24,14 +24,12 @@ from google.protobuf import descriptor
 from p4.config.v1 import p4info_pb2
 from p4.v1 import p4runtime_pb2
 
+import ConfigConst as ConfConst
+from P4Runtime import bytes_utils
+from P4Runtime.context import P4RuntimeEntity, P4Type
 from P4Runtime.p4runtime import parse_p4runtime_error
-from . import bytes_utils
-from .context import P4RuntimeEntity, P4Type
-from .utils import UserError, InvalidP4InfoError
+from P4Runtime.utils import UserError, InvalidP4InfoError
 
-import logging
-import logging.handlers
-import  ConfigConst as ConfConst
 logger = logging.getLogger('Shell')
 logger.handlers = []
 hdlr = logging.handlers.RotatingFileHandler(ConfConst.CONTROLLER_LOG_FILE_PATH, maxBytes = ConfConst.MAX_LOG_FILE_SIZE , backupCount= ConfConst.MAX_LOG_FILE_BACKUP_COUNT)

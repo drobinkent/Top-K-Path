@@ -1027,17 +1027,6 @@ counters {
   }
   size: 256
 }
-counters {
-  preamble {
-    id: 304167189
-    name: "load_balancer_missed_counter"
-    alias: "load_balancer_missed_counter"
-  }
-  spec {
-    unit: PACKETS
-  }
-  size: 1
-}
 direct_counters {
   preamble {
     id: 330338703
@@ -1108,24 +1097,99 @@ controller_packet_metadata {
   }
   metadata {
     id: 3
-    name: "clb_flags"
+    name: "top_k_path_flags"
     bitwidth: 8
   }
   metadata {
     id: 4
-    name: "link_id"
-    bitwidth: 32
-  }
-  metadata {
-    id: 5
     name: "bitmask"
     bitwidth: 32
   }
   metadata {
-    id: 6
-    name: "level_to_link_id_store_index"
+    id: 5
+    name: "rank"
     bitwidth: 32
   }
+  metadata {
+    id: 6
+    name: "port"
+    bitwidth: 32
+  }
+  metadata {
+    id: 7
+    name: "rank_max_index"
+    bitwidth: 32
+  }
+  metadata {
+    id: 8
+    name: "rank_min_index"
+    bitwidth: 32
+  }
+  metadata {
+    id: 9
+    name: "new_port_index"
+    bitwidth: 32
+  }
+}
+registers {
+  preamble {
+    id: 372704615
+    name: "stored_bitmask"
+    alias: "stored_bitmask"
+  }
+  type_spec {
+    bitstring {
+      bit {
+        bitwidth: 8
+      }
+    }
+  }
+  size: 1
+}
+registers {
+  preamble {
+    id: 377218411
+    name: "rank_to_max_index"
+    alias: "rank_to_max_index"
+  }
+  type_spec {
+    bitstring {
+      bit {
+        bitwidth: 32
+      }
+    }
+  }
+  size: 8
+}
+registers {
+  preamble {
+    id: 380646284
+    name: "rank_to_min_index"
+    alias: "rank_to_min_index"
+  }
+  type_spec {
+    bitstring {
+      bit {
+        bitwidth: 32
+      }
+    }
+  }
+  size: 8
+}
+registers {
+  preamble {
+    id: 384890338
+    name: "level_to_link_store"
+    alias: "level_to_link_store"
+  }
+  type_spec {
+    bitstring {
+      bit {
+        bitwidth: 32
+      }
+    }
+  }
+  size: 64
 }
 type_info {
 }

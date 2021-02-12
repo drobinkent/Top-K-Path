@@ -167,9 +167,13 @@ const bit<8> WINDOW_INCREASE_RATIO = 8;
 
 
 
-//===============================================CLB Related Constants
+//===============================================TOP k path Related Constants
 
-counter((bit<32>)1, CounterType.packets) load_balancer_missed_counter;
-
+//counter((bit<32>)1, CounterType.packets) load_balancer_missed_counter;
+const bit<256> ALL_1_256_BIT = 0b1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111;
+@name("stored_bitmask")register<bit<K>>(1) stored_bitmask;
+@name("rank_to_max_index")register<bit<32>>(K) rank_to_max_index;
+@name("rank_to_min_index")register<bit<32>>(K) rank_to_min_index;
+@name("level_to_link_store")register<bit<32>>(K*K) rank_to_port_map;
 #endif
 

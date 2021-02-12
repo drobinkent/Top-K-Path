@@ -1,8 +1,8 @@
-import logging
 import logging.handlers
-from DistributedAlgorithms.TopKPathManager import  TopKPathManager
+
 import ConfigConst as ConfConst
-from P4Runtime.P4DeviceManager import SwitchType
+import InternalConfig as intCoonfig
+from DistributedAlgorithms.TopKPathManager import TopKPathManager
 
 logger = logging.getLogger('Shell')
 logger.handlers = []
@@ -18,11 +18,13 @@ class TopKPathRouting:
 
     def __init__(self, dev):
         self.p4dev = dev
-        if self.p4dev.fabric_device_config.switch_type == SwitchType.LEAF:
-            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=len(self.p4dev.portToSpineSwitchMap.keys()))
-        elif self.p4dev.fabric_device_config.switch_type == SwitchType.SPINE:
-            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=len(self.p4dev.portToSuperSpineSwitchMap.keys()))
-        elif self.fabric_device_config.switch_type == SwitchType.SUPER_SPINE:
+        if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
+            #self.topKPathManager = TopKPathManager(dev = self.p4dev, k=len(self.p4dev.portToSpineSwitchMap.keys()))
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=16)
+        elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
+            # self.topKPathManager = TopKPathManager(dev = self.p4dev, k=len(self.p4dev.portToSuperSpineSwitchMap.keys()))
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=16)
+        elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
             self.topKPathManager = TopKPathManager(dev = self.p4dev, k=16) # by default add space for 16 ports in super spine. This is not actually used in our simulation
             pass
         return
@@ -51,6 +53,18 @@ class TopKPathRouting:
         # elif self.p4dev.fabric_device_config.switch_type == jp.SwitchType.SUPER_SPINE:
         #     pass
         #self.p4dev.setupECMPUpstreamRouting()
+        if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
+            for k in self.p4dev.portToSpineSwitchMap.keys():
+                pkt = self.topKPathManager.insertPort(port = int(k), k = int(k))
+                self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
+            for k in self.p4dev.portToSuperSpineSwitchMap.keys():
+                pkt = self.topKPathManager.insertPort(port = int(k), k = int(k))
+                self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=16) # by default add space for 16 ports in super spine. This is not actually used in our simulation
+            pass
+        return
         return
 
     def processFeedbackPacket(self, parsedPkt, dev):

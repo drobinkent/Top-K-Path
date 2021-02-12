@@ -13,11 +13,13 @@
 # limitations under the License.
 #
 
-from ipaddr import IPv4Address, IPv6Address, AddressValueError
-from .utils import UserError
-import logging
 import logging.handlers
-import  ConfigConst as ConfConst
+
+from ipaddr import IPv4Address, IPv6Address, AddressValueError
+
+import ConfigConst as ConfConst
+from .utils import UserError
+
 logger = logging.getLogger('ByteUtils')
 logger.handlers = []
 hdlr = logging.handlers.RotatingFileHandler(ConfConst.CONTROLLER_LOG_FILE_PATH, maxBytes = ConfConst.MAX_LOG_FILE_SIZE , backupCount= ConfConst.MAX_LOG_FILE_BACKUP_COUNT)
