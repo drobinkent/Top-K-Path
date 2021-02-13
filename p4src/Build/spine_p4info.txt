@@ -1103,7 +1103,7 @@ controller_packet_metadata {
   metadata {
     id: 4
     name: "bitmask"
-    bitwidth: 32
+    bitwidth: 16
   }
   metadata {
     id: 5

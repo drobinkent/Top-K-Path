@@ -9,7 +9,7 @@
 
 #ifndef TOP_K_PATH_SELECTION
 #define TOP_K_PATH_SELECTION
-control top_k_path(inout parsed_headers_t    hdr,
+control k_path_selector(inout parsed_headers_t    hdr,
                         inout local_metadata_t    local_metadata,
                         inout standard_metadata_t standard_metadata)
 {
@@ -25,38 +25,36 @@ control top_k_path(inout parsed_headers_t    hdr,
     }
 
     action best_path_finder_action_without_param() {
-        local_metadata.best_path_rank =0;
-        //local_metadata.flag_hdr.found_multi_criteria_paths = false;
+        local_metadata.best_path_rank =INVALID_RANK;
     }
-    action best_path_finder_action_with_param(bit<32> rank) { //we do not neeeed this bcz our bitmask will lways give us a path
+    action best_path_finder_action_with_param(bit<32> rank) {
         local_metadata.best_path_rank = rank;
-        //local_metadata.flag_hdr.found_multi_criteria_paths = true;
     }
 
     table worst_path_finder_mat {
         key = {
             local_metadata.worst_path_selector_bitmask: ternary;
         }
-        actions = {//best_path_finder_action_without_param;
+        actions = {
             worst_path_finder_action_with_param;
+            worst_path_finder_action_without_param;
         }
         default_action = worst_path_finder_action_without_param;
     }
 
     action worst_path_finder_action_with_param(bit<32> rank) {
         local_metadata.worst_path_rank =rank;
-        //local_metadata.flag_hdr.found_multi_criteria_paths = false;
     }
     action worst_path_finder_action_without_param() { //we do not neeeed this bcz our bitmask will lways give us a path
-        local_metadata.worst_path_rank =0;
-        //local_metadata.flag_hdr.found_multi_criteria_paths = true;
+        local_metadata.worst_path_rank =INVALID_RANK;
     }
 
     table kth_path_finder_mat {
         key = {
             local_metadata.kth_path_selector_bitmask: ternary;
         }
-        actions = {//best_path_finder_action_without_param;
+        actions = {
+            kth_path_finder_action_without_param;
             kth_path_finder_action_with_param;
         }
         default_action = kth_path_finder_action_without_param;
@@ -64,20 +62,29 @@ control top_k_path(inout parsed_headers_t    hdr,
 
     action kth_path_finder_action_with_param(bit<32> rank) {
         local_metadata.kth_path_rank =rank;
-        //local_metadata.flag_hdr.found_multi_criteria_paths = false;
     }
-    action kth_path_finder_action_without_param() { //we do not neeeed this bcz our bitmask will lways give us a path
-        local_metadata.kth_path_rank =0;
-        local_metadata.flag_hdr.found_multi_criteria_paths = true;
+    action kth_path_finder_action_without_param() {
+        local_metadata.kth_path_rank =INVALID_RANK;
     }
 
 
     apply {
          {
+            bit<K> stored_bitmask_read_value = 0;
+            stored_bitmask.read(stored_bitmask_read_value, (bit<32>)0);
+            local_metadata.best_path_selector_bitmask = stored_bitmask_read_value;
+            local_metadata.worst_path_selector_bitmask = stored_bitmask_read_value;
+            bit<K> temp_mask = ALL_1_256_BIT[K-1:0] << local_metadata.rank_of_path_to_be_searched;
+            local_metadata.kth_path_selector_bitmask = stored_bitmask_read_value & temp_mask ;
 
+            best_path_finder_mat.apply();
+            kth_path_finder_mat.apply();
+            worst_path_finder_mat.apply();
          }
     }
 }
+
+
 #endif
 
 

@@ -4,10 +4,8 @@
       "name" : "scalars_0",
       "id" : 0,
       "fields" : [
-        ["tmp", 16, false],
-        ["tmp_0", 16, false],
         ["ndp_processing_control_block_host_ipv6_tmp", 128, false],
-        ["tmp_1", 32, false],
+        ["tmp", 32, false],
         ["userMetadata.l4_src_port", 16, false],
         ["userMetadata.l4_dst_port", 16, false],
         ["userMetadata.is_multicast", 1, false],
@@ -20,7 +18,7 @@
         ["userMetadata.best_path_selector_bitmask", 16, false],
         ["userMetadata.worst_path_selector_bitmask", 16, false],
         ["userMetadata.kth_path_selector_bitmask", 16, false],
-        ["userMetadata.path_rank", 16, false],
+        ["userMetadata.rank_of_path_to_be_searched", 16, false],
         ["userMetadata.best_path_rank", 16, false],
         ["userMetadata.worst_path_rank", 16, false],
         ["userMetadata.kth_path_rank", 16, false],
@@ -57,7 +55,7 @@
         ["egress_port", 9, false],
         ["_pad", 7, false],
         ["top_k_path_flags", 8, false],
-        ["bitmask", 32, false],
+        ["bitmask", 16, false],
         ["rank", 32, false],
         ["port", 32, false],
         ["rank_max_index", 32, false],
@@ -749,8 +747,8 @@
       "name" : "level_to_link_store",
       "id" : 3,
       "source_info" : {
-        "filename" : "p4src/src/leaf.p4",
-        "line" : 22,
+        "filename" : "p4src/src/CONSTANTS.p4",
+        "line" : 177,
         "column" : 53,
         "source_fragment" : "@name(\\\"level_to_link_store\\\")register<bit<32>>(16*16) rank_to_port_map;"
       },
@@ -1390,38 +1388,6 @@
           }
         },
         {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["packet_out", "bitmask"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path_control_message_processor.p4",
-            "line" : 21,
-            "column" : 46,
-            "source_fragment" : "hdr.packet_out.bitmask[16 - 1 :0]"
-          }
-        },
-        {
           "op" : "register_write",
           "parameters" : [
             {
@@ -1434,7 +1400,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp"]
+              "value" : ["packet_out", "bitmask"]
             }
           ],
           "source_info" : {
@@ -1585,38 +1551,6 @@
           }
         },
         {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_0"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["packet_out", "bitmask"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path_control_message_processor.p4",
-            "line" : 32,
-            "column" : 46,
-            "source_fragment" : "hdr.packet_out.bitmask[16 - 1 :0]"
-          }
-        },
-        {
           "op" : "register_write",
           "parameters" : [
             {
@@ -1629,7 +1563,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_0"]
+              "value" : ["packet_out", "bitmask"]
             }
           ],
           "source_info" : {
@@ -2238,7 +2172,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_1"]
+              "value" : ["scalars", "tmp"]
             },
             {
               "type" : "expression",
@@ -2274,7 +2208,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_1"]
+              "value" : ["scalars", "tmp"]
             }
           ],
           "source_info" : {

@@ -175,5 +175,9 @@ const bit<256> ALL_1_256_BIT = 0b11111111111111111111111111111111111111111111111
 @name("rank_to_max_index")register<bit<32>>(K) rank_to_max_index;
 @name("rank_to_min_index")register<bit<32>>(K) rank_to_min_index;
 @name("level_to_link_store")register<bit<32>>(K*K) rank_to_port_map;
+
+
+const bit<32> INVALID_RANK = -1;
+
 #endif
 

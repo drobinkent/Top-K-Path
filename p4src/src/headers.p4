@@ -146,7 +146,7 @@ struct local_metadata_t {
     bit <K> worst_path_selector_bitmask;
     bit <K> kth_path_selector_bitmask;
 
-    bit <16> path_rank;
+    bit <16> rank_of_path_to_be_searched;
     bit <16> best_path_rank;
     bit <16> worst_path_rank;
     bit <16> kth_path_rank;
@@ -213,7 +213,7 @@ header packet_out_t {
     //--------bit-1--------||
     //--------bit-0--------||
 
-    bit<32> bitmask;  //It shoudl not be 32 bit . It should be acutally K bit, But to ease of implementation we are using 32 bit assuming that
+    bit<K> bitmask;  //It shoudl not be 32 bit . It should be acutally K bit, But to ease of implementation we are using 32 bit assuming that
     //K will be always less then 32 for our tests. In real life just need to make it K bit
     bit<32> rank;
     bit<32> port;

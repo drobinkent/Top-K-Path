@@ -73,6 +73,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     //#endif
     upstream_routing() upstream_ecmp_routing_control_block;
     top_k_path_control_message_processor() top_k_path_control_message_processor_control_block;
+    k_path_selector() k_path_selector_control_block;
 
 
 
@@ -124,7 +125,14 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 upstream_ecmp_routing_control_block.apply(hdr, local_metadata, standard_metadata);
                 #endif
                 #ifdef DP_ALGO_TOP_K_PATH
+                k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
+                //Here we are showing how to use ecmp inside same group
 
+
+                level_to_link_store.read(temp, (bit<32>)local_metadata.link_location_index);
+                local_metadata.best_path_rank
+
+                standard_metadata.egress_spec = port_num;
                 #endif
                 //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
             }
