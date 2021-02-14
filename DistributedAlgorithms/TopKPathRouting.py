@@ -5,6 +5,7 @@ import time
 import ConfigConst as ConfConst
 import InternalConfig as intCoonfig
 from DistributedAlgorithms.TopKPathManager import TopKPathManager
+import P4Runtime.SwitchUtils as swUtils
 
 logger = logging.getLogger('Shell')
 logger.handlers = []
@@ -37,12 +38,14 @@ class TopKPathRouting:
         '''
         This function setup all the relevant stuffs for running the algorithm
         '''
-
-        #self.p4dev.setupECMPUpstreamRouting()
+        startingRankForTestingTopKPathProblem = 0
+        swUtils.setupFlowtypeBasedIngressRateMonitoringForKPathProblem(self.p4dev)
         if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
+            i=0
             for k in self.p4dev.portToSpineSwitchMap.keys():
-                pkt = self.topKPathManager.insertPort(port = int(k), k = 0)
+                pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem+i)
                 self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+                i=i+1
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
             for k in self.p4dev.portToSuperSpineSwitchMap.keys():
                 pkt = self.topKPathManager.insertPort(port = int(k), k = int(k))

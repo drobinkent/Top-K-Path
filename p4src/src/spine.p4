@@ -31,6 +31,9 @@
 #include "l2_ternary.p4"
 #include "spine_downstream_routing.p4"
 #include "top_k_path_control_message_processor.p4"
+#include "top_k_path.p4"
+#include "ingress_rate_monitor.p4"
+
 // *** V1MODEL
 //
 // V1Model is a P4_16 architecture that defines 7 processing blocks.
@@ -96,6 +99,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     upstream_routing() upstream_ecmp_routing_control_block;
     top_k_path_control_message_processor() top_k_path_control_message_processor_control_block;
     k_path_selector() k_path_selector_control_block;
+    ingress_rate_monitor() ingress_rate_monitor_control_block;
 
     // *** APPLY BLOCK STATEMENT
     apply {
@@ -138,6 +142,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 #endif
                 #ifdef DP_ALGO_TOP_K_PATH
                 k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
+                ingress_rate_monitor_control_block.apply(hdr, local_metadata, standard_metadata);
                 #endif
             //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
             }

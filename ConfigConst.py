@@ -108,12 +108,12 @@ class DataplnaeAlgorithm(Enum):
 ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_TOP_K_PATH
 
 
-queueRateForHostFacingPortsOfLeafSwitch = 18
-queueRateForSpineFacingPortsOfLeafSwitch = 18
-queueRateForLeafSwitchFacingPortsOfSpineSwitch= 18
-queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch=18
-queueRateForSpineSwitchFacingPortsOfSuperSpineSwitch=18
-queueRateForExternalInternetFacingPortsOfSuperSpineSwitch=18
+queueRateForHostFacingPortsOfLeafSwitch = 40
+queueRateForSpineFacingPortsOfLeafSwitch = 10
+queueRateForLeafSwitchFacingPortsOfSpineSwitch= 10
+queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch=10
+queueRateForSpineSwitchFacingPortsOfSuperSpineSwitch=10
+queueRateForExternalInternetFacingPortsOfSuperSpineSwitch=10
 
 
 
@@ -190,4 +190,5 @@ LINUX_CC_ALGORITHM_CUBIC = "cubic"
 
 #=======================configurations for TOP_K_PATH algorithm
 INVALID = -1
-
+UPWARD_PORT_METER_CONFIG_FOR_TOP_K_PATH = [40,30, 20]
+UPWARD_PORT_BURST_RATE_FORTOP_K_PATH = 5

@@ -28,6 +28,37 @@ logger.addHandler(hdlr)
 logging.StreamHandler(stream=None)
 logger.setLevel(logging.INFO)
 
+def setupFlowtypeBasedIngressRateMonitoringForKPathProblem(dev):
+    upwardPortList = []
+    if (dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF ):
+        upwardPortList = list(dev.portToSpineSwitchMap.keys())
+        p = upwardPortList[0] # for testing the K-path system just taking the total incoming capacity of a leaf-to-host port
+        totalRate = 0
+        if dev.portToQueueRateMap[str(p)] != None:
+            totalRate = totalRate + int(dev.portToQueueRateMap[str(p)] )
+
+        for i in range (0, len(ConfConst.TRAFFIC_CLASS_AS_LIST)):
+            tClass = ConfConst.TRAFFIC_CLASS_AS_LIST[i]
+            #(tableName, fieldName, fieldValue, actionName, actionParamName, actionParamValue):)
+            dev.addExactMatchEntry( tableName = "flow_type_based_ingress_stats_table",
+                            fieldName = "hdr.ipv6.traffic_class", fieldValue =  str(tClass),
+                            actionName="monitor_incoming_flow_based_on_flow_type",
+                             actionParamName = "flow_type_based_meter_idx", actionParamValue = str(tClass))
+            me = sh.MeterEntry(dev,"IngressPipeImpl.ingress_rate_monitor_control_block.flow_type_based_ingress_meter_for_upstream")
+            me.index = tClass
+            me.cir = int((totalRate * ConfConst.UPWARD_PORT_METER_CONFIG_FOR_TOP_K_PATH[0])/100)
+            me.cburst = int((totalRate * ConfConst.UPWARD_PORT_BURST_RATE_FORTOP_K_PATH)/100)
+            me.pir = int((totalRate * ConfConst.UPWARD_PORT_METER_CONFIG_FOR_TOP_K_PATH[1])/100)
+            me.pburst = int((totalRate * ConfConst.UPWARD_PORT_BURST_RATE_FORTOP_K_PATH)/100)
+            me.modify()
+
+    elif ((dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE ) or (dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE )):
+        # For testingv with layer-2 fat-tree topology we do not need think about  spine or super spine switch
+        pass
+
+    pass
+
+
 def setupFlowtypeBasedIngressRateMonitoring(dev):
     '''
     We have setup the port queue rates earlier and ther are stored in portToQueueRateMap. But the problem in they are setup for single port.

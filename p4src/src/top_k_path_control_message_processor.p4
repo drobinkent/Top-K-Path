@@ -22,7 +22,7 @@ control top_k_path_control_message_processor(inout parsed_headers_t    hdr,
             rank_to_max_index.write((bit<32>)hdr.packet_out.rank, hdr.packet_out.rank_max_index);
             rank_to_min_index.write((bit<32>)hdr.packet_out.rank, hdr.packet_out.rank_min_index);
             //rank_to_port_map.write() this write is not needed as we will use select links based on max_location
-            rank_to_port_map.write((bit<32>)hdr.packet_out.new_port_index, hdr.packet_out.port);
+            rank_to_port_map.write((bit<32>)hdr.packet_out.new_port_index, (bit<9>)hdr.packet_out.port);
 
 
         }else if (hdr.packet_out.top_k_path_flags[7:7] == (bit<1>)0){ //this is a add message
@@ -32,7 +32,7 @@ control top_k_path_control_message_processor(inout parsed_headers_t    hdr,
             stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[K - 1 :0]);
             rank_to_max_index.write((bit<32>)hdr.packet_out.rank, hdr.packet_out.rank_max_index);
             rank_to_min_index.write((bit<32>)hdr.packet_out.rank, hdr.packet_out.rank_min_index);
-            rank_to_port_map.write((bit<32>)hdr.packet_out.new_port_index, hdr.packet_out.port);
+            rank_to_port_map.write((bit<32>)hdr.packet_out.new_port_index, (bit<9>)hdr.packet_out.port);
 
         }
 
