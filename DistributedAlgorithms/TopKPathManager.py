@@ -165,7 +165,7 @@ class TopKPathManager:
         if((oldIndex != None) and (oldIndex >0) and (oldIndex!= (self.rankToCounterMap[k] + 1))):
             logger.info("Old index of port "+str(port)+" is: "+str(oldIndex)+" and new index is: "+str(self.rankToCounterMap.get(k)))
             logger.info("This can not happen. Please Debug. Exiting the thread!!!!")
-            exit(1)
+            return None
         self.portToRankMap[port] = k
         self.rankToCounterMap[k] = self.rankToCounterMap.get(k) + 1
         self.rankToPortAtMaxIndexMap[k] = port
@@ -188,12 +188,12 @@ class TopKPathManager:
         if self.rankToCounterMap.get(rank)> -1:
             return rank * self.maxRank
         else:
-            return -1
+            return rank * self.maxRank
     def getMaxIndex(self, rank):
         if self.rankToCounterMap.get(rank)> -1:
             return rank * self.maxRank + self.rankToCounterMap.get(rank)
         else:
-            return -1
+            return rank * self.maxRank
 
     def deletePort(self, port):
         '''

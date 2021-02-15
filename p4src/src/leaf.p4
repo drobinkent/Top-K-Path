@@ -134,7 +134,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 #ifdef DP_ALGO_TOP_K_PATH
                 //apply the policy table here
                 local_metadata.rank_of_path_to_be_searched = 1;
-                ingress_rate_monitor_control_block.apply(hdr, local_metadata, standard_metadata);
+                //ingress_rate_monitor_control_block.apply(hdr, local_metadata, standard_metadata);
                 k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
                 //Here we are showing how to use k'th path
                 bit<32> rankMinLocation = 0;
@@ -142,8 +142,9 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank);
                 rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.kth_path_rank);
                 bit<32> linkLocation = 0;
-                hash(linkLocation, HashAlgorithm.crc16, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)rankMaxLocation);
+                hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)(rankMaxLocation-rankMinLocation));
                 rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
+                log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
                 //standard_metadata.egress_spec = port_num;
                 #endif
                 //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
@@ -200,7 +201,6 @@ control EgressPipeImpl (inout parsed_headers_t hdr,
     #ifdef ENABLE_DEBUG_TABLES
     debug_std_meta() debug_std_meta_egress_start;
     #endif  // ENABLE_DEBUG_TABLES
-
     apply {
        if (standard_metadata.egress_port == CPU_PORT) {
            // Add packet_in header and set relevant fields, such as the
@@ -224,6 +224,9 @@ control EgressPipeImpl (inout parsed_headers_t hdr,
     #ifdef ENABLE_DEBUG_TABLES
     debug_std_meta_egress_start.apply(hdr, local_metadata, standard_metadata);
     #endif  // ENABLE_DEBUG_TABLES
+
+
+    if(standard_metadata.deq_qdepth > ECN_THRESHOLD) hdr.ipv6.ecn = 3; //setting ecm mark
 
     egressPortCounter.count((bit<32>)standard_metadata.egress_port);
 

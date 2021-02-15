@@ -4,14 +4,11 @@
       "name" : "scalars_0",
       "id" : 0,
       "fields" : [
-        ["tmp", 32, false],
-        ["tmp_0", 16, false],
-        ["tmp_1", 9, false],
-        ["tmp_2", 16, false],
-        ["tmp_3", 9, false],
-        ["tmp_4", 16, false],
-        ["tmp_5", 16, false],
-        ["tmp_6", 32, false],
+        ["tmp", 16, false],
+        ["tmp_0", 9, false],
+        ["tmp_1", 16, false],
+        ["tmp_2", 9, false],
+        ["tmp_3", 32, false],
         ["ndp_processing_control_block_host_ipv6_tmp", 128, false],
         ["k_path_selector_control_block_stored_bitmask_read_value", 16, false],
         ["userMetadata.l4_src_port", 16, false],
@@ -651,22 +648,7 @@
       "primitives" : []
     }
   ],
-  "meter_arrays" : [
-    {
-      "name" : "IngressPipeImpl.ingress_rate_monitor_control_block.flow_type_based_ingress_meter_for_upstream",
-      "id" : 0,
-      "source_info" : {
-        "filename" : "p4src/src/ingress_rate_monitor.p4",
-        "line" : 14,
-        "column" : 96,
-        "source_fragment" : "    @name(\\\"flow_type_based_ingress_meter_for_upstream\\\") meter(MAX_FLOW_TYPES,MeterType.packets) flow_type_based_ingress_meter;"
-      },
-      "is_direct" : false,
-      "size" : 64,
-      "rate_count" : 2,
-      "type" : "packets"
-    }
-  ],
+  "meter_arrays" : [],
   "counter_arrays" : [
     {
       "name" : "ndp_reply_table_counter",
@@ -1517,101 +1499,8 @@
       ]
     },
     {
-      "name" : "IngressPipeImpl.ingress_rate_monitor_control_block.monitor_incoming_flow_based_on_flow_type",
-      "id" : 15,
-      "runtime_data" : [
-        {
-          "name" : "flow_type_based_meter_idx",
-          "bitwidth" : 9
-        }
-      ],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "local",
-                    "value" : 0
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/ingress_rate_monitor.p4",
-            "line" : 18,
-            "column" : 52,
-            "source_fragment" : "(bit<32>)flow_type_based_meter_idx"
-          }
-        },
-        {
-          "op" : "execute_meter",
-          "parameters" : [
-            {
-              "type" : "meter_array",
-              "value" : "IngressPipeImpl.ingress_rate_monitor_control_block.flow_type_based_ingress_meter_for_upstream"
-            },
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp"]
-            },
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.rank_of_path_to_be_searched"]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/ingress_rate_monitor.p4",
-            "line" : 18,
-            "column" : 8,
-            "source_fragment" : "flow_type_based_ingress_meter.execute_meter((bit<32>)flow_type_based_meter_idx, local_metadata.rank_of_path_to_be_searched)"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "IngressPipeImpl.ingress_rate_monitor_control_block.monitor_incoming_flow_based_on_flow_type_without_param",
-      "id" : 16,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.rank_of_path_to_be_searched"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x00"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/ingress_rate_monitor.p4",
-            "line" : 22,
-            "column" : 12,
-            "source_fragment" : "local_metadata.rank_of_path_to_be_searched = 0"
-          }
-        }
-      ]
-    },
-    {
       "name" : "top_k_path_control_message_processor18",
-      "id" : 17,
+      "id" : 15,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -1683,7 +1572,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_0"]
+              "value" : ["scalars", "tmp"]
             },
             {
               "type" : "expression",
@@ -1723,7 +1612,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_0"]
+              "value" : ["scalars", "tmp"]
             }
           ],
           "source_info" : {
@@ -1784,7 +1673,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_1"]
+              "value" : ["scalars", "tmp_0"]
             },
             {
               "type" : "expression",
@@ -1824,7 +1713,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_1"]
+              "value" : ["scalars", "tmp_0"]
             }
           ],
           "source_info" : {
@@ -1838,7 +1727,7 @@
     },
     {
       "name" : "top_k_path_control_message_processor29",
-      "id" : 18,
+      "id" : 16,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -1910,7 +1799,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_2"]
+              "value" : ["scalars", "tmp_1"]
             },
             {
               "type" : "expression",
@@ -1950,7 +1839,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_2"]
+              "value" : ["scalars", "tmp_1"]
             }
           ],
           "source_info" : {
@@ -2011,7 +1900,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_3"]
+              "value" : ["scalars", "tmp_2"]
             },
             {
               "type" : "expression",
@@ -2051,7 +1940,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_3"]
+              "value" : ["scalars", "tmp_2"]
             }
           ],
           "source_info" : {
@@ -2065,7 +1954,7 @@
     },
     {
       "name" : "spine114",
-      "id" : 19,
+      "id" : 17,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2091,7 +1980,7 @@
     },
     {
       "name" : "spine119",
-      "id" : 20,
+      "id" : 18,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2123,7 +2012,7 @@
     },
     {
       "name" : "spine124",
-      "id" : 21,
+      "id" : 19,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2174,7 +2063,7 @@
     },
     {
       "name" : "spine110",
-      "id" : 22,
+      "id" : 20,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2239,7 +2128,7 @@
     },
     {
       "name" : "ndp43",
-      "id" : 23,
+      "id" : 21,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2304,7 +2193,7 @@
     },
     {
       "name" : "ndp47",
-      "id" : 24,
+      "id" : 22,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2340,7 +2229,7 @@
     },
     {
       "name" : "spine135",
-      "id" : 25,
+      "id" : 23,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2357,7 +2246,7 @@
     },
     {
       "name" : "l2_ternary44",
-      "id" : 26,
+      "id" : 24,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2373,8 +2262,8 @@
       ]
     },
     {
-      "name" : "spine151",
-      "id" : 27,
+      "name" : "top_k_path74",
+      "id" : 25,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2395,14 +2284,7 @@
             "column" : 16,
             "source_fragment" : "local_metadata.rank_of_path_to_be_searched = 0"
           }
-        }
-      ]
-    },
-    {
-      "name" : "top_k_path74",
-      "id" : 28,
-      "runtime_data" : [],
-      "primitives" : [
+        },
         {
           "op" : "register_read",
           "parameters" : [
@@ -2489,48 +2371,6 @@
           }
         },
         {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_4"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "expression",
-                    "value" : {
-                      "op" : "<<",
-                      "left" : {
-                        "type" : "hexstr",
-                        "value" : "0xffff"
-                      },
-                      "right" : {
-                        "type" : "field",
-                        "value" : ["scalars", "userMetadata.rank_of_path_to_be_searched"]
-                      }
-                    }
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 78,
-            "column" : 32,
-            "source_fragment" : "ALL_1_256_BIT[16 -1:0] << local_metadata.rank_of_path_to_be_searched"
-          }
-        },
-        {
           "op" : "log_msg",
           "parameters" : [
             {
@@ -2541,12 +2381,12 @@
               "type" : "parameters_vector",
               "value" : [
                 {
-                  "type" : "field",
-                  "value" : ["scalars", "userMetadata.rank_of_path_to_be_searched"]
+                  "type" : "hexstr",
+                  "value" : "0x00"
                 },
                 {
-                  "type" : "field",
-                  "value" : ["scalars", "tmp_4"]
+                  "type" : "hexstr",
+                  "value" : "0xffff"
                 }
               ]
             }
@@ -2566,100 +2406,15 @@
               "value" : ["scalars", "userMetadata.kth_path_selector_bitmask"]
             },
             {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["scalars", "k_path_selector_control_block_stored_bitmask_read_value"]
-                  },
-                  "right" : {
-                    "type" : "expression",
-                    "value" : {
-                      "op" : "&",
-                      "left" : {
-                        "type" : "expression",
-                        "value" : {
-                          "op" : "<<",
-                          "left" : {
-                            "type" : "hexstr",
-                            "value" : "0xffff"
-                          },
-                          "right" : {
-                            "type" : "field",
-                            "value" : ["scalars", "userMetadata.rank_of_path_to_be_searched"]
-                          }
-                        }
-                      },
-                      "right" : {
-                        "type" : "hexstr",
-                        "value" : "0xffff"
-                      }
-                    }
-                  }
-                }
-              }
+              "type" : "field",
+              "value" : ["scalars", "k_path_selector_control_block_stored_bitmask_read_value"]
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
             "line" : 80,
             "column" : 12,
-            "source_fragment" : "local_metadata.kth_path_selector_bitmask = stored_bitmask_read_value & temp_mask"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_5"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["scalars", "k_path_selector_control_block_stored_bitmask_read_value"]
-                  },
-                  "right" : {
-                    "type" : "expression",
-                    "value" : {
-                      "op" : "&",
-                      "left" : {
-                        "type" : "expression",
-                        "value" : {
-                          "op" : "<<",
-                          "left" : {
-                            "type" : "hexstr",
-                            "value" : "0xffff"
-                          },
-                          "right" : {
-                            "type" : "field",
-                            "value" : ["scalars", "userMetadata.rank_of_path_to_be_searched"]
-                          }
-                        }
-                      },
-                      "right" : {
-                        "type" : "hexstr",
-                        "value" : "0xffff"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 80,
-            "column" : 55,
-            "source_fragment" : "stored_bitmask_read_value & temp_mask"
+            "source_fragment" : "local_metadata.kth_path_selector_bitmask = stored_bitmask_read_value"
           }
         },
         {
@@ -2674,7 +2429,7 @@
               "value" : [
                 {
                   "type" : "field",
-                  "value" : ["scalars", "tmp_5"]
+                  "value" : ["scalars", "k_path_selector_control_block_stored_bitmask_read_value"]
                 }
               ]
             }
@@ -2690,7 +2445,7 @@
     },
     {
       "name" : "spine155",
-      "id" : 29,
+      "id" : 26,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2698,7 +2453,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_6"]
+              "value" : ["scalars", "tmp_3"]
             },
             {
               "type" : "expression",
@@ -2738,7 +2493,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_6"]
+              "value" : ["scalars", "tmp_3"]
             }
           ],
           "source_info" : {
@@ -2752,13 +2507,13 @@
     },
     {
       "name" : "NoAction",
-      "id" : 30,
+      "id" : 27,
       "runtime_data" : [],
       "primitives" : []
     },
     {
       "name" : "spine210",
-      "id" : 31,
+      "id" : 28,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2809,7 +2564,7 @@
     },
     {
       "name" : "spine218",
-      "id" : 32,
+      "id" : 29,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2858,14 +2613,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [22],
+          "action_ids" : [20],
           "actions" : ["spine110"],
           "base_default_next" : "node_3",
           "next_tables" : {
             "spine110" : "node_3"
           },
           "default_entry" : {
-            "action_id" : 22,
+            "action_id" : 20,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2887,14 +2642,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [19],
+          "action_ids" : [17],
           "actions" : ["spine114"],
           "base_default_next" : "node_5",
           "next_tables" : {
             "spine114" : "node_5"
           },
           "default_entry" : {
-            "action_id" : 19,
+            "action_id" : 17,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2916,14 +2671,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [17],
+          "action_ids" : [15],
           "actions" : ["top_k_path_control_message_processor18"],
           "base_default_next" : "tbl_spine119",
           "next_tables" : {
             "top_k_path_control_message_processor18" : "tbl_spine119"
           },
           "default_entry" : {
-            "action_id" : 17,
+            "action_id" : 15,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2945,14 +2700,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [18],
+          "action_ids" : [16],
           "actions" : ["top_k_path_control_message_processor29"],
           "base_default_next" : "tbl_spine119",
           "next_tables" : {
             "top_k_path_control_message_processor29" : "tbl_spine119"
           },
           "default_entry" : {
-            "action_id" : 18,
+            "action_id" : 16,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2974,14 +2729,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [20],
+          "action_ids" : [18],
           "actions" : ["spine119"],
           "base_default_next" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table",
           "next_tables" : {
             "spine119" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 20,
+            "action_id" : 18,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3003,14 +2758,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [21],
+          "action_ids" : [19],
           "actions" : ["spine124"],
           "base_default_next" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table",
           "next_tables" : {
             "spine124" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 21,
+            "action_id" : 19,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3285,14 +3040,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [23],
+          "action_ids" : [21],
           "actions" : ["ndp43"],
           "base_default_next" : "tbl_spine135",
           "next_tables" : {
             "ndp43" : "tbl_spine135"
           },
           "default_entry" : {
-            "action_id" : 23,
+            "action_id" : 21,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3314,14 +3069,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [24],
+          "action_ids" : [22],
           "actions" : ["ndp47"],
           "base_default_next" : "tbl_spine135",
           "next_tables" : {
             "ndp47" : "tbl_spine135"
           },
           "default_entry" : {
-            "action_id" : 24,
+            "action_id" : 22,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3343,14 +3098,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [25],
+          "action_ids" : [23],
           "actions" : ["spine135"],
           "base_default_next" : "node_18",
           "next_tables" : {
             "spine135" : "node_18"
           },
           "default_entry" : {
-            "action_id" : 25,
+            "action_id" : 23,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3409,14 +3164,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [26],
+          "action_ids" : [24],
           "actions" : ["l2_ternary44"],
           "base_default_next" : "node_21",
           "next_tables" : {
             "l2_ternary44" : "node_21"
           },
           "default_entry" : {
-            "action_id" : 26,
+            "action_id" : 24,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3489,74 +3244,8 @@
           }
         },
         {
-          "name" : "tbl_spine151",
-          "id" : 15,
-          "source_info" : {
-            "filename" : "p4src/src/spine.p4",
-            "line" : 151,
-            "column" : 59,
-            "source_fragment" : "="
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [27],
-          "actions" : ["spine151"],
-          "base_default_next" : "IngressPipeImpl.ingress_rate_monitor_control_block.flow_type_based_ingress_stats_table",
-          "next_tables" : {
-            "spine151" : "IngressPipeImpl.ingress_rate_monitor_control_block.flow_type_based_ingress_stats_table"
-          },
-          "default_entry" : {
-            "action_id" : 27,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "IngressPipeImpl.ingress_rate_monitor_control_block.flow_type_based_ingress_stats_table",
-          "id" : 16,
-          "source_info" : {
-            "filename" : "p4src/src/ingress_rate_monitor.p4",
-            "line" : 24,
-            "column" : 10,
-            "source_fragment" : "flow_type_based_ingress_stats_table"
-          },
-          "key" : [
-            {
-              "match_type" : "exact",
-              "name" : "hdr.ipv6.traffic_class",
-              "target" : ["ipv6", "traffic_class"],
-              "mask" : null
-            }
-          ],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [15, 16],
-          "actions" : ["IngressPipeImpl.ingress_rate_monitor_control_block.monitor_incoming_flow_based_on_flow_type", "IngressPipeImpl.ingress_rate_monitor_control_block.monitor_incoming_flow_based_on_flow_type_without_param"],
-          "base_default_next" : "tbl_top_k_path74",
-          "next_tables" : {
-            "IngressPipeImpl.ingress_rate_monitor_control_block.monitor_incoming_flow_based_on_flow_type" : "tbl_top_k_path74",
-            "IngressPipeImpl.ingress_rate_monitor_control_block.monitor_incoming_flow_based_on_flow_type_without_param" : "tbl_top_k_path74"
-          },
-          "default_entry" : {
-            "action_id" : 16,
-            "action_const" : false,
-            "action_data" : [],
-            "action_entry_const" : false
-          }
-        },
-        {
           "name" : "tbl_top_k_path74",
-          "id" : 17,
+          "id" : 15,
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
             "line" : 74,
@@ -3570,14 +3259,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [28],
+          "action_ids" : [25],
           "actions" : ["top_k_path74"],
           "base_default_next" : "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat",
           "next_tables" : {
             "top_k_path74" : "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat"
           },
           "default_entry" : {
-            "action_id" : 28,
+            "action_id" : 25,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3585,7 +3274,7 @@
         },
         {
           "name" : "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat",
-          "id" : 18,
+          "id" : 16,
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
             "line" : 21,
@@ -3622,7 +3311,7 @@
         },
         {
           "name" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
-          "id" : 19,
+          "id" : 17,
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
             "line" : 57,
@@ -3659,7 +3348,7 @@
         },
         {
           "name" : "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_mat",
-          "id" : 20,
+          "id" : 18,
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
             "line" : 39,
@@ -3696,7 +3385,7 @@
         },
         {
           "name" : "tbl_spine155",
-          "id" : 21,
+          "id" : 19,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
             "line" : 155,
@@ -3710,14 +3399,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [29],
+          "action_ids" : [26],
           "actions" : ["spine155"],
           "base_default_next" : "IngressPipeImpl.ingress_end_debug.dbg_table",
           "next_tables" : {
             "spine155" : "IngressPipeImpl.ingress_end_debug.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 29,
+            "action_id" : 26,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3725,7 +3414,7 @@
         },
         {
           "name" : "IngressPipeImpl.ingress_end_debug.dbg_table",
-          "id" : 22,
+          "id" : 20,
           "source_info" : {
             "filename" : "p4src/src/debug.p4",
             "line" : 12,
@@ -4233,7 +3922,7 @@
             }
           },
           "true_next" : "node_24",
-          "false_next" : "tbl_spine151"
+          "false_next" : "tbl_top_k_path74"
         },
         {
           "name" : "node_24",
@@ -4272,11 +3961,11 @@
         "column" : 8,
         "source_fragment" : "EgressPipeImpl"
       },
-      "init_table" : "node_36",
+      "init_table" : "node_34",
       "tables" : [
         {
           "name" : "tbl_spine210",
-          "id" : 23,
+          "id" : 21,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
             "line" : 210,
@@ -4290,14 +3979,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [31],
+          "action_ids" : [28],
           "actions" : ["spine210"],
-          "base_default_next" : "node_38",
+          "base_default_next" : "node_36",
           "next_tables" : {
-            "spine210" : "node_38"
+            "spine210" : "node_36"
           },
           "default_entry" : {
-            "action_id" : 31,
+            "action_id" : 28,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4305,7 +3994,7 @@
         },
         {
           "name" : "tbl_spine218",
-          "id" : 24,
+          "id" : 22,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
             "line" : 218,
@@ -4319,14 +4008,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [32],
+          "action_ids" : [29],
           "actions" : ["spine218"],
           "base_default_next" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table",
           "next_tables" : {
             "spine218" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 32,
+            "action_id" : 29,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4334,7 +4023,7 @@
         },
         {
           "name" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table",
-          "id" : 25,
+          "id" : 23,
           "source_info" : {
             "filename" : "p4src/src/debug.p4",
             "line" : 12,
@@ -4535,14 +4224,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [30],
+          "action_ids" : [27],
           "actions" : ["NoAction"],
           "base_default_next" : null,
           "next_tables" : {
             "NoAction" : null
           },
           "default_entry" : {
-            "action_id" : 30,
+            "action_id" : 27,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4552,7 +4241,7 @@
       "action_profiles" : [],
       "conditionals" : [
         {
-          "name" : "node_36",
+          "name" : "node_34",
           "id" : 9,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
@@ -4575,10 +4264,10 @@
             }
           },
           "true_next" : "tbl_spine210",
-          "false_next" : "node_38"
+          "false_next" : "node_36"
         },
         {
-          "name" : "node_38",
+          "name" : "node_36",
           "id" : 10,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",

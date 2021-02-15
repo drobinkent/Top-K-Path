@@ -149,7 +149,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 #ifdef DP_ALGO_TOP_K_PATH
                 //apply the policy table here
                 local_metadata.rank_of_path_to_be_searched = 0;
-                ingress_rate_monitor_control_block.apply(hdr, local_metadata, standard_metadata);
+                //ingress_rate_monitor_control_block.apply(hdr, local_metadata, standard_metadata);
                 k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
                 //Here we are showing how to use k'th path
                 rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)local_metadata.kth_path_rank);

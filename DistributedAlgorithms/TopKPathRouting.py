@@ -1,7 +1,7 @@
 import logging.handlers
 import threading
 import time
-
+import DistributedAlgorithms.Testingconst as tstConst
 import ConfigConst as ConfConst
 import InternalConfig as intCoonfig
 from DistributedAlgorithms.TopKPathManager import TopKPathManager
@@ -53,11 +53,13 @@ class TopKPathRouting:
                                                actionName = "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
                                                actionParamName = "rank",
                                                actionParamValue = str(j), priority=bitMaskLength-j+1)
-            # switchObject.addTernaryEntriesForCLBTMAt( packetBitmaskValueWithMaskAsString = allOneMAskBinaryString+"&&&"+maskAsString,
-            #                                           actionParamValue=  j , priority= bitMaskLength-j+1) #1 added in the prioity bcz  0 priority doesn;t work
-            # switchObject.addTernaryEntriesForCLBTMAt( packetBitmaskArrayIndex = i, packetBitmaskValueWithMaskAsString = allOneMAskBinaryString+"&&&"+maskAsString,
-            #                                           actionParamValue=i * bitMaskLength + j ,
-            #                                           priority= (bitMaskArrayMaxIndex * bitMaskLength)-(i * bitMaskLength + j)) #1 added in the prioity bcz  0 priority doesn;t work
+            switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_mat",
+                                               fieldName = "local_metadata.worst_path_selector_bitmask",
+                                               fieldValue = allOneMAskBinaryString, mask = maskAsString,
+                                               actionName = "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_action_with_param",
+                                               actionParamName = "rank",
+                                               actionParamValue = str(j), priority=j+1)
+
 
 
 
@@ -66,12 +68,12 @@ class TopKPathRouting:
         This function setup all the relevant stuffs for running the algorithm
         '''
         startingRankForTestingTopKPathProblem = 0
-        swUtils.setupFlowtypeBasedIngressRateMonitoringForKPathProblem(self.p4dev)
+        #swUtils.setupFlowtypeBasedIngressRateMonitoringForKPathProblem(self.p4dev)
         self.initMAT(self.p4dev, ConfConst.K)
         if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
             i=0
             for k in self.p4dev.portToSpineSwitchMap.keys():
-                pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem+i)
+                pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
                 self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
                 i=i+1
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
@@ -81,9 +83,9 @@ class TopKPathRouting:
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
             self.topKPathManager = TopKPathManager(dev = self.p4dev, k=16) # by default add space for 16 ports in super spine. This is not actually used in our simulation
             pass
-        # self.x = threading.Thread(target=self.topKpathroutingTesting, args=())
-        # self.x.start()
-        # logger.info("TopKpathroutingTesting thread started")
+        self.x = threading.Thread(target=self.topKpathroutingTesting, args=())
+        self.x.start()
+        logger.info("TopKpathroutingTesting thread started")
         return
 
     def processFeedbackPacket(self, parsedPkt, dev):
@@ -101,15 +103,49 @@ class TopKPathRouting:
             self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
 
     def topKpathroutingTesting(self):
-        time.sleep(40)
+        time.sleep(50)
+        i = 0
         while(True):
-            self.testPerRankMaxPortCapacity()
-            time.sleep(10)
-            pkt = self.topKPathManager.deletePort(5)
-            self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
-            pkt = self.topKPathManager.deletePort(20)
-            self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
-            self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+            j = i % len(tstConst.PORT_RATE_CONFIGS)
+            i = i+ 1
+            # if(self.p4dev.devName != "device:p0l0"):
+            #     time.sleep(tstConst.RECONFIGURATION_GAP)
+            #     return
+            portCfg = tstConst.PORT_RATE_CONFIGS[i]
+            for k in range(0,len(portCfg)): # k gives the rank iteslf as the port configs are already sorted
+                dltPkt = self.topKPathManager.deletePort(portCfg[k][0])
+                self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt)
+                if(float(portCfg[k][1]) > 0): # if 0 that means the port is down . dnt consider it
+                    insertPkt = self.topKPathManager.insertPort(portCfg[k][0], k)
+                    self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
+                #Reconfigure the port rate and buffer length
+            time.sleep(tstConst.RECONFIGURATION_GAP)
+
+
+
+
+
+
+
+
+
+
+
+
+
+            # (port, queue_rate) --> (5,.5), (6,1.5), (7,.5), (8,1.5)
+            # (5,1.25), (6,.75), (7,1.5), (8,.5)
+            #
+            # keep these type of 10 distribution. after each 10 sec we will load one distribution
+            # keep a counter . x = counter mod number of distribution. we will load the xth distribution.
+            # then run the P4TE style tests.
+            #
+            # keep a simple data strcure to sort the port and their values . insert them accordingly.
+            # To simulate port down make a port rate 0. randomly
+            #
+            # we can generate these distributions randomly. using a siomple function
+
+
         # while(True):
         #     self.testOperationIndex = self.testOperationIndex + 1
         #     if(self.testOperationIndex == 1):
@@ -170,3 +206,4 @@ def modifyBit(n, position, b):
     '''
     mask = 1 << position
     return (n & ~mask) | ((b << position) & mask)
+

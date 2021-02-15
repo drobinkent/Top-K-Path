@@ -9,8 +9,8 @@ import time
 
                # Symbolic name meaning the local host
 
-SEND_BUF_SIZE = 1400
-RECV_BUF_SIZE = 1400
+SEND_BUF_SIZE = 559
+RECV_BUF_SIZE = 559
 
 
 class ServerThread:
@@ -63,8 +63,8 @@ class ServerThread:
         start = time.time()
         counter = 0
         while 1:
-            data = conn.recv(1400)
-            start = time.time()
+            data = conn.recv(559)
+            #start = time.time()
             if not data: break
             counter = counter + 1
             # print("Packet counter is  :", counter)
@@ -73,7 +73,7 @@ class ServerThread:
             #conn.send(data)
         end = time.time()
         #s.recv()
-        print("Total recvd byes are "+str(totalRcvdBytes))
+        print("Total recvd bytes are "+str(totalRcvdBytes))
         print("total time required to transfer these data is "+str(end-start))
         conn.close()
 
@@ -94,27 +94,30 @@ class ServerThread:
             sys.exit()
 
         print ('UDP Socket bind complete with ip and port '+str(self.host)+" -- "+str(self.port))
-        # conn, addr = s.accept()
-        # print('Connected by udp client', addr)
+        conn, addr = s.accept()
+        print('Connected by udp client', addr)
 
         #now keep talking with the client
+        rcvdDataSize = 0
         while True:
             # receive data from client (data, addr)
             data, addr = s.recvfrom(1024) # buffer size is 1024 bytes
             if not data:
                 break
-            #print("rcvd")
+            print("rcvd")
             reply = 'OK...disconnecting'
+            rcvdDataSize = rcvdDataSize + len(data)
 
-            # s.sendto(reply , addr)
+        # s.sendto(reply , addr)
             # print ('Message[' + addr[0] + ':' + str(addr[1]) + '] - ' + reply.strip())
+        print("total data rcvd from client is ",str(rcvdDataSize))
 
         s.close()
 
 
 def driverFunction():
     for i in range (0,CNF.TOTAL_CONNECTION):
-        srvrThrd = ServerThread(HOST=CNF.SERVER_HOST, PORT=CNF.PORT_START, index = i, protocol="udp")
+        srvrThrd = ServerThread(HOST=CNF.SERVER_HOST, PORT=CNF.PORT_START, index = i, protocol="tcp")
 
 
 driverFunction()

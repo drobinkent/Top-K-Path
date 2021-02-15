@@ -147,9 +147,9 @@ const bit<19> INGRESS_QUEUE_DEPTH_THRESHOLD = 2;
 const bit<19> EGRESS_QUEUE_DEPTH_THRESHOLD = 4;
 
 
-const bit<19> ECN_THRESHOLD_LEAF = 2;
+const bit<19> ECN_THRESHOLD_LEAF = 4;
 const bit<19> ECN_THRESHOLD_SPINE = 1;
-const bit<19> ECN_THRESHOLD = 2;
+const bit<19> ECN_THRESHOLD = 3;
 const bit<32> SEQ_NUMBER_THRESHOLD_FOR_RATE_CONTROL = 5000; // this means for each 10000 byte we will check for rate control. We may want to increase this
 
 //======================================= Stateful data structures============================================================
@@ -160,7 +160,7 @@ counter((bit<32>)MAX_PORTS_IN_SWITCH, CounterType.packets) egressPortCounter;
 
 
 //============================flowlet regrading constnts
-const bit<48> FLOWLET_INTER_PACKET_GAP_THRESHOLD = 48w15000 ;  //40 packets per second rate means 1/40 second means 25000 microsecond
+const bit<48> FLOWLET_INTER_PACKET_GAP_THRESHOLD = 48w50000 ;  //40 packets per second rate means 1/40 second means 25000 microsecond
 const bit<8> WINDOW_DECREASE_RATIO = 2;  // this is used when there is some congestion how mnay times ^ -1 a windows will be reduced. 2 means 2 times shift. or window size half.
 const bit<8> WINDOW_INCREASE_RATIO = 8;
 

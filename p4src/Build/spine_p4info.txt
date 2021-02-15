@@ -529,26 +529,6 @@ tables {
 }
 tables {
   preamble {
-    id: 43516692
-    name: "IngressPipeImpl.ingress_rate_monitor_control_block.flow_type_based_ingress_stats_table"
-    alias: "flow_type_based_ingress_stats_table"
-  }
-  match_fields {
-    id: 1
-    name: "hdr.ipv6.traffic_class"
-    bitwidth: 6
-    match_type: EXACT
-  }
-  action_refs {
-    id: 33336048
-  }
-  action_refs {
-    id: 25801572
-  }
-  size: 1024
-}
-tables {
-  preamble {
     id: 39819042
     name: "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
     alias: "debug_std_meta_egress_start.dbg_table"
@@ -865,25 +845,6 @@ actions {
     alias: "kth_path_finder_action_without_param"
   }
 }
-actions {
-  preamble {
-    id: 33336048
-    name: "IngressPipeImpl.ingress_rate_monitor_control_block.monitor_incoming_flow_based_on_flow_type"
-    alias: "monitor_incoming_flow_based_on_flow_type"
-  }
-  params {
-    id: 1
-    name: "flow_type_based_meter_idx"
-    bitwidth: 9
-  }
-}
-actions {
-  preamble {
-    id: 25801572
-    name: "IngressPipeImpl.ingress_rate_monitor_control_block.monitor_incoming_flow_based_on_flow_type_without_param"
-    alias: "monitor_incoming_flow_based_on_flow_type_without_param"
-  }
-}
 counters {
   preamble {
     id: 312468779
@@ -927,17 +888,6 @@ direct_counters {
     unit: BOTH
   }
   direct_table_id: 44899682
-}
-meters {
-  preamble {
-    id: 336773184
-    name: "IngressPipeImpl.ingress_rate_monitor_control_block.flow_type_based_ingress_meter_for_upstream"
-    alias: "flow_type_based_ingress_meter_for_upstream"
-  }
-  spec {
-    unit: PACKETS
-  }
-  size: 64
 }
 controller_packet_metadata {
   preamble {

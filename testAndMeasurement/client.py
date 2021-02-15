@@ -27,8 +27,8 @@ packetContent = bytes('Hello, world test packet what is content is not important
 
 packetContentLength = len(packetContent)
 print("Content length is "+str(packetContentLength))
-SEND_BUF_SIZE = 1400
-RECV_BUF_SIZE = 1400
+SEND_BUF_SIZE = 559
+RECV_BUF_SIZE = 559
 
 
 
@@ -79,10 +79,10 @@ class ClientThread:
         totalSentbytes = 0
 
         start = time.time()
-        for i in range(0, CNF.TOTAL_DURATION_OF_TEST):
+        for i in range(0, int(CNF.TOTAL_DURATION_OF_TEST* CNF.PPS)):
             s.send(packetContent)
             totalSentbytes = totalSentbytes+ packetContentLength
-            time.sleep(1)   # If this difference is too much then sending packets in too high speed blocks the tcp stacks.
+            time.sleep(1/CNF.PPS)   # If this difference is too much then sending packets in too high speed blocks the tcp stacks.
         end = time.time()
         print("Client-thread-"+str(self.index)+ "--- Total sent byes are "+str(totalSentbytes))
         print("Client-thread-"+str(self.index)+ "--- Total time required to send these much data is "+str(end-start))
@@ -106,14 +106,20 @@ class ClientThread:
         end = time.time()
         print("UDP Client-thread-"+str(self.index)+ "--- Total sent byes are "+str(totalSentbytes))
         print("UDP Client-thread-"+str(self.index)+ "--- Total time required to send these much data is "+str(end-start))
+        # try:
+        #     data, addr = s.recvfrom(1024)
+        #     print("Msg rcvd from server is "+data)
+        # except socket.error:
+        #     print("Error in client socket reciving")
+        #     sys.exit(1)
+        # print("Client-thread-"+str(self.index)+ "--- Closing")
         s.close()
-        print("Client-thread-"+str(self.index)+ "--- Closing")
 
 
 
 
 def driverFunction():
     for i in range (0,CNF.TOTAL_CONNECTION):
-        srvrThrd = ClientThread(HOST=HOST, PORT=CNF.PORT_START, index = i, protocol="udp")
+        srvrThrd = ClientThread(HOST=HOST, PORT=CNF.PORT_START, index = i, protocol="tcp")
 
 driverFunction()

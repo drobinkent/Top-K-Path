@@ -153,7 +153,7 @@ struct local_metadata_t {
     bit <16> worst_path_rank;
     bit <16> kth_path_rank;
 
-
+    //bit<32> linkLocation ;
 
 }
 
