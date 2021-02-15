@@ -28,7 +28,7 @@
                 standard_metadata.deq_qdepth : exact;
                 standard_metadata.ingress_global_timestamp : exact;
                 standard_metadata.egress_global_timestamp : exact;
-                standard_metadata.mcast_grp : exact;
+                /*standard_metadata.mcast_grp : exact;
                 standard_metadata.egress_rid : exact;
                 standard_metadata.checksum_error : exact;
                 //standard_metadata.parser_error : exact;
@@ -50,7 +50,9 @@
                 local_metadata.flag_hdr.do_l3_l2: exact;
                 local_metadata.flag_hdr.my_station_table_hit: exact;
                 local_metadata.flag_hdr.downstream_routing_table_hit: exact;
-                local_metadata.flag_hdr.is_pkt_toward_host:exact;
+                local_metadata.flag_hdr.is_pkt_toward_host:exact;*/
+
+                local_metadata.rank_of_path_to_be_searched:exact;
 
 
                 //all hdr field

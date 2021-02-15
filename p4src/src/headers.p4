@@ -142,9 +142,11 @@ struct local_metadata_t {
     bit<9> flowlet_last_used_path;
 
     //all these 3 will be of length k
+    #ifdef DP_ALGO_TOP_K_PATH
     bit <K> best_path_selector_bitmask;
     bit <K> worst_path_selector_bitmask;
     bit <K> kth_path_selector_bitmask;
+    #endif
 
     bit <8> rank_of_path_to_be_searched; //We are forced to keep this to 8 bit. Because in bmv2 this amount of right shift is limited to 8 bits
     bit <16> best_path_rank;
@@ -213,8 +215,10 @@ header packet_out_t {
     //--------bit-1--------||
     //--------bit-0--------||
 
+    #ifdef DP_ALGO_TOP_K_PATH
     bit<K> bitmask;  //It shoudl not be 32 bit . It should be acutally K bit, But to ease of implementation we are using 32 bit assuming that
     //K will be always less then 32 for our tests. In real life just need to make it K bit
+    #endif
     bit<32> rank;
     bit<32> port;
     bit<32> rank_max_index;

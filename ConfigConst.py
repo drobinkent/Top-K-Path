@@ -109,7 +109,7 @@ ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_TOP_K_PATH
 
 
 queueRateForHostFacingPortsOfLeafSwitch = 40
-queueRateForSpineFacingPortsOfLeafSwitch = 10
+queueRateForSpineFacingPortsOfLeafSwitch = 40
 queueRateForLeafSwitchFacingPortsOfSpineSwitch= 10
 queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch=10
 queueRateForSpineSwitchFacingPortsOfSuperSpineSwitch=10
@@ -192,3 +192,4 @@ LINUX_CC_ALGORITHM_CUBIC = "cubic"
 INVALID = -1
 UPWARD_PORT_METER_CONFIG_FOR_TOP_K_PATH = [40,30, 20]
 UPWARD_PORT_BURST_RATE_FORTOP_K_PATH = 5
+K=16

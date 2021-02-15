@@ -46,10 +46,14 @@ def setupFlowtypeBasedIngressRateMonitoringForKPathProblem(dev):
                              actionParamName = "flow_type_based_meter_idx", actionParamValue = str(tClass))
             me = sh.MeterEntry(dev,"IngressPipeImpl.ingress_rate_monitor_control_block.flow_type_based_ingress_meter_for_upstream")
             me.index = tClass
-            me.cir = int((totalRate * ConfConst.UPWARD_PORT_METER_CONFIG_FOR_TOP_K_PATH[0])/100)
-            me.cburst = int((totalRate * ConfConst.UPWARD_PORT_BURST_RATE_FORTOP_K_PATH)/100)
-            me.pir = int((totalRate * ConfConst.UPWARD_PORT_METER_CONFIG_FOR_TOP_K_PATH[1])/100)
-            me.pburst = int((totalRate * ConfConst.UPWARD_PORT_BURST_RATE_FORTOP_K_PATH)/100)
+            cir = int((totalRate * ConfConst.UPWARD_PORT_METER_CONFIG_FOR_TOP_K_PATH[0])/100)
+            cburst = int((totalRate * ConfConst.UPWARD_PORT_BURST_RATE_FORTOP_K_PATH)/100)
+            pir = int((totalRate * ConfConst.UPWARD_PORT_METER_CONFIG_FOR_TOP_K_PATH[1])/100)
+            pburst = int((totalRate * ConfConst.UPWARD_PORT_BURST_RATE_FORTOP_K_PATH)/100)
+            me.cir = cir
+            me.cburst = cburst
+            me.pir = cir+pir
+            me.pburst = pburst
             me.modify()
 
     elif ((dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE ) or (dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE )):

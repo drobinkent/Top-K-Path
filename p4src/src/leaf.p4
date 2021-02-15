@@ -30,9 +30,11 @@
 #include "my_station.p4"
 #include "l2_ternary.p4"
 #include "leaf_downstream_routing.p4"
+#ifdef DP_ALGO_TOP_K_PATH
 #include "top_k_path.p4"
 #include "top_k_path_control_message_processor.p4"
 #include "ingress_rate_monitor.p4"
+#endif
 control VerifyChecksumImpl(inout parsed_headers_t hdr,
                            inout local_metadata_t meta)
 {
@@ -73,10 +75,11 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     //upstream_routing() upstream_ecmp_routing_control_block;
     //#endif
     upstream_routing() upstream_ecmp_routing_control_block;
+    #ifdef DP_ALGO_TOP_K_PATH
     top_k_path_control_message_processor() top_k_path_control_message_processor_control_block;
     k_path_selector() k_path_selector_control_block;
     ingress_rate_monitor() ingress_rate_monitor_control_block;
-
+    #endif
 
 
     apply {
@@ -86,7 +89,9 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
        // Set the egress port to that found in the packet-out metadata...
        standard_metadata.egress_spec = hdr.packet_out.egress_port;
        // Remove the packet-out header...
+       #ifdef DP_ALGO_TOP_K_PATH
        top_k_path_control_message_processor_control_block.apply(hdr, local_metadata, standard_metadata);
+       #endif
        hdr.packet_out.setInvalid();
        // Exit the pipeline here, no need to go through other tables.
        mark_to_drop(standard_metadata);
@@ -128,14 +133,11 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 #endif
                 #ifdef DP_ALGO_TOP_K_PATH
                 //apply the policy table here
+                local_metadata.rank_of_path_to_be_searched = 1;
                 ingress_rate_monitor_control_block.apply(hdr, local_metadata, standard_metadata);
                 k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
-                //Here we are showing how to use ecmp inside same group
-
-
-                //level_to_link_store.read(temp, (bit<32>)local_metadata.link_location_index);
-                //local_metadata.best_path_rank
-
+                //Here we are showing how to use k'th path
+                rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)local_metadata.kth_path_rank);
                 //standard_metadata.egress_spec = port_num;
                 #endif
                 //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});

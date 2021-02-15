@@ -33,6 +33,33 @@ class TopKPathRouting:
             pass
 
         return
+    def initMAT(self, switchObject, bitMaskLength):
+        allOneMAsk = BinaryMask(bitMaskLength)
+        allOneMAsk.setAllBitOne()
+        allOneMAskBinaryString = allOneMAsk.getBinaryString()
+        for j in range(0, bitMaskLength):
+            mask = BinaryMask(bitMaskLength)
+            mask.setNthBitWithB(n=j,b=1)
+            maskAsString = mask.getBinaryString()
+            switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat",
+                                               fieldName = "local_metadata.best_path_selector_bitmask",
+                                               fieldValue = allOneMAskBinaryString, mask = maskAsString,
+                                               actionName = "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param",
+                                               actionParamName = "rank",
+                                               actionParamValue = str(j), priority=bitMaskLength-j+1)
+            switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
+                                               fieldName = "local_metadata.kth_path_selector_bitmask",
+                                               fieldValue = allOneMAskBinaryString, mask = maskAsString,
+                                               actionName = "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
+                                               actionParamName = "rank",
+                                               actionParamValue = str(j), priority=bitMaskLength-j+1)
+            # switchObject.addTernaryEntriesForCLBTMAt( packetBitmaskValueWithMaskAsString = allOneMAskBinaryString+"&&&"+maskAsString,
+            #                                           actionParamValue=  j , priority= bitMaskLength-j+1) #1 added in the prioity bcz  0 priority doesn;t work
+            # switchObject.addTernaryEntriesForCLBTMAt( packetBitmaskArrayIndex = i, packetBitmaskValueWithMaskAsString = allOneMAskBinaryString+"&&&"+maskAsString,
+            #                                           actionParamValue=i * bitMaskLength + j ,
+            #                                           priority= (bitMaskArrayMaxIndex * bitMaskLength)-(i * bitMaskLength + j)) #1 added in the prioity bcz  0 priority doesn;t work
+
+
 
     def setup(self):
         '''
@@ -40,6 +67,7 @@ class TopKPathRouting:
         '''
         startingRankForTestingTopKPathProblem = 0
         swUtils.setupFlowtypeBasedIngressRateMonitoringForKPathProblem(self.p4dev)
+        self.initMAT(self.p4dev, ConfConst.K)
         if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
             i=0
             for k in self.p4dev.portToSpineSwitchMap.keys():
@@ -99,3 +127,46 @@ class TopKPathRouting:
         #         self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
         #         time.sleep(10)
 
+
+class BinaryMask:
+    def __init__(self, length):
+        self.bits=[]
+        self.length = length
+        for i in range(0,self.length):
+            self.bits.append(0)
+
+    def setNthBitWithB(self,n,b):
+        self.bits[(len(self.bits) - 1 )-n] = b
+    def setAllBitOne(self):
+        for i in range(0,self.length):
+            self.bits[i]  = 1
+
+    def setAllBitMinuxOneEqualX(self):
+        for i in range(0,self.length):
+            self.bits[i]  = -1
+
+    def getBinaryString(self):
+        val = "0b"
+        for i in range(0, self.length):
+            if(self.bits[i] == 0):
+                val = val + "0"
+            elif (self.bits[i] == 1):
+                val = val + "1"
+            else:
+                val = val + "X"
+        return  val
+
+
+def modifyBit(n, position, b):
+    '''
+    # Python3 program to modify a bit at position
+    # p in n to b.
+
+    # Returns modified n.
+        :param n:
+        :param position:
+        :param b:
+        :return:
+    '''
+    mask = 1 << position
+    return (n & ~mask) | ((b << position) & mask)
