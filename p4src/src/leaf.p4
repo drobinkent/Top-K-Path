@@ -131,21 +131,41 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 #ifdef DP_ALGO_ECMP
                 upstream_ecmp_routing_control_block.apply(hdr, local_metadata, standard_metadata);
                 #endif
+
                 #ifdef DP_ALGO_TOP_K_PATH
-                //apply the policy table here
-                local_metadata.rank_of_path_to_be_searched = 1;
-                //ingress_rate_monitor_control_block.apply(hdr, local_metadata, standard_metadata);
+                local_metadata.rank_of_path_to_be_searched = 0;
                 k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
-                //Here we are showing how to use k'th path
-                bit<32> rankMinLocation = 0;
-                bit<32> rankMaxLocation = 0;
-                rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank);
-                rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.kth_path_rank);
-                bit<32> linkLocation = 0;
-                hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)(rankMaxLocation-rankMinLocation));
-                rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
-                log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
-                //standard_metadata.egress_spec = port_num;
+                if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_LOW_DELAY){
+
+                    bit<32> rankMinLocation = 0;
+                    bit<32> rankMaxLocation = 0;
+                    rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.best_path_rank);
+                    rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.best_path_rank);
+                    bit<32> linkLocation = 0;
+                    hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)(rankMaxLocation-rankMinLocation));
+                    rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
+                    log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
+                    //standard_metadata.egress_spec = port_num;
+                }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_HIGH_THROUGHPUT){
+                    bit<32> rankMinLocation = 0;
+                    bit<32> rankMaxLocation = 0;
+                    rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.worst_path_rank);
+                    rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.worst_path_rank);
+                    bit<32> linkLocation = 0;
+                    hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)(rankMaxLocation-rankMinLocation));
+                    rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
+                    log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
+                }else{
+                    bit<32> rankMinLocation = 0;
+                    bit<32> rankMaxLocation = 0;
+                    rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.best_path_rank);
+                    rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.best_path_rank);
+                    bit<32> linkLocation = 0;
+                    hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)(rankMaxLocation-rankMinLocation));
+                    rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
+                    log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
+                    //standard_metadata.egress_spec = port_num;
+                }
                 #endif
                 //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
             }

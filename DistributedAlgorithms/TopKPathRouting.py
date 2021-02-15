@@ -3,9 +3,11 @@ import threading
 import time
 import DistributedAlgorithms.Testingconst as tstConst
 import ConfigConst as ConfConst
+import InternalConfig
 import InternalConfig as intCoonfig
 from DistributedAlgorithms.TopKPathManager import TopKPathManager
 import P4Runtime.SwitchUtils as swUtils
+from TestCaseDeployer import TestCommandDeployer
 
 logger = logging.getLogger('Shell')
 logger.handlers = []
@@ -102,23 +104,47 @@ class TopKPathRouting:
             pkt = self.topKPathManager.insertPort(port = int(i), k = 0)
             self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
 
+    # for k in range(0,len(portCfg)): # k gives the rank iteslf as the port configs are already sorted
+    #     dltPkt = self.topKPathManager.deletePort(portCfg[k][0])
+    #     self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt)
+    #     if(float(portCfg[k][1]) > 0): # if 0 that means the port is not down . So need to iinsert it. but for rate < 0 we delete the port but do not insert it agian to simulate delete behavior
+    #         insertPkt = self.topKPathManager.insertPort(portCfg[k][0], k)
+    #         self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
+    #     #Reconfigure the port rate and buffer length
+
     def topKpathroutingTesting(self):
-        time.sleep(50)
+        time.sleep(25)
+        topologyConfigFilePath =  ConfConst.TOPOLOGY_CONFIG_FILE
+        if(self.p4dev.devName == "device:p0l0"):
+            testEvaluator = TestCommandDeployer(topologyConfigFilePath,
+                                                "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/topKPath/l2strideSmallLarge-highRationForLargeFlows.json",
+                                                ConfConst.IPERF3_CLIENT_PORT_START, ConfConst.IPERF3_SERVER_PORT_START, testStartDelay= 20)
+            testEvaluator.setupTestCase()
         i = 0
         while(True):
             j = i % len(tstConst.PORT_RATE_CONFIGS)
-            i = i+ 1
-            # if(self.p4dev.devName != "device:p0l0"):
-            #     time.sleep(tstConst.RECONFIGURATION_GAP)
-            #     return
-            portCfg = tstConst.PORT_RATE_CONFIGS[i]
+            if(self.p4dev.devName != "device:p0l0"):
+                time.sleep(tstConst.RECONFIGURATION_GAP)
+                return
+            portCfg = tstConst.PORT_RATE_CONFIGS[j]
             for k in range(0,len(portCfg)): # k gives the rank iteslf as the port configs are already sorted
+                if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
+                    port =portCfg[k][0]
+                    portRate = int(self.p4dev.queueRateForSpineFacingPortsOfLeafSwitch * portCfg[k][1])
+                    bufferSize = int(portRate * ConfConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
+                    setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
+                if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.SPINE:
+                    port =portCfg[k][0]
+                    portRate = int(self.p4dev.queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch * portCfg[k][1])
+                    bufferSize = int(portRate * ConfConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
+                    setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
                 dltPkt = self.topKPathManager.deletePort(portCfg[k][0])
                 self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt)
-                if(float(portCfg[k][1]) > 0): # if 0 that means the port is down . dnt consider it
+                if(float(portCfg[k][1]) > 0): # if 0 that means the port is not down . So need to iinsert it. but for rate < 0 we delete the port but do not insert it agian to simulate delete behavior
                     insertPkt = self.topKPathManager.insertPort(portCfg[k][0], k)
                     self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
-                #Reconfigure the port rate and buffer length
+
+            i = i+ 1
             time.sleep(tstConst.RECONFIGURATION_GAP)
 
 
@@ -207,3 +233,13 @@ def modifyBit(n, position, b):
     mask = 1 << position
     return (n & ~mask) | ((b << position) & mask)
 
+def setPortQueueRatesAndDepth(dev, port, queueRate, bufferSize):
+    cmdString = ""
+    cmdString = cmdString+  "set_queue_rate "+str(queueRate)+ " "+str(port)+"\n"
+    dev.executeCommand(cmdString)
+    cmdString = ""
+    cmdString = cmdString+  "set_queue_depth "+str(bufferSize)+ " "+str(port)+"\n"
+    dev.executeCommand(cmdString)
+    logger.info("Executing queuerate and depth setup commmand for device "+ str(dev))
+    logger.info("command is: "+cmdString)
+    #dev.executeCommand(cmdString)

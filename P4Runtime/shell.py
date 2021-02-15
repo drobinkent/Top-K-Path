@@ -326,7 +326,7 @@ class MatchKey:
         for mf in match_fields:
             self._add_field(mf)
         self._mk = OrderedDict()
-        self._set_docstring()
+        #self._set_docstring()
 
     def _set_docstring(self):
         self.__doc__ = "Match key fields for table '{}':\n\n".format(self._table_name)
@@ -555,7 +555,7 @@ class Action:
             self._params[param.name] = param
         self._action_info = action_info
         self._param_values = OrderedDict()
-        self._set_docstring()
+        #self._set_docstring()
         self._init = True
 
     def _set_docstring(self):
@@ -979,6 +979,18 @@ For information about how to read groups, use <self>.read?
                 self.members.pop(i)
                 return
         return self
+    def del_member_from_groupByuMemberId(self, memberID, weight=1, watch=0):
+        """Delete a member from the members list."""
+        for i in range (0, len(self.members)):
+            if self.members[i].member_id == memberID:
+                self.members.pop(i)
+                return
+        return self
+    def isMemberExists(self, member):
+        for i in range (0, len(self.members)):
+            if self.members[i].member_id == member.member_id:
+                return True
+        return False
 
     def clear(self):
         """Empty members list."""

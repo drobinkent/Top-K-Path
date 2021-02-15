@@ -153,17 +153,17 @@ class TopKPathManager:
             return None
         oldRank = self.portToRankMap.get(port)
         if((oldRank != None) and (oldRank > ConfConst.INVALID) and  (oldRank != k)):
-            logger.info("Old rank of port "+str(port)+" is: "+str(oldRank)+" and new rank is: "+str(k))
+            logger.info(self.p4dev.devName+"-Old rank of port "+str(port)+" is: "+str(oldRank)+" and new rank is: "+str(k))
             logger.info("This can not happen. Please Debug. !!!!")
             return None
         if((oldRank != None) and (oldRank > ConfConst.INVALID) and  (oldRank==k)):
-            logger.info("The port is already in rank-"+str(k))
-            print("The port is already in rank-",k)
+            logger.info(self.p4dev.devName+"-The port is already in rank-"+str(k))
+            print(self.p4dev.devName+"-The port is already in rank-",k)
             return None
 
         oldIndex = self.portToIndexAtCurrentRankMap.get(port)
         if((oldIndex != None) and (oldIndex >0) and (oldIndex!= (self.rankToCounterMap[k] + 1))):
-            logger.info("Old index of port "+str(port)+" is: "+str(oldIndex)+" and new index is: "+str(self.rankToCounterMap.get(k)))
+            logger.info(self.p4dev.devName+"-Old index of port "+str(port)+" is: "+str(oldIndex)+" and new index is: "+str(self.rankToCounterMap.get(k)))
             logger.info("This can not happen. Please Debug. Exiting the thread!!!!")
             return None
         self.portToRankMap[port] = k
@@ -204,12 +204,13 @@ class TopKPathManager:
         '''
         oldRank = self.portToRankMap.get(port)
         if(oldRank == None):
-            logger.info("Old rank of port to be deleted("+str(port)+") is None. If you are deleting a port before inserting it then you are ok. otherwise There is some bug.")
+
+            logger.info(self.p4dev.devName+"-Old rank of port to be deleted("+str(port)+") is None. If you are deleting a port before inserting it then you are ok. otherwise There is some bug.")
             logger.info("To ensure consistency we are exiting.")
             return None
         oldIndex = self.portToIndexAtCurrentRankMap.get(port)
         if((oldIndex == None) ):
-            logger.info("Old index of port "+str(port)+" to be deleted is None. This means the port is already not existing ")
+            logger.info(self.p4dev.devName+"-Old index of port "+str(port)+" to be deleted is None. This means the port is already not existing ")
             logger.info("This can not happen. Please Debug. !!!!")
             return None
         self.portToRankMap[port] = ConfConst.INVALID

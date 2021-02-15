@@ -1,8 +1,19 @@
 import logging.handlers
 import logging.handlers
-
+import sys
+import threading
+import time
+import DistributedAlgorithms.Testingconst as tstConst
 import ConfigConst as ConfConst
+import InternalConfig
 from DistributedAlgorithms.RoutingInfo import RoutingInfo
+import P4Runtime.leafSwitchUtils as leafUtils
+import P4Runtime.spineSwitchUtils as spineUtils
+import P4Runtime.superSpineSwitchUtils as superSpineUtils
+import P4Runtime.SwitchUtils as swUtils
+import P4Runtime.packetUtils as pktUtil
+from TestCaseDeployer import TestCommandDeployer
+import ConfigConst as confConst
 
 logger = logging.getLogger('Shell')
 logger.handlers = []
@@ -27,23 +38,11 @@ class ECMPRouting:
         This function setup all the relevant stuffs for running the algorithm
         '''
 
-        # if self.p4dev.fabric_device_config.switch_type == jp.SwitchType.LEAF:
-        #     leafUtils.addUpStreamRoutingGroupForLeafSwitch(self.p4dev, list(self.p4dev.portToSpineSwitchMap.keys())) #this creates a group for upstream routing with  group_id=InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP
-        #     self.p4dev.addLPMMatchEntryWithGroupAction( tableName = "IngressPipeImpl.upstream_ecmp_routing_control_block.upstream_routing_table", fieldName = "hdr.ipv6.dst_addr",
-        #                                           fieldValue= InternalConfig.DCN_CORE_IPv6_PREFIX, prefixLength = InternalConfig.DCN_CORE_IPv6_PREFIX_LENGTH,
-        #                                           actionName="IngressPipeImpl.upstream_ecmp_routing_control_block.set_upstream_egress_port", actionParamName=None, actionParamValue=None,
-        #                                           groupID = InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP, priority = None)
-        #     return
-        # elif self.p4dev.fabric_device_config.switch_type == jp.SwitchType.SPINE:
-        #     spineUtils.addUpStreamRoutingGroupForSpineSwitch(self.p4dev, list(self.p4dev.portToSuperSpineSwitchMap.keys()))  #this creates a group for upstream routing with  group_id=InternalConfig.SPINE_SWITCH_UPSTREAM_PORTS_GROUP
-        #     self.p4dev.addLPMMatchEntryWithGroupAction( tableName = "IngressPipeImpl.upstream_ecmp_routing_control_block.upstream_routing_table", fieldName = "hdr.ipv6.dst_addr",
-        #                                           fieldValue= InternalConfig.DCN_CORE_IPv6_PREFIX, prefixLength = InternalConfig.DCN_CORE_IPv6_PREFIX_LENGTH,
-        #                                           actionName="IngressPipeImpl.upstream_ecmp_routing_control_block.set_upstream_egress_port", actionParamName=None, actionParamValue=None,
-        #                                           groupID = InternalConfig.SPINE_SWITCH_UPSTREAM_PORTS_GROUP, priority = None)
-        #     pass
-        # elif self.p4dev.fabric_device_config.switch_type == jp.SwitchType.SUPER_SPINE:
-        #     pass
+
         self.p4dev.setupECMPUpstreamRouting()
+        self.x = threading.Thread(target=self.topKpathroutingTesting, args=())
+        self.x.start()
+        logger.info("ECMP-VS-TopKpathroutingTesting thread started( This Thread is ECMP)")
         return
 
     def processFeedbackPacket(self, parsedPkt, dev):
@@ -52,3 +51,44 @@ class ECMPRouting:
 
         pass
 
+    def topKpathroutingTesting(self):
+        time.sleep(25)
+        topologyConfigFilePath =  confConst.TOPOLOGY_CONFIG_FILE
+        if(self.p4dev.devName == "device:p0l0"):
+            testEvaluator = TestCommandDeployer(topologyConfigFilePath,
+                            "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/ECMP/l2strideSmallLarge-highRationForLargeFlows.json",
+                            confConst.IPERF3_CLIENT_PORT_START, confConst.IPERF3_SERVER_PORT_START, testStartDelay= 20)
+            testEvaluator.setupTestCase()
+        i = 0
+        while(True):
+            j = i % len(tstConst.PORT_RATE_CONFIGS)
+            if(self.p4dev.devName != "device:p0l0"):
+                time.sleep(tstConst.RECONFIGURATION_GAP)
+                return
+            portCfg = tstConst.PORT_RATE_CONFIGS[j]
+            for k in range(0,len(portCfg)): # k gives the rank iteslf as the port configs are already sorted
+                if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
+                    port =portCfg[k][0]
+                    portRate = int(self.p4dev.queueRateForSpineFacingPortsOfLeafSwitch * portCfg[k][1])
+                    bufferSize = int(portRate * ConfConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
+                    setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
+                if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.SPINE:
+                    port =portCfg[k][0]
+                    portRate = int(self.p4dev.queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch * portCfg[k][1])
+                    bufferSize = int(portRate * ConfConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
+                    setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
+
+            i = i+ 1
+            time.sleep(tstConst.RECONFIGURATION_GAP)
+
+
+def setPortQueueRatesAndDepth(dev, port, queueRate, bufferSize):
+    cmdString = ""
+    cmdString = cmdString+  "set_queue_rate "+str(queueRate)+ " "+str(port)+"\n"
+    dev.executeCommand(cmdString)
+    cmdString = ""
+    cmdString = cmdString+  "set_queue_depth "+str(bufferSize)+ " "+str(port)+"\n"
+    dev.executeCommand(cmdString)
+    logger.info("Executing queuerate and depth setup commmand for device "+ str(dev))
+    logger.info("command is: "+cmdString)
+    #dev.executeCommand(cmdString)

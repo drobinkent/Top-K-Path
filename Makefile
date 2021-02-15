@@ -74,9 +74,7 @@ count-iperf-processes:
 
 
 
-process-l2highContention:
-	python3 ResultProcessorExecutor.py testAndMeasurement/TEST_RESULTS/ecmp/l2highContention testAndMeasurement/TEST_RESULTS/P4TE/l2highContention ECMP P4TE /home/deba/Desktop/CLB/ProcessedResultImages/l2highContention
+process-topkpath:
+	python3 ResultProcessorExecutor.py testAndMeasurement/TEST_RESULTS/ecmp/l2strideSmallLarge-highRationForLargeFlows testAndMeasurement/TEST_RESULTS/topKpath/l2strideSmallLarge-highRationForLargeFlows ECMP P4TE ./ProcessedResultImages/l2strideSmallLarge-highRationForLargeFlows
 
 
-process-stride-custom:
-	python3 ResultProcessorExecutor.py testAndMeasurement/TEST_RESULTS/P4TE/l2strideSmallLarge-80-20/ testAndMeasurement/TEST_RESULTS/P4TE/l2strideSmallLarge Custom P4TE /home/deba/Desktop/CLB/ProcessedResultImages/custom

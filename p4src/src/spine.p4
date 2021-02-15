@@ -220,6 +220,7 @@ control EgressPipeImpl (inout parsed_headers_t hdr,
        #ifdef ENABLE_DEBUG_TABLES
        debug_std_meta_egress_start.apply(hdr, local_metadata, standard_metadata);
        #endif  // ENABLE_DEBUG_TABLES
+       if(standard_metadata.deq_qdepth > ECN_THRESHOLD) hdr.ipv6.ecn = 3; //setting ecm mark
 
     }
 }

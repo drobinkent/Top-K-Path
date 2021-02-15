@@ -11,7 +11,7 @@
             {
               "flow_type": "tcp",
               "flow_traffic_class" : "0x10",
-              "flow-volume": "1M",
+              "flow-volume": "3M",
               "src-window-size": "65K",
               "src-data-rate": "512K",
               "pkt-size":  "1400",

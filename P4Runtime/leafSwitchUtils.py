@@ -61,10 +61,23 @@ def addUpStreamRoutingGroupForLeafSwitch(dev, upstreamPortsList):
         group_id=InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP)
     group.insert()
     for i in range(0, len(upstreamPortsList)):
-        member = sh.ActionProfileMember(dev, "upstream_path_selector")(member_id=i, action="set_upstream_egress_port")
+        member = sh.ActionProfileMember(dev, "upstream_path_selector")(member_id=upstreamPortsList[i], action="set_upstream_egress_port")
         member.action["port_num"] = str(upstreamPortsList[i])
         member.insert()
         group.add(member.member_id)
+    group.modify()
+    #delFrmGrp(dev, 1)
+
+def addUpStreamRoutingGroupForLeafSwitchWithExistingGroup(dev, upstreamPortsList, groupID):
+    group = sh.ActionProfileGroup(dev, "upstream_path_selector")(
+        group_id=groupID)
+
+    for i in range(0, len(upstreamPortsList)):
+        if(group.isMemberExists(member = upstreamPortsList[i]) == False):
+            member = sh.ActionProfileMember(dev, "upstream_path_selector")(member_id=i, action="set_upstream_egress_port")
+            member.action["port_num"] = str(upstreamPortsList[i])
+            member.insert()
+            group.add(member.member_id)
     group.modify()
     #delFrmGrp(dev, 1)
 
@@ -79,7 +92,7 @@ def delFrmGrp(dev, port):
     #print("Group is "+group)
     member = sh.ActionProfileMember(dev, "upstream_path_selector")(member_id=port, action="set_upstream_egress_port")
     member.action["port_num"] = str(port)
-    group.del_member_from_group(member)
+    group.del_member_from_groupByuMemberId(port)
     group.modify()
 
 
