@@ -1,7 +1,7 @@
 {
   "TESTS": [
     {
-      "testCaseName": "CLBTester",
+      "testCaseName": "TopKPathTesterWithTopKPath",
       "src-dst-pairs": [
         {
           "src": "h0p0l0",
@@ -11,26 +11,9 @@
             {
               "flow_type": "tcp",
               "flow_traffic_class" : "0x10",
-              "flow-volume": "2M",
+              "flow-volume": "1M",
               "src-window-size": "65K",
-              "src-data-rate": "56K",
-              "pkt-size":  "1400",
-              "repeat" : "1",
-              "repeat_interval": "75",
-              "is-interactive" : "true"
-            }
-          ]
-        },{
-          "src": "h1p0l0",
-          "dest": "h0p0l2",
-          "pattern": "one-to-one",
-          "flows": [
-            {
-              "flow_type": "tcp",
-              "flow_traffic_class" : "0x10",
-              "flow-volume": "2M",
-              "src-window-size": "65K",
-              "src-data-rate": "56K",
+              "src-data-rate": "430k",
               "pkt-size":  "1400",
               "repeat" : "1",
               "repeat_interval": "75",

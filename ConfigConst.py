@@ -22,7 +22,7 @@ MAX_LOG_FILE_SIZE  =  52428800 #50 MB
 MAX_LOG_FILE_BACKUP_COUNT = 250  # MAximum 25 files will be kept
 IPERF_MAX_FLOW_RATE_FOR_SERVER = "4K"  #Iperf flow rate is made maximum to 64K. if we keep ubnlimited it swamps the buffer and experiemnts doesn't work really good
 IPERF_DEFAULT_WINDOW_SIZE_FOR_SERVER = "1.4K"
-IPERF_PACING_TIMER = 32
+IPERF_PACING_TIMER = 25000
 #This is the path where all the counter values from devices will be written. Or we can directly show some data in live view of gnuplot
 LAMBDA = 25
 CONTROLLER_STATISTICS_RESULT_FILE_PATH = "./result/"
@@ -193,3 +193,5 @@ INVALID = -1
 UPWARD_PORT_METER_CONFIG_FOR_TOP_K_PATH = [40,30, 20]
 UPWARD_PORT_BURST_RATE_FORTOP_K_PATH = 5
 K=16
+
+CLB_TESTER_DEVICE_NAME="p0l0"
