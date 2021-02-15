@@ -137,7 +137,13 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 ingress_rate_monitor_control_block.apply(hdr, local_metadata, standard_metadata);
                 k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
                 //Here we are showing how to use k'th path
-                rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)local_metadata.kth_path_rank);
+                bit<32> rankMinLocation = 0;
+                bit<32> rankMaxLocation = 0;
+                rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank);
+                rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.kth_path_rank);
+                bit<32> linkLocation = 0;
+                hash(linkLocation, HashAlgorithm.crc16, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)rankMaxLocation);
+                rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
                 //standard_metadata.egress_spec = port_num;
                 #endif
                 //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});

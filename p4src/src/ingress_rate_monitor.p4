@@ -17,13 +17,19 @@ control ingress_rate_monitor(inout parsed_headers_t    hdr,
     action monitor_incoming_flow_based_on_flow_type(bit<9> flow_type_based_meter_idx) {
         flow_type_based_ingress_meter.execute_meter((bit<32>)flow_type_based_meter_idx, local_metadata.rank_of_path_to_be_searched);
     }
+    action monitor_incoming_flow_based_on_flow_type_without_param() {
+            //flow_type_based_ingress_meter.execute_meter((bit<32>)flow_type_based_meter_idx, local_metadata.rank_of_path_to_be_searched);
+            local_metadata.rank_of_path_to_be_searched = 0;
+        }
     table flow_type_based_ingress_stats_table {
         key = {
             hdr.ipv6.traffic_class: exact ;
         }
         actions = {
             monitor_incoming_flow_based_on_flow_type;
+            monitor_incoming_flow_based_on_flow_type_without_param;
         }
+        default_action = monitor_incoming_flow_based_on_flow_type_without_param;
     }
     apply{
         flow_type_based_ingress_stats_table.apply();

@@ -561,9 +561,7 @@ tables {
     id: 33336048
   }
   action_refs {
-    id: 21257015
-    annotations: "@defaultonly"
-    scope: DEFAULT_ONLY
+    id: 25801572
   }
   size: 1024
 }
@@ -890,6 +888,13 @@ actions {
     bitwidth: 9
   }
 }
+actions {
+  preamble {
+    id: 25801572
+    name: "IngressPipeImpl.ingress_rate_monitor_control_block.monitor_incoming_flow_based_on_flow_type_without_param"
+    alias: "monitor_incoming_flow_based_on_flow_type_without_param"
+  }
+}
 counters {
   preamble {
     id: 312468779
@@ -999,7 +1004,7 @@ controller_packet_metadata {
   metadata {
     id: 4
     name: "bitmask"
-    bitwidth: 16
+    bitwidth: 32
   }
   metadata {
     id: 5

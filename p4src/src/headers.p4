@@ -215,10 +215,10 @@ header packet_out_t {
     //--------bit-1--------||
     //--------bit-0--------||
 
-    #ifdef DP_ALGO_TOP_K_PATH
-    bit<K> bitmask;  //It shoudl not be 32 bit . It should be acutally K bit, But to ease of implementation we are using 32 bit assuming that
-    //K will be always less then 32 for our tests. In real life just need to make it K bit
-    #endif
+    //#ifdef DP_ALGO_TOP_K_PATH
+    bit<32> bitmask;  //It shoudl not be 32 bit . It should be acutally K bit, But to ease of implementation we are using 32 bit assuming that
+    //K will be always less then 32 for our tests. In real life just need to make it K bit (or padded to multiple of 8 bit
+    //#endif
     bit<32> rank;
     bit<32> port;
     bit<32> rank_max_index;
