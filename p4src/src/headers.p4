@@ -117,7 +117,10 @@ header flag_headers_t {
     bool is_packet_from_downstream_port;
     bool is_packet_from_upstream_port;
     bool is_load_balancer_processing_required;
-    bit<6> padding;
+    bool best_path_finderMat_hit;
+    bool worst_path_finderMat_hit;
+    bool kth_path_finderMat_hit;
+    bit<3> padding;
 }
 
 

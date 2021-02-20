@@ -55,12 +55,12 @@ class TopKPathRouting:
                                                actionName = "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
                                                actionParamName = "rank",
                                                actionParamValue = str(j), priority=bitMaskLength-j+1)
-            # switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_mat",
-            #                                    fieldName = "local_metadata.worst_path_selector_bitmask",
-            #                                    fieldValue = allOneMAskBinaryString, mask = maskAsString,
-            #                                    actionName = "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_action_with_param",
-            #                                    actionParamName = "rank",
-            #                                    actionParamValue = str(j), priority=j+1)
+            switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_mat",
+                                               fieldName = "local_metadata.worst_path_selector_bitmask",
+                                               fieldValue = allOneMAskBinaryString, mask = maskAsString,
+                                               actionName = "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_action_with_param",
+                                               actionParamName = "rank",
+                                               actionParamValue = str(j), priority=j+1)
 
 
 
@@ -96,7 +96,21 @@ class TopKPathRouting:
 
         pass
 
+    def testPerRankMaxPortCapacity(self):
+        for i in range(1, 25):
+            pkt = self.topKPathManager.insertPort(port = int(i), k = 10)
+            self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        for i in range(50, 75):
+            pkt = self.topKPathManager.insertPort(port = int(i), k = 0)
+            self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
 
+    # for k in range(0,len(portCfg)): # k gives the rank iteslf as the port configs are already sorted
+    #     dltPkt = self.topKPathManager.deletePort(portCfg[k][0])
+    #     self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt)
+    #     if(float(portCfg[k][1]) > 0): # if 0 that means the port is not down . So need to iinsert it. but for rate < 0 we delete the port but do not insert it agian to simulate delete behavior
+    #         insertPkt = self.topKPathManager.insertPort(portCfg[k][0], k)
+    #         self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
+    #     #Reconfigure the port rate and buffer length
 
     def topKpathroutingTesting(self):
         time.sleep(25)
@@ -135,6 +149,45 @@ class TopKPathRouting:
 
 
 
+
+
+
+
+
+
+
+
+
+
+            # (port, queue_rate) --> (5,.5), (6,1.5), (7,.5), (8,1.5)
+            # (5,1.25), (6,.75), (7,1.5), (8,.5)
+            #
+            # keep these type of 10 distribution. after each 10 sec we will load one distribution
+            # keep a counter . x = counter mod number of distribution. we will load the xth distribution.
+            # then run the P4TE style tests.
+            #
+            # keep a simple data strcure to sort the port and their values . insert them accordingly.
+            # To simulate port down make a port rate 0. randomly
+            #
+            # we can generate these distributions randomly. using a siomple function
+
+
+        # while(True):
+        #     self.testOperationIndex = self.testOperationIndex + 1
+        #     if(self.testOperationIndex == 1):
+        #         pkt = self.topKPathManager.deletePort(5)
+        #         self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        #         pkt = self.topKPathManager.insertPort(port = 5, k = 12)
+        #         self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        #         pkt = self.topKPathManager.insertPort(port = 5, k = 11)
+        #         self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        #         pkt = self.topKPathManager.insertPort(port = 12, k = 12)
+        #         self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        #         pkt = self.topKPathManager.insertPort(port = 9, k = 2)
+        #         self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        #         pkt = self.topKPathManager.deletePort(port=6)
+        #         self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        #         time.sleep(10)
 
 
 class BinaryMask:

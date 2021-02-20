@@ -133,10 +133,23 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 #endif
 
                 #ifdef DP_ALGO_TOP_K_PATH
-                local_metadata.rank_of_path_to_be_searched = 0;
-                k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
-                if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_LOW_DELAY){
 
+                {
+                    // Here we will set the bitmasks for 3 experiemntal traffi classes
+                    //In real life scenario other algorihtms will setup these bitmasks
+                    if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_LOW_DELAY){
+                        local_metadata.kth_path_selector_bitmask = 0; //later it will find miss and use best path
+                    }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_HIGH_THROUGHPUT){
+                         local_metadata.worst_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 2; //skip the first 2 best path as they are reserved by low delay and special custom traffic class
+                    }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_CUSTOM_QOS){
+                        bit<K> tempMask = ALL_1_256_BIT[K-1:0] <<4;
+                        local_metadata.kth_path_selector_bitmask = tempMask;
+                    }else{
+                        local_metadata.best_path_selector_bitmask =  ALL_1_256_BIT[K-1:0]; //set it here
+                    }
+                }
+                k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
+                if ( local_metadata.flag_hdr.kth_path_finderMat_hit == false){
                     bit<32> rankMinLocation = 0;
                     bit<32> rankMaxLocation = 0;
                     rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.best_path_rank);
@@ -144,28 +157,20 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                     bit<32> linkLocation = 0;
                     hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)(rankMaxLocation-rankMinLocation));
                     rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
-                    log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
-                    //standard_metadata.egress_spec = port_num;
-                }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_HIGH_THROUGHPUT){
-                    bit<32> rankMinLocation = 0;
-                    bit<32> rankMaxLocation = 0;
-                    rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.worst_path_rank);
-                    rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.worst_path_rank);
-                    bit<32> linkLocation = 0;
-                    hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)(rankMaxLocation-rankMinLocation));
-                    rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
+                    log_msg("Using best path");
                     log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
                 }else{
                     bit<32> rankMinLocation = 0;
                     bit<32> rankMaxLocation = 0;
-                    rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.best_path_rank);
-                    rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.best_path_rank);
+                    rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank);
+                    rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.kth_path_rank);
                     bit<32> linkLocation = 0;
                     hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)(rankMaxLocation-rankMinLocation));
                     rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
+                    log_msg("Using Kth path");
                     log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
-                    //standard_metadata.egress_spec = port_num;
                 }
+
                 #endif
                 //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
             }

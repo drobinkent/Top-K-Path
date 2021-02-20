@@ -469,26 +469,42 @@ tables {
 }
 tables {
   preamble {
-    id: 36992381
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.upstream_routing_table"
-    alias: "upstream_routing_table"
+    id: 41303458
+    name: "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat"
+    alias: "best_path_finder_mat"
   }
   match_fields {
     id: 1
-    name: "hdr.ipv6.dst_addr"
-    bitwidth: 128
-    match_type: LPM
+    name: "local_metadata.best_path_selector_bitmask"
+    bitwidth: 16
+    match_type: TERNARY
   }
   action_refs {
-    id: 30149272
+    id: 19456785
   }
   action_refs {
-    id: 21257015
-    annotations: "@defaultonly"
-    scope: DEFAULT_ONLY
+    id: 33074583
   }
-  implementation_id: 295678503
-  direct_resource_ids: 321186985
+  size: 1024
+}
+tables {
+  preamble {
+    id: 36185609
+    name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
+    alias: "kth_path_finder_mat"
+  }
+  match_fields {
+    id: 1
+    name: "local_metadata.kth_path_selector_bitmask"
+    bitwidth: 16
+    match_type: TERNARY
+  }
+  action_refs {
+    id: 25442642
+  }
+  action_refs {
+    id: 24517793
+  }
   size: 1024
 }
 tables {
@@ -754,39 +770,41 @@ actions {
 }
 actions {
   preamble {
-    id: 24470521
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.lookup_flowlet_map"
-    alias: "lookup_flowlet_map"
+    id: 19456785
+    name: "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_without_param"
+    alias: "best_path_finder_action_without_param"
   }
 }
 actions {
   preamble {
-    id: 33537169
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.update_flowlet_id"
-    alias: "update_flowlet_id"
-  }
-}
-actions {
-  preamble {
-    id: 30149272
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.set_upstream_egress_port"
-    alias: "set_upstream_egress_port"
+    id: 33074583
+    name: "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param"
+    alias: "best_path_finder_action_with_param"
   }
   params {
     id: 1
-    name: "port_num"
-    bitwidth: 9
+    name: "rank"
+    bitwidth: 16
   }
 }
-action_profiles {
+actions {
   preamble {
-    id: 295678503
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.upstream_path_selector"
-    alias: "upstream_path_selector"
+    id: 24517793
+    name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param"
+    alias: "kth_path_finder_action_with_param"
   }
-  table_ids: 36992381
-  with_selector: true
-  size: 128
+  params {
+    id: 1
+    name: "rank"
+    bitwidth: 16
+  }
+}
+actions {
+  preamble {
+    id: 25442642
+    name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param"
+    alias: "kth_path_finder_action_without_param"
+  }
 }
 counters {
   preamble {
@@ -831,17 +849,6 @@ direct_counters {
     unit: BOTH
   }
   direct_table_id: 44899682
-}
-direct_counters {
-  preamble {
-    id: 321186985
-    name: "upstream_routing_table_counter"
-    alias: "upstream_routing_table_counter"
-  }
-  spec {
-    unit: BOTH
-  }
-  direct_table_id: 36992381
 }
 controller_packet_metadata {
   preamble {
@@ -916,9 +923,9 @@ controller_packet_metadata {
 }
 registers {
   preamble {
-    id: 370808593
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.ecmp_flowlet_id_map"
-    alias: "ecmp_flowlet_id_map"
+    id: 372704615
+    name: "stored_bitmask"
+    alias: "stored_bitmask"
   }
   type_spec {
     bitstring {
@@ -927,22 +934,52 @@ registers {
       }
     }
   }
-  size: 8192
+  size: 1
 }
 registers {
   preamble {
-    id: 383017684
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.ecmp_flowlet_lasttime_map"
-    alias: "ecmp_flowlet_lasttime_map"
+    id: 377218411
+    name: "rank_to_max_index"
+    alias: "rank_to_max_index"
   }
   type_spec {
     bitstring {
       bit {
-        bitwidth: 48
+        bitwidth: 32
       }
     }
   }
-  size: 8192
+  size: 16
+}
+registers {
+  preamble {
+    id: 380646284
+    name: "rank_to_min_index"
+    alias: "rank_to_min_index"
+  }
+  type_spec {
+    bitstring {
+      bit {
+        bitwidth: 32
+      }
+    }
+  }
+  size: 16
+}
+registers {
+  preamble {
+    id: 382265012
+    name: "rank_to_port_map"
+    alias: "rank_to_port_map"
+  }
+  type_spec {
+    bitstring {
+      bit {
+        bitwidth: 9
+      }
+    }
+  }
+  size: 256
 }
 type_info {
 }
