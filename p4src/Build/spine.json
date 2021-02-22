@@ -2394,7 +2394,31 @@
           "parameters" : [
             {
               "type" : "string",
-              "value" : "Stored bitmask after is {}"
+              "value" : "traffic class is {}"
+            },
+            {
+              "type" : "parameters_vector",
+              "value" : [
+                {
+                  "type" : "field",
+                  "value" : ["ipv6", "traffic_class"]
+                }
+              ]
+            }
+          ],
+          "source_info" : {
+            "filename" : "p4src/src/top_k_path.p4",
+            "line" : 83,
+            "column" : 12,
+            "source_fragment" : "            log_msg(\\\"traffic class is {}\\\", {hdr.ipv6.traffic_class});"
+          }
+        },
+        {
+          "op" : "log_msg",
+          "parameters" : [
+            {
+              "type" : "string",
+              "value" : "Stored bitmask after read is {}"
             },
             {
               "type" : "parameters_vector",
@@ -2408,9 +2432,33 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 83,
+            "line" : 84,
             "column" : 12,
-            "source_fragment" : "            log_msg(\\\"Stored bitmask after is {}\\\",{stored_bitmask_read_value});"
+            "source_fragment" : "            log_msg(\\\"Stored bitmask after read is {}\\\",{stored_bitmask_read_value});"
+          }
+        },
+        {
+          "op" : "log_msg",
+          "parameters" : [
+            {
+              "type" : "string",
+              "value" : "kth path selector bitmask is {}"
+            },
+            {
+              "type" : "parameters_vector",
+              "value" : [
+                {
+                  "type" : "field",
+                  "value" : ["scalars", "userMetadata.kth_path_selector_bitmask"]
+                }
+              ]
+            }
+          ],
+          "source_info" : {
+            "filename" : "p4src/src/top_k_path.p4",
+            "line" : 85,
+            "column" : 12,
+            "source_fragment" : "            log_msg(\\\"kth path selector bitmask is {}\\\",{local_metadata.kth_path_selector_bitmask});"
           }
         },
         {
@@ -2440,7 +2488,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 86,
+            "line" : 88,
             "column" : 12,
             "source_fragment" : "local_metadata.kth_path_selector_bitmask = stored_bitmask_read_value & local_metadata.kth_path_selector_bitmask"
           }
@@ -2464,7 +2512,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 89,
+            "line" : 91,
             "column" : 12,
             "source_fragment" : "            log_msg(\\\"local_metadata.kth_path_selector_bitmask  after AND of stored_bitmask_read_value & local_metadata.kth_path_selector_bitmask is : {}\\\",{local_metadata.kth_path_selector_bitmask});"
           }

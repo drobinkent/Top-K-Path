@@ -140,12 +140,14 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                     if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_LOW_DELAY){
                         local_metadata.kth_path_selector_bitmask = 0; //later it will find miss and use best path
                     }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_HIGH_THROUGHPUT){
-                         local_metadata.worst_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 2; //skip the first 2 best path as they are reserved by low delay and special custom traffic class
+                         local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 4; //skip the first 2 best path as they are reserved by low delay and special custom traffic class
+                         log_msg("Bitmask for high throughout traffic class is {}",{local_metadata.kth_path_selector_bitmask});
                     }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_CUSTOM_QOS){
-                        bit<K> tempMask = ALL_1_256_BIT[K-1:0] <<4;
+                        bit<K> tempMask = ALL_1_256_BIT[K-1:0] <<2;
                         local_metadata.kth_path_selector_bitmask = tempMask;
+
                     }else{
-                        local_metadata.best_path_selector_bitmask =  ALL_1_256_BIT[K-1:0]; //set it here
+                        local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0]; //set it here
                     }
                 }
                 k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);

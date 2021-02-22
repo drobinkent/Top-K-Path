@@ -100,38 +100,41 @@ class TopKPathRouting:
 
     def topKpathroutingTesting(self):
         time.sleep(25)
-        topologyConfigFilePath =  ConfConst.TOPOLOGY_CONFIG_FILE
-        if(self.p4dev.devName == "device:p0l0"):
-            testEvaluator = TestCommandDeployer(topologyConfigFilePath,
-                                                "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/topKPath/l2strideSmallLarge-highRationForLargeFlows.json",
-                                                ConfConst.IPERF3_CLIENT_PORT_START, ConfConst.IPERF3_SERVER_PORT_START, testStartDelay= 20)
-            testEvaluator.setupTestCase()
         i = 0
         while(True):
-            j = i % len(tstConst.PORT_RATE_CONFIGS)
+            j = i % len(tstConst.TOP_K_PATH_EXPERIMENT_PORT_RATE_CONFIGS)
             if(self.p4dev.devName != "device:p0l0"):
-                time.sleep(tstConst.RECONFIGURATION_GAP)
                 return
-            portCfg = tstConst.PORT_RATE_CONFIGS[j]
-            for k in range(0,len(portCfg)): # k gives the rank iteslf as the port configs are already sorted
+            portCfg = tstConst.TOP_K_PATH_EXPERIMENT_PORT_RATE_CONFIGS[j]
+            time.sleep(portCfg[0])
+            for k in range(0,len(portCfg[1])): # k gives the rank iteslf as the port configs are already sorted
                 if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
-                    port =portCfg[k][0]
-                    portRate = int(self.p4dev.queueRateForSpineFacingPortsOfLeafSwitch * portCfg[k][1])
-                    bufferSize = int(portRate * ConfConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
+                    port =portCfg[1][k][0]
+                    portRank = portCfg[1][k][1]
+                    portRate = portCfg[1][k][2]
+                    bufferSize = portCfg[1][k][3]
                     setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
                 if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.SPINE:
-                    port =portCfg[k][0]
-                    portRate = int(self.p4dev.queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch * portCfg[k][1])
-                    bufferSize = int(portRate * ConfConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
-                    setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
-                dltPkt = self.topKPathManager.deletePort(portCfg[k][0])
+                    port =portCfg[1][k][0]
+                    portRank = portCfg[1][k][1]
+                    portRate = portCfg[1][k][2]
+                    bufferSize = portCfg[1][k][3]
+                dltPkt = self.topKPathManager.deletePort(port)
                 self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt)
-                if(float(portCfg[k][1]) > 0): # if 0 that means the port is not down . So need to iinsert it. but for rate < 0 we delete the port but do not insert it agian to simulate delete behavior
-                    insertPkt = self.topKPathManager.insertPort(portCfg[k][0], k)
+                if(portRate> 0): # if 0 that means the port is not down . So need to iinsert it. but for rate < 0 we delete the port but do not insert it agian to simulate delete behavior
+                    insertPkt = self.topKPathManager.insertPort(port, portRank)
                     self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
-
+            print("Installed routes ",portCfg)
+            topologyConfigFilePath =  ConfConst.TOPOLOGY_CONFIG_FILE
+            # if(self.p4dev.devName == "device:p0l0"):
+            #     testEvaluator = TestCommandDeployer(topologyConfigFilePath,
+            #                                         "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/TopKPathTesterWithTopKPath.json",
+            #                                         ConfConst.IPERF3_CLIENT_PORT_START, ConfConst.IPERF3_SERVER_PORT_START, testStartDelay= 5)
+            # testEvaluator.setupTestCase()
             i = i+ 1
-            time.sleep(tstConst.RECONFIGURATION_GAP)
+
+
+            # after reconfiguration start the testcase with 3 special flows
 
 
 

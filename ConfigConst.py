@@ -108,12 +108,12 @@ class DataplnaeAlgorithm(Enum):
 ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_TOP_K_PATH
 
 
-queueRateForHostFacingPortsOfLeafSwitch = 40
-queueRateForSpineFacingPortsOfLeafSwitch = 40
-queueRateForLeafSwitchFacingPortsOfSpineSwitch= 10
-queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch=10
-queueRateForSpineSwitchFacingPortsOfSuperSpineSwitch=10
-queueRateForExternalInternetFacingPortsOfSuperSpineSwitch=10
+queueRateForHostFacingPortsOfLeafSwitch = 400
+queueRateForSpineFacingPortsOfLeafSwitch = 400
+queueRateForLeafSwitchFacingPortsOfSpineSwitch= 100
+queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch=100
+queueRateForSpineSwitchFacingPortsOfSuperSpineSwitch=100
+queueRateForExternalInternetFacingPortsOfSuperSpineSwitch=100
 
 
 

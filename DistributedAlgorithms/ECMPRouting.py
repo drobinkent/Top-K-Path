@@ -37,12 +37,32 @@ class ECMPRouting:
         '''
         This function setup all the relevant stuffs for running the algorithm
         '''
-
-
-        self.p4dev.setupECMPUpstreamRouting()
-        self.x = threading.Thread(target=self.topKpathroutingTesting, args=())
-        self.x.start()
-        logger.info("ECMP-VS-TopKpathroutingTesting thread started( This Thread is ECMP)")
+        j = 0
+        if(self.p4dev.devName == "device:p0l0"):
+            portCfg = tstConst.TOP_K_PATH_EXPERIMENT_PORT_RATE_CONFIGS[j]
+            for k in range(0,len(portCfg[1])): # k gives the rank iteslf as the port configs are already sorted
+                if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
+                    port =portCfg[1][k][0]
+                    portRank = portCfg[1][k][1]
+                    portRate = portCfg[1][k][2]
+                    bufferSize = portCfg[1][k][3]
+                    if(portRate <= 0): # if 0 that means the port is  down
+                        del self.p4dev.portToSpineSwitchMap[port]
+                    setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
+            leafUtils.addUpStreamRoutingGroupForLeafSwitch(self.p4dev, list(
+                self.p4dev.portToSpineSwitchMap.keys()))  # this creates a group for upstream routing with  group_id=InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP
+            self.p4dev.addLPMMatchEntryWithGroupAction(
+                tableName="IngressPipeImpl.upstream_ecmp_routing_control_block.upstream_routing_table",
+                fieldName="hdr.ipv6.dst_addr",
+                fieldValue=InternalConfig.DCN_CORE_IPv6_PREFIX, prefixLength=InternalConfig.DCN_CORE_IPv6_PREFIX_LENGTH,
+                actionName="IngressPipeImpl.upstream_ecmp_routing_control_block.set_upstream_egress_port",
+                actionParamName=None, actionParamValue=None,
+                groupID=InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP, priority=None)
+        else:
+            self.p4dev.setupECMPUpstreamRouting()
+        # self.x = threading.Thread(target=self.topKpathroutingTesting, args=())
+        # self.x.start()
+        # logger.info("ECMP-VS-TopKpathroutingTesting thread started( This Thread is ECMP)")
         return
 
     def processFeedbackPacket(self, parsedPkt, dev):
@@ -53,33 +73,38 @@ class ECMPRouting:
 
     def topKpathroutingTesting(self):
         time.sleep(25)
-        topologyConfigFilePath =  confConst.TOPOLOGY_CONFIG_FILE
-        if(self.p4dev.devName == "device:p0l0"):
-            testEvaluator = TestCommandDeployer(topologyConfigFilePath,
-                            "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/ECMP/l2strideSmallLarge-highRationForLargeFlows.json",
-                            confConst.IPERF3_CLIENT_PORT_START, confConst.IPERF3_SERVER_PORT_START, testStartDelay= 20)
-            testEvaluator.setupTestCase()
         i = 0
         while(True):
-            j = i % len(tstConst.PORT_RATE_CONFIGS)
+            j = i % len(tstConst.TOP_K_PATH_EXPERIMENT_PORT_RATE_CONFIGS)
             if(self.p4dev.devName != "device:p0l0"):
-                time.sleep(tstConst.RECONFIGURATION_GAP)
                 return
-            portCfg = tstConst.PORT_RATE_CONFIGS[j]
-            for k in range(0,len(portCfg)): # k gives the rank iteslf as the port configs are already sorted
+            portCfg = tstConst.TOP_K_PATH_EXPERIMENT_PORT_RATE_CONFIGS[j]
+            time.sleep(portCfg[0])
+            for k in range(0,len(portCfg[1])): # k gives the rank iteslf as the port configs are already sorted
                 if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
-                    port =portCfg[k][0]
-                    portRate = int(self.p4dev.queueRateForSpineFacingPortsOfLeafSwitch * portCfg[k][1])
-                    bufferSize = int(portRate * ConfConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
+                    port =portCfg[1][k][0]
+                    portRank = portCfg[1][k][1]
+                    portRate = portCfg[1][k][2]
+                    bufferSize = portCfg[1][k][3]
                     setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
                 if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.SPINE:
-                    port =portCfg[k][0]
-                    portRate = int(self.p4dev.queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch * portCfg[k][1])
-                    bufferSize = int(portRate * ConfConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
-                    setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
-
+                    port =portCfg[1][k][0]
+                    portRank = portCfg[1][k][1]
+                    portRate = portCfg[1][k][2]
+                    bufferSize = portCfg[1][k][3]
+                if(portRate<= 0): # if 0 that means the port is  down
+                    self.p4dev.setupECMPUpstreamRouting
+            print("Installed routes ",portCfg)
+            topologyConfigFilePath =  ConfConst.TOPOLOGY_CONFIG_FILE
+            if(self.p4dev.devName == "device:p0l0"):
+                testEvaluator = TestCommandDeployer(topologyConfigFilePath,
+                                                    "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/TopKPathTesterWithECMP.json",
+                                                    ConfConst.IPERF3_CLIENT_PORT_START, ConfConst.IPERF3_SERVER_PORT_START, testStartDelay= 5)
+            testEvaluator.setupTestCase()
             i = i+ 1
-            time.sleep(tstConst.RECONFIGURATION_GAP)
+
+
+            # after reconfiguration start the testcase with 3 special flows
 
 
 def setPortQueueRatesAndDepth(dev, port, queueRate, bufferSize):
