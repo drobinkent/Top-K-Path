@@ -82,3 +82,9 @@ which paper needs which of our feature?
 
 ===============================================================
 THe value of K in P4 program and controller Max Rank must have to match
+
+======================================================================================
+Top-K path testiing bottleneck
+
+Assume we want to reconfigure the port rate of a queue in bmv2. Now when Iperf is sending data already a lot of data is in the queue. 
+somehow, the queue doesn't really change it;s rate. it stays in its old hogh rate. 

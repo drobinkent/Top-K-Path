@@ -75,6 +75,6 @@ count-iperf-processes:
 
 
 process-topkpath:
-	python3 ResultProcessorExecutor.py testAndMeasurement/TEST_RESULTS/ecmp/l2strideSmallLarge-highRationForLargeFlows testAndMeasurement/TEST_RESULTS/topKpath/l2strideSmallLarge-highRationForLargeFlows ECMP P4TE ./ProcessedResultImages/l2strideSmallLarge-highRationForLargeFlows
+	python3 ResultProcessorExecutor.py testAndMeasurement/TEST_RESULTS/ecmp/TopKPathTesterWithTopKPath testAndMeasurement/TEST_RESULTS/TopKPath/TopKPathTesterWithTopKPath ECMP P4TE ./ProcessedResultImages/l2strideSmallLarge-highRationForLargeFlows
 
 

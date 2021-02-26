@@ -16,7 +16,7 @@
               "src-data-rate": "128K",
               "pkt-size":  "1400",
               "repeat" : "1",
-              "repeat_interval": "35",
+              "repeat_interval": "0",
               "is-interactive" : "true"
             }
           ]
@@ -34,7 +34,7 @@
               "src-data-rate": "128K",
               "pkt-size":  "1400",
               "repeat" : "1",
-              "repeat_interval": "35",
+              "repeat_interval": "0",
               "is-interactive" : "true"
             }
           ]
@@ -51,7 +51,7 @@
               "src-data-rate": "128K",
               "pkt-size":  "1400",
               "repeat" : "1",
-              "repeat_interval": "35",
+              "repeat_interval": "0",
               "is-interactive" : "true"
             }
           ]

@@ -124,6 +124,8 @@ class TopKPathRouting:
                 if(portRate> 0): # if 0 that means the port is not down . So need to iinsert it. but for rate < 0 we delete the port but do not insert it agian to simulate delete behavior
                     insertPkt = self.topKPathManager.insertPort(port, portRank)
                     self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
+                else:
+                    logger.info("Port : "+str(port)+" will not be configured into system as it's rate is <0 = ")
             print("Installed routes ",portCfg)
             topologyConfigFilePath =  ConfConst.TOPOLOGY_CONFIG_FILE
             # if(self.p4dev.devName == "device:p0l0"):
