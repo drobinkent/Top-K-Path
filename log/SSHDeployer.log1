@@ -1,9 +1,3 @@
-[02-26 01:57:20] p41685 {/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfig.py:323} INFO - Finished reading and loading cfg
-[02-26 01:57:20] p41685 {TestCaseDeployer.py:90} INFO - Creating folder for test case
-[02-26 01:57:20] p41685 {TestCaseDeployer.py:93} INFO - Current working Directory is /home/deba/Desktop/Top-K-Path
-[02-26 02:00:52] p43893 {/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfig.py:323} INFO - Finished reading and loading cfg
-[02-26 02:00:52] p43893 {TestCaseDeployer.py:90} INFO - Creating folder for test case
-[02-26 02:00:52] p43893 {TestCaseDeployer.py:93} INFO - Current working Directory is /home/deba/Desktop/Top-K-Path
-[02-26 02:04:42] p47209 {/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfig.py:323} INFO - Finished reading and loading cfg
-[02-26 02:04:42] p47209 {TestCaseDeployer.py:90} INFO - Creating folder for test case
-[02-26 02:04:42] p47209 {TestCaseDeployer.py:93} INFO - Current working Directory is /home/deba/Desktop/Top-K-Path
+[03-17 22:08:33] p37642 {/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfig.py:323} INFO - Finished reading and loading cfg
+[03-17 22:08:33] p37642 {TestCaseDeployer.py:90} INFO - Creating folder for test case
+[03-17 22:08:33] p37642 {TestCaseDeployer.py:93} INFO - Current working Directory is /home/deba/Desktop/Top-K-Path
