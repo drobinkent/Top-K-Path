@@ -1446,123 +1446,8 @@
       ]
     },
     {
-      "name" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
-      "id" : 11,
-      "runtime_data" : [
-        {
-          "name" : "rank",
-          "bitwidth" : 16
-        }
-      ],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.kth_path_rank"]
-            },
-            {
-              "type" : "runtime_data",
-              "value" : 0
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 56,
-            "column" : 8,
-            "source_fragment" : "local_metadata.kth_path_rank =rank"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["flag_hdr", "kth_path_finderMat_hit"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "b2d",
-                  "left" : null,
-                  "right" : {
-                    "type" : "bool",
-                    "value" : true
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 57,
-            "column" : 8,
-            "source_fragment" : "local_metadata.flag_hdr.kth_path_finderMat_hit = true"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param",
-      "id" : 12,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.kth_path_rank"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0xffff"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/spine.p4",
-            "line" : 22,
-            "column" : 30,
-            "source_fragment" : "1; ..."
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["flag_hdr", "kth_path_finderMat_hit"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "b2d",
-                  "left" : null,
-                  "right" : {
-                    "type" : "bool",
-                    "value" : false
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 61,
-            "column" : 8,
-            "source_fragment" : "local_metadata.flag_hdr.kth_path_finderMat_hit = false"
-          }
-        }
-      ]
-    },
-    {
       "name" : "top_k_path_control_message_processor18",
-      "id" : 13,
+      "id" : 11,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -1789,7 +1674,7 @@
     },
     {
       "name" : "top_k_path_control_message_processor29",
-      "id" : 14,
+      "id" : 12,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2016,7 +1901,7 @@
     },
     {
       "name" : "spine114",
-      "id" : 15,
+      "id" : 13,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2042,7 +1927,7 @@
     },
     {
       "name" : "spine119",
-      "id" : 16,
+      "id" : 14,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2074,7 +1959,7 @@
     },
     {
       "name" : "spine124",
-      "id" : 17,
+      "id" : 15,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2125,7 +2010,7 @@
     },
     {
       "name" : "spine110",
-      "id" : 18,
+      "id" : 16,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2190,7 +2075,7 @@
     },
     {
       "name" : "ndp43",
-      "id" : 19,
+      "id" : 17,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2255,7 +2140,7 @@
     },
     {
       "name" : "ndp47",
-      "id" : 20,
+      "id" : 18,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2291,7 +2176,7 @@
     },
     {
       "name" : "spine135",
-      "id" : 21,
+      "id" : 19,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2308,7 +2193,7 @@
     },
     {
       "name" : "l2_ternary44",
-      "id" : 22,
+      "id" : 20,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2325,7 +2210,7 @@
     },
     {
       "name" : "top_k_path81",
-      "id" : 23,
+      "id" : 21,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2521,7 +2406,7 @@
     },
     {
       "name" : "spine155",
-      "id" : 24,
+      "id" : 22,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2583,13 +2468,13 @@
     },
     {
       "name" : "NoAction",
-      "id" : 25,
+      "id" : 23,
       "runtime_data" : [],
       "primitives" : []
     },
     {
       "name" : "spine210",
-      "id" : 26,
+      "id" : 24,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2640,7 +2525,7 @@
     },
     {
       "name" : "spine218",
-      "id" : 27,
+      "id" : 25,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2662,7 +2547,7 @@
     },
     {
       "name" : "spine223",
-      "id" : 28,
+      "id" : 26,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2715,14 +2600,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [18],
+          "action_ids" : [16],
           "actions" : ["spine110"],
           "base_default_next" : "node_3",
           "next_tables" : {
             "spine110" : "node_3"
           },
           "default_entry" : {
-            "action_id" : 18,
+            "action_id" : 16,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2744,14 +2629,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [15],
+          "action_ids" : [13],
           "actions" : ["spine114"],
           "base_default_next" : "node_5",
           "next_tables" : {
             "spine114" : "node_5"
           },
           "default_entry" : {
-            "action_id" : 15,
+            "action_id" : 13,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2773,14 +2658,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [13],
+          "action_ids" : [11],
           "actions" : ["top_k_path_control_message_processor18"],
           "base_default_next" : "tbl_spine119",
           "next_tables" : {
             "top_k_path_control_message_processor18" : "tbl_spine119"
           },
           "default_entry" : {
-            "action_id" : 13,
+            "action_id" : 11,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2802,14 +2687,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [14],
+          "action_ids" : [12],
           "actions" : ["top_k_path_control_message_processor29"],
           "base_default_next" : "tbl_spine119",
           "next_tables" : {
             "top_k_path_control_message_processor29" : "tbl_spine119"
           },
           "default_entry" : {
-            "action_id" : 14,
+            "action_id" : 12,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2831,14 +2716,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [16],
+          "action_ids" : [14],
           "actions" : ["spine119"],
           "base_default_next" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table",
           "next_tables" : {
             "spine119" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 16,
+            "action_id" : 14,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -2860,14 +2745,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [17],
+          "action_ids" : [15],
           "actions" : ["spine124"],
           "base_default_next" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table",
           "next_tables" : {
             "spine124" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 17,
+            "action_id" : 15,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3142,14 +3027,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [19],
+          "action_ids" : [17],
           "actions" : ["ndp43"],
           "base_default_next" : "tbl_spine135",
           "next_tables" : {
             "ndp43" : "tbl_spine135"
           },
           "default_entry" : {
-            "action_id" : 19,
+            "action_id" : 17,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3171,14 +3056,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [20],
+          "action_ids" : [18],
           "actions" : ["ndp47"],
           "base_default_next" : "tbl_spine135",
           "next_tables" : {
             "ndp47" : "tbl_spine135"
           },
           "default_entry" : {
-            "action_id" : 20,
+            "action_id" : 18,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3200,14 +3085,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [21],
+          "action_ids" : [19],
           "actions" : ["spine135"],
           "base_default_next" : "node_18",
           "next_tables" : {
             "spine135" : "node_18"
           },
           "default_entry" : {
-            "action_id" : 21,
+            "action_id" : 19,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3266,14 +3151,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [22],
+          "action_ids" : [20],
           "actions" : ["l2_ternary44"],
           "base_default_next" : "node_21",
           "next_tables" : {
             "l2_ternary44" : "node_21"
           },
           "default_entry" : {
-            "action_id" : 22,
+            "action_id" : 20,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3361,14 +3246,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [23],
+          "action_ids" : [21],
           "actions" : ["top_k_path81"],
           "base_default_next" : "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat",
           "next_tables" : {
             "top_k_path81" : "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat"
           },
           "default_entry" : {
-            "action_id" : 23,
+            "action_id" : 21,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3399,10 +3284,10 @@
           "direct_meters" : null,
           "action_ids" : [9, 10],
           "actions" : ["IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_without_param", "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param"],
-          "base_default_next" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
+          "base_default_next" : "tbl_spine155",
           "next_tables" : {
-            "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_without_param" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
-            "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
+            "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_without_param" : "tbl_spine155",
+            "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param" : "tbl_spine155"
           },
           "default_entry" : {
             "action_id" : 9,
@@ -3412,45 +3297,8 @@
           }
         },
         {
-          "name" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
-          "id" : 17,
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 64,
-            "column" : 10,
-            "source_fragment" : "kth_path_finder_mat"
-          },
-          "key" : [
-            {
-              "match_type" : "ternary",
-              "name" : "local_metadata.kth_path_selector_bitmask",
-              "target" : ["scalars", "userMetadata.kth_path_selector_bitmask"],
-              "mask" : null
-            }
-          ],
-          "match_type" : "ternary",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [12, 11],
-          "actions" : ["IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param", "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param"],
-          "base_default_next" : "tbl_spine155",
-          "next_tables" : {
-            "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param" : "tbl_spine155",
-            "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param" : "tbl_spine155"
-          },
-          "default_entry" : {
-            "action_id" : 12,
-            "action_const" : false,
-            "action_data" : [],
-            "action_entry_const" : false
-          }
-        },
-        {
           "name" : "tbl_spine155",
-          "id" : 18,
+          "id" : 17,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
             "line" : 155,
@@ -3464,14 +3312,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [24],
+          "action_ids" : [22],
           "actions" : ["spine155"],
           "base_default_next" : "IngressPipeImpl.ingress_end_debug.dbg_table",
           "next_tables" : {
             "spine155" : "IngressPipeImpl.ingress_end_debug.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 24,
+            "action_id" : 22,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3479,7 +3327,7 @@
         },
         {
           "name" : "IngressPipeImpl.ingress_end_debug.dbg_table",
-          "id" : 19,
+          "id" : 18,
           "source_info" : {
             "filename" : "p4src/src/debug.p4",
             "line" : 12,
@@ -4026,11 +3874,11 @@
         "column" : 8,
         "source_fragment" : "EgressPipeImpl"
       },
-      "init_table" : "node_33",
+      "init_table" : "node_32",
       "tables" : [
         {
           "name" : "tbl_spine210",
-          "id" : 20,
+          "id" : 19,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
             "line" : 210,
@@ -4044,14 +3892,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [26],
+          "action_ids" : [24],
           "actions" : ["spine210"],
-          "base_default_next" : "node_35",
+          "base_default_next" : "node_34",
           "next_tables" : {
-            "spine210" : "node_35"
+            "spine210" : "node_34"
           },
           "default_entry" : {
-            "action_id" : 26,
+            "action_id" : 24,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4059,7 +3907,7 @@
         },
         {
           "name" : "tbl_spine218",
-          "id" : 21,
+          "id" : 20,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
             "line" : 218,
@@ -4073,14 +3921,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [27],
+          "action_ids" : [25],
           "actions" : ["spine218"],
           "base_default_next" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table",
           "next_tables" : {
             "spine218" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 27,
+            "action_id" : 25,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4088,7 +3936,7 @@
         },
         {
           "name" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table",
-          "id" : 22,
+          "id" : 21,
           "source_info" : {
             "filename" : "p4src/src/debug.p4",
             "line" : 12,
@@ -4289,14 +4137,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [25],
+          "action_ids" : [23],
           "actions" : ["NoAction"],
-          "base_default_next" : "node_38",
+          "base_default_next" : "node_37",
           "next_tables" : {
-            "NoAction" : "node_38"
+            "NoAction" : "node_37"
           },
           "default_entry" : {
-            "action_id" : 25,
+            "action_id" : 23,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4304,7 +4152,7 @@
         },
         {
           "name" : "tbl_spine223",
-          "id" : 23,
+          "id" : 22,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
             "line" : 223,
@@ -4318,14 +4166,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [28],
+          "action_ids" : [26],
           "actions" : ["spine223"],
           "base_default_next" : null,
           "next_tables" : {
             "spine223" : null
           },
           "default_entry" : {
-            "action_id" : 28,
+            "action_id" : 26,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4335,7 +4183,7 @@
       "action_profiles" : [],
       "conditionals" : [
         {
-          "name" : "node_33",
+          "name" : "node_32",
           "id" : 9,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
@@ -4358,10 +4206,10 @@
             }
           },
           "true_next" : "tbl_spine210",
-          "false_next" : "node_35"
+          "false_next" : "node_34"
         },
         {
-          "name" : "node_35",
+          "name" : "node_34",
           "id" : 10,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
@@ -4404,7 +4252,7 @@
           "false_next" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
         },
         {
-          "name" : "node_38",
+          "name" : "node_37",
           "id" : 11,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",

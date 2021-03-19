@@ -90,7 +90,7 @@ control k_path_selector(inout parsed_headers_t    hdr,
             //local_metadata.worst_path_selector_bitmask = stored_bitmask_read_value;
             log_msg("local_metadata.kth_path_selector_bitmask  after AND of stored_bitmask_read_value & local_metadata.kth_path_selector_bitmask is : {}",{local_metadata.kth_path_selector_bitmask});
             best_path_finder_mat.apply();
-            kth_path_finder_mat.apply();
+            //kth_path_finder_mat.apply();
             //worst_path_finder_mat.apply();
          }
     }
