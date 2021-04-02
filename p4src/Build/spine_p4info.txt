@@ -469,21 +469,21 @@ tables {
 }
 tables {
   preamble {
-    id: 41303458
-    name: "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat"
-    alias: "best_path_finder_mat"
+    id: 36185609
+    name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
+    alias: "kth_path_finder_mat"
   }
   match_fields {
     id: 1
-    name: "local_metadata.best_path_selector_bitmask"
+    name: "local_metadata.kth_path_selector_bitmask"
     bitwidth: 16
     match_type: TERNARY
   }
   action_refs {
-    id: 19456785
+    id: 25442642
   }
   action_refs {
-    id: 33074583
+    id: 24517793
   }
   size: 1024
 }
@@ -750,21 +750,21 @@ actions {
 }
 actions {
   preamble {
-    id: 19456785
-    name: "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_without_param"
-    alias: "best_path_finder_action_without_param"
-  }
-}
-actions {
-  preamble {
-    id: 33074583
-    name: "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param"
-    alias: "best_path_finder_action_with_param"
+    id: 24517793
+    name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param"
+    alias: "kth_path_finder_action_with_param"
   }
   params {
     id: 1
     name: "rank"
     bitwidth: 16
+  }
+}
+actions {
+  preamble {
+    id: 25442642
+    name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param"
+    alias: "kth_path_finder_action_without_param"
   }
 }
 counters {

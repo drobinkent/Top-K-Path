@@ -1385,63 +1385,8 @@
       ]
     },
     {
-      "name" : "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_without_param",
+      "name" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
       "id" : 9,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.best_path_rank"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0xffff"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 22,
-            "column" : 30,
-            "source_fragment" : "1; ..."
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["flag_hdr", "best_path_finderMat_hit"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "b2d",
-                  "left" : null,
-                  "right" : {
-                    "type" : "bool",
-                    "value" : false
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 17,
-            "column" : 8,
-            "source_fragment" : "local_metadata.flag_hdr.best_path_finderMat_hit = false"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param",
-      "id" : 10,
       "runtime_data" : [
         {
           "name" : "rank",
@@ -1454,7 +1399,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "userMetadata.best_path_rank"]
+              "value" : ["scalars", "userMetadata.kth_path_rank"]
             },
             {
               "type" : "runtime_data",
@@ -1463,9 +1408,9 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 20,
+            "line" : 56,
             "column" : 8,
-            "source_fragment" : "local_metadata.best_path_rank = rank"
+            "source_fragment" : "local_metadata.kth_path_rank =rank"
           }
         },
         {
@@ -1473,7 +1418,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["flag_hdr", "best_path_finderMat_hit"]
+              "value" : ["flag_hdr", "kth_path_finderMat_hit"]
             },
             {
               "type" : "expression",
@@ -1492,9 +1437,64 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 21,
+            "line" : 57,
             "column" : 8,
-            "source_fragment" : "local_metadata.flag_hdr.best_path_finderMat_hit = true"
+            "source_fragment" : "local_metadata.flag_hdr.kth_path_finderMat_hit = true"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param",
+      "id" : 10,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.kth_path_rank"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0xffff"
+            }
+          ],
+          "source_info" : {
+            "filename" : "p4src/src/leaf.p4",
+            "line" : 22,
+            "column" : 30,
+            "source_fragment" : "1; ..."
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["flag_hdr", "kth_path_finderMat_hit"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "b2d",
+                  "left" : null,
+                  "right" : {
+                    "type" : "bool",
+                    "value" : false
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "p4src/src/top_k_path.p4",
+            "line" : 61,
+            "column" : 8,
+            "source_fragment" : "local_metadata.flag_hdr.kth_path_finderMat_hit = false"
           }
         }
       ]
@@ -2370,14 +2370,14 @@
             },
             {
               "type" : "hexstr",
-              "value" : "0x0000"
+              "value" : "0x0001"
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
             "line" : 141,
             "column" : 24,
-            "source_fragment" : "local_metadata.kth_path_selector_bitmask = 0"
+            "source_fragment" : "local_metadata.kth_path_selector_bitmask = 1"
           }
         }
       ]
@@ -4307,9 +4307,9 @@
           "direct_meters" : null,
           "action_ids" : [29],
           "actions" : ["top_k_path81"],
-          "base_default_next" : "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat",
+          "base_default_next" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
           "next_tables" : {
-            "top_k_path81" : "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat"
+            "top_k_path81" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
           },
           "default_entry" : {
             "action_id" : 29,
@@ -4319,19 +4319,19 @@
           }
         },
         {
-          "name" : "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat",
+          "name" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
           "id" : 24,
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 23,
+            "line" : 64,
             "column" : 10,
-            "source_fragment" : "best_path_finder_mat"
+            "source_fragment" : "kth_path_finder_mat"
           },
           "key" : [
             {
               "match_type" : "ternary",
-              "name" : "local_metadata.best_path_selector_bitmask",
-              "target" : ["scalars", "userMetadata.best_path_selector_bitmask"],
+              "name" : "local_metadata.kth_path_selector_bitmask",
+              "target" : ["scalars", "userMetadata.kth_path_selector_bitmask"],
               "mask" : null
             }
           ],
@@ -4341,15 +4341,15 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [9, 10],
-          "actions" : ["IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_without_param", "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param"],
+          "action_ids" : [10, 9],
+          "actions" : ["IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param", "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param"],
           "base_default_next" : "node_38",
           "next_tables" : {
-            "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_without_param" : "node_38",
-            "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param" : "node_38"
+            "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param" : "node_38",
+            "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param" : "node_38"
           },
           "default_entry" : {
-            "action_id" : 9,
+            "action_id" : 10,
             "action_const" : false,
             "action_data" : [],
             "action_entry_const" : false

@@ -138,7 +138,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                     // Here we will set the bitmasks for 3 experiemntal traffi classes
                     //In real life scenario other algorihtms will setup these bitmasks
                     if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_LOW_DELAY){
-                        local_metadata.kth_path_selector_bitmask = 0; //later it will find miss and use best path
+                        local_metadata.kth_path_selector_bitmask = 1;
                     }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_HIGH_THROUGHPUT){
                          local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 4; //skip the first 2 best path as they are reserved by low delay and special custom traffic class
                          log_msg("Bitmask for high throughout traffic class is {}",{local_metadata.kth_path_selector_bitmask});

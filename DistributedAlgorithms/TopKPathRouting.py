@@ -43,12 +43,12 @@ class TopKPathRouting:
             mask = BinaryMask(bitMaskLength)
             mask.setNthBitWithB(n=j,b=1)
             maskAsString = mask.getBinaryString()
-            switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat",
-                                               fieldName = "local_metadata.best_path_selector_bitmask",
-                                               fieldValue = allOneMAskBinaryString, mask = maskAsString,
-                                               actionName = "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param",
-                                               actionParamName = "rank",
-                                               actionParamValue = str(j), priority=bitMaskLength-j+1)
+            # switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat",
+            #                                    fieldName = "local_metadata.best_path_selector_bitmask",
+            #                                    fieldValue = allOneMAskBinaryString, mask = maskAsString,
+            #                                    actionName = "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param",
+            #                                    actionParamName = "rank",
+            #                                    actionParamValue = str(j), priority=bitMaskLength-j+1)
             switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
                                                fieldName = "local_metadata.kth_path_selector_bitmask",
                                                fieldValue = allOneMAskBinaryString, mask = maskAsString,

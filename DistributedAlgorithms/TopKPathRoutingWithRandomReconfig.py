@@ -49,18 +49,18 @@ class TopKPathRouting:
                                                actionName = "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param",
                                                actionParamName = "rank",
                                                actionParamValue = str(j), priority=bitMaskLength-j+1)
-            switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
-                                               fieldName = "local_metadata.kth_path_selector_bitmask",
-                                               fieldValue = allOneMAskBinaryString, mask = maskAsString,
-                                               actionName = "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
-                                               actionParamName = "rank",
-                                               actionParamValue = str(j), priority=bitMaskLength-j+1)
-            switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_mat",
-                                               fieldName = "local_metadata.worst_path_selector_bitmask",
-                                               fieldValue = allOneMAskBinaryString, mask = maskAsString,
-                                               actionName = "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_action_with_param",
-                                               actionParamName = "rank",
-                                               actionParamValue = str(j), priority=j+1)
+            # switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
+            #                                    fieldName = "local_metadata.kth_path_selector_bitmask",
+            #                                    fieldValue = allOneMAskBinaryString, mask = maskAsString,
+            #                                    actionName = "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
+            #                                    actionParamName = "rank",
+            #                                    actionParamValue = str(j), priority=bitMaskLength-j+1)
+            # switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_mat",
+            #                                    fieldName = "local_metadata.worst_path_selector_bitmask",
+            #                                    fieldValue = allOneMAskBinaryString, mask = maskAsString,
+            #                                    actionName = "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_action_with_param",
+            #                                    actionParamName = "rank",
+            #                                    actionParamValue = str(j), priority=j+1)
 
 
 
@@ -113,13 +113,13 @@ class TopKPathRouting:
     #     #Reconfigure the port rate and buffer length
 
     def topKpathroutingTesting(self):
-        time.sleep(25)
+        time.sleep(35)
         topologyConfigFilePath =  ConfConst.TOPOLOGY_CONFIG_FILE
-        if(self.p4dev.devName == "device:p0l0"):
-            testEvaluator = TestCommandDeployer(topologyConfigFilePath,
-                                                "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/topKPath/l2strideSmallLarge-highRationForLargeFlows.json",
-                                                ConfConst.IPERF3_CLIENT_PORT_START, ConfConst.IPERF3_SERVER_PORT_START, testStartDelay= 20)
-            testEvaluator.setupTestCase()
+        # if(self.p4dev.devName == "device:p0l0"):
+        #     testEvaluator = TestCommandDeployer(topologyConfigFilePath,
+        #                                         "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/topKPath/l2strideSmallLarge-highRationForLargeFlows.json",
+        #                                         ConfConst.IPERF3_CLIENT_PORT_START, ConfConst.IPERF3_SERVER_PORT_START, testStartDelay= 20)
+        #     testEvaluator.setupTestCase()
         i = 0
         while(True):
             j = i % len(tstConst.PORT_RATE_CONFIGS)
