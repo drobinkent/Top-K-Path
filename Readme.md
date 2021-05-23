@@ -4,7 +4,7 @@
     . We have used the Ubuntu 20.04 version (https://github.com/jafingerhut/p4-guide/blob/master/bin/install-p4dev-v4.sh)
 
 # # Now download the github repository for this project
-    . Link : https://github.com/drobinkent/CLB.git
+    . Link : https://github.com/drobinkent/Top-K-Path
 
 # All the necessary libraries should be already installed in the system by now
 
@@ -53,17 +53,15 @@
 
 
 
-# How to test the load balancer
+# How to test P4KP
 
 ## Data plane configurations
-Assume we want to maintain **K=16** ranks of paths and we implement the P4KP system for  for **K** paths in each of the rank.
-simply set -DK = 16 in the 2 rules of makefile 
+Assume you want to store 16 paths in each rank and you will store 16 ranks.
+In out proof of concept implementation we have stored K ranks and K paths for each rank. 
+go to the makefile and 
+look at the follwoing rules "p4-leaf-top-k-path" and "p4-spine-top-k-path". 
+In these 2 rules there is a compile time variable "-DK=16". If you want to use different value for K, change it here.
 
-These 2 rules are **p4-leaf-top-k-path** and **p4-spine-top-k-path**
-
-Then invoke folwoing command to compile the P4 programs for P4KP
-
-    $ make p4-top-k-path 
 
 
 
@@ -103,21 +101,24 @@ Steps
     a) starting mininet : discussed earlier in the file. look at top
     b) for starting the controller : open another terminal and run **make start_ctrlr** This will start the control plane and it 
         will start installing paths according to their ranks given in TOP_K_PATH_EXPERIMENT_PORT_RATE_CONFIGS variable. 
-
 ![img.png](./Docs/img.png)
-You should see a output similar to this picture. This means your controller has started correctly.
+        You should see a output similar to this picture. This means your controller has started correctly.
+
+    c) open a terminal window and go inside the directory where you have copied the Top-K-path github repo. run the follwoing command
+
+        $  python3 TestCaseDeployer.py  /home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/TopKPathTesterWithTopKPath.json
+    
+    This will start 3 flows as described in the paper.
+
+
 
 
 
 # Analyzing the result
 
-open a terminal window and go inside the directory where you have copied the Top-K-pat github repo. run the follwoing command
-
-    $  python3 TestCaseDeployer.py  /home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/TopKPathTesterWithTopKPath.json
-
-This will start the 3 flows described in the paper. 
-If you want you can modify the flows according to your necessity to test othe rconfigurations
 Ther IPerf results are saved in  **testAndMeasurement/TEST_RESULTS** folder
+
+check the flow completion time from those results
 
 ------------------------------ END-----------------------
 
