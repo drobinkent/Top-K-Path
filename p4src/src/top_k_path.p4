@@ -77,6 +77,11 @@ control k_path_selector(inout parsed_headers_t    hdr,
 
     apply {
          {
+            //destination calculation
+            bit<32> destination_index = (bit<32>)hdr.ipv6.dst_addr[31:16] ; //rightmost 16 bit shows the ToR ID in our scheme. This basically dones nonthing. just a casting
+            //And used for doccumentatin purpose. we can directly use the 8 bits of tor id. no need to take xtra variable
+
+
             bit<K> stored_bitmask_read_value = 0;
             stored_bitmask.read(stored_bitmask_read_value, (bit<32>)0);
             local_metadata.best_path_selector_bitmask =  ALL_1_256_BIT[K-1:0];

@@ -9,6 +9,9 @@
 import math
 import queue
 import sys
+from random import random
+
+import numpy as np
 
 print(sys.path)
 import threading
@@ -473,6 +476,99 @@ class Device:
         self.processor_stream_thread.start()
         print("Pkt processor thread started")
 
+    def modifyLPMMatchEntry(self, tableName, fieldName, fieldValue, prefixLength, actionName, actionParamName,
+                            oldActionParamValue, newActionParamValue, priority=InternalConfig.DEFAULT_PRIORITY):
+        # self.p4runtimeLock.acquire(blocking=True)
+        # o,e = self.executeCommand("table_dump "+ tableName+"\n")
+        # logger.info(str(self.devName)+ "At start of modifyLPMMatchEntryWithGroupActionWith2RangeField"+str(o))
+        te = sh.TableEntry(self, tableName)(action=actionName)
+        te.match[fieldName] = "" + fieldValue + "/" + str(prefixLength)
+        if ((actionParamName != None) and (oldActionParamValue != None)):
+            te.action[actionParamName] = oldActionParamValue
+        te.delete()
+        te._update_msg()
+        # o,e = self.executeCommand("table_dump "+ tableName+"\n")
+        # logger.info(str(self.devName)+ "After dlting old entry "+str(o))
+        #logger.info("Deleted TE is "+te._info)
+        te = sh.TableEntry(self, tableName)(action=actionName)
+        te.match[fieldName] = "" + fieldValue + "/" + str(prefixLength)
+        if ((actionParamName != None) and (newActionParamValue != None)):
+            te.action[actionParamName] = newActionParamValue
+        te.insert()
+    def hulaUtilBasedReconfigureForLeafSwitches(self, linkUtilStats,oldLinkUtilStats):
+        # for all leafswitch get their 16-31 th bit and convert it to int
+        # multply that with the upword port nubers
+        # get the resultindex th position in the pulled results.
+        # use that for that tor
+        minUtil = 999999999999
+        minUtilPort =-1
+        torID = -1
+        for lswitch in self.allLeafSwitchesInTheDCN:
+            e = lswitch.fabric_device_config.switch_host_subnet_prefix.index("/")
+            leafSubnetAsIP = lswitch.fabric_device_config.switch_host_subnet_prefix[0:e]
+            leafSubnetPrefixLength = lswitch.fabric_device_config.switch_host_subnet_prefix[e+1:len(lswitch.fabric_device_config.switch_host_subnet_prefix)]
+            r1 = lswitch.fabric_device_config.switch_host_subnet_prefix.rindex(":")
+            r2 = lswitch.fabric_device_config.switch_host_subnet_prefix[0:r1].rindex(":")
+            torID = int(lswitch.fabric_device_config.switch_host_subnet_prefix[r2+1:r1])
+
+            # print("ToirId is ")
+            upwardPortList = list(self.portToSpineSwitchMap.keys())
+            # minUtilPort = upwardPortList[0]
+            index = (torID*ConfConst.MAX_PORTS_IN_SWITCH)
+            minUtil = 999999999999
+            for uPort in upwardPortList:
+                index = int(uPort) + (torID*ConfConst.MAX_PORTS_IN_SWITCH) -1
+                if(linkUtilStats[index] <= minUtil):
+                    minUtil = linkUtilStats[index]
+                    minUtilPort = uPort
+
+            self.modifyLPMMatchEntry(tableName="IngressPipeImpl.hula_load_balancing_control_block.hula_routing_table",
+                                     fieldName="hdr.ipv6.dst_addr",
+                                     fieldValue=leafSubnetAsIP, prefixLength=leafSubnetPrefixLength,
+                                     actionName = "IngressPipeImpl.hula_load_balancing_control_block.hula_set_upstream_egress_port",
+                                     actionParamName="port_num", oldActionParamValue = None, newActionParamValue= str(minUtilPort))
+            # logger.info("Hula path update done for destination "+str(leafSubnetAsIP))
+            logger.info("HULA ALGORITHM: For switch "+ self.devName+ "new Utilization data is  "+str(linkUtilStats))
+            logger.info("HULA ALGORITHM: For switch "+ self.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
+            logger.info("For torid"+ str(torID)+ ' Minutil is '+str(minUtil)+ "Minutilport is "+str(minUtilPort)+ " index is "+str(index))
+
+    pass
+
+
+    def setupHULAUpstreamRouting(self,nameToSwitchMap):
+        '''
+        This function setup all the relevant stuffs for running the algorithm
+        '''
+        if self.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
+            upwardPortList = list(self.portToSpineSwitchMap.keys())
+            for lswitch in self.allLeafSwitchesInTheDCN:
+                randomIndex = np.random.randint(0,len(upwardPortList)-1)
+                randomUpwordPort = upwardPortList[randomIndex]
+                e = lswitch.fabric_device_config.switch_host_subnet_prefix.index("/")
+                leafSubnetAsIP = lswitch.fabric_device_config.switch_host_subnet_prefix[0:e]
+                leafSubnetPrefixLength = lswitch.fabric_device_config.switch_host_subnet_prefix[e+1:len(lswitch.fabric_device_config.switch_host_subnet_prefix)]
+                self.addLPMMatchEntry(tableName="IngressPipeImpl.hula_load_balancing_control_block.hula_routing_table",
+                                      fieldName="hdr.ipv6.dst_addr",
+                                      fieldValue=leafSubnetAsIP, prefixLength=leafSubnetPrefixLength,
+                                      actionName = "IngressPipeImpl.hula_load_balancing_control_block.hula_set_upstream_egress_port",
+                                      actionParamName="port_num",
+                                      actionParamValue=str(randomUpwordPort))
+                randomIndex = np.random.randint(0,len(upwardPortList)-1)
+                randomUpwordPort = upwardPortList[randomIndex] #use another random port as default port to use when hula is updating the port at runtime
+                self.addLPMMatchEntry(tableName="IngressPipeImpl.hula_load_balancing_control_block.hula_routing_table",
+                                      fieldName="hdr.ipv6.dst_addr",
+                                      fieldValue=leafSubnetAsIP, prefixLength=leafSubnetPrefixLength,
+                                      actionName = "IngressPipeImpl.hula_load_balancing_control_block.hula_set_upstream_default_egress_port",
+                                      actionParamName="port_num",
+                                      actionParamValue=str(randomUpwordPort), isDefault=  True)
+            return
+        elif self.fabric_device_config.switch_type == InternalConfig.SwitchType.SPINE:
+            pass
+        elif self.fabric_device_config.switch_type == InternalConfig.SwitchType.SUPER_SPINE:
+            pass
+        return
+
+
     def pkt_processor(self, ):
         try:
             while (True):
@@ -688,7 +784,7 @@ class Device:
             pass
         return
 
-    def initialCommonSetup(self):
+    def initialCommonSetup(self,nameToSwitchMap):
         '''This funciotn setup dataplane entries for various muslticast grousp and NDP entries and downstream routing in each switch. Irrespective of
         Dataplane algorithms these tasks are common.
         '''
@@ -700,6 +796,7 @@ class Device:
                 fieldName="hdr.ethernet.dst_addr", fieldValue=self.fabric_device_config.my_station_mac)
             leafUtils.addNDPentries(self)
             leafUtils.addDownstreamRoutingRuleForLeafSwitch(self)
+            self.allLeafSwitchesInTheDCN = swUtils.getAllLeafSwitches(nameToSwitchMap)
         elif self.fabric_device_config.switch_type == InternalConfig.SwitchType.SPINE:
             spineUtils.addDownstreamRoutingRuleForSpineSwitch(self)
         elif self.fabric_device_config.switch_type == InternalConfig.SwitchType.SUPER_SPINE:
@@ -807,12 +904,16 @@ class Device:
         te.insert()
 
     def addLPMMatchEntry(self, tableName, fieldName, fieldValue, prefixLength, actionName, actionParamName,
-                         actionParamValue, priority=InternalConfig.DEFAULT_PRIORITY):
+                         actionParamValue, priority=InternalConfig.DEFAULT_PRIORITY,isDefault = False):
         te = sh.TableEntry(self, tableName)(action=actionName)
         te.match[fieldName] = "" + fieldValue + "/" + str(prefixLength)
+        te.is_default = isDefault
         if ((actionParamName != None) and (actionParamValue != None)):
             te.action[actionParamName] = actionParamValue
-        te.insert()
+        if(isDefault):
+            te.modify()
+        else:
+            te.insert()
 
     def removeLPMMatchEntryWithGroupActionWithRangeField(self, tableName, fieldName, fieldValue, prefixLength,
                                                          rangeFieldName, rangeFieldLowerValue, rangefieldHigherValue,

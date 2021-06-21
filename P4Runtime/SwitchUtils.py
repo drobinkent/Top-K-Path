@@ -7,6 +7,8 @@ import math
 import ConfigConst as ConfConst
 import DistributedAlgorithms.ECMPRouting as ecmpRouting
 import DistributedAlgorithms.TopKPathRouting as topKPathRouting
+import DistributedAlgorithms.ECMPRouting as ecmpRouting
+import DistributedAlgorithms.HulaRouting as hulaRouting
 import InternalConfig as intCoonfig
 import P4Runtime.P4DeviceManager as jp
 import P4Runtime.shell as sh
@@ -310,7 +312,12 @@ def resetAllCounters(dev):
     resetPacketCounterForAllPort(dev, "ctrlPktToCPCounter")
     resetPacketCounterForAllPort(dev, "p2pFeedbackCounter")
 
-
+def getAllLeafSwitches(nameToSwitchMap):
+    leafSwitchList = []
+    for dev in nameToSwitchMap:
+        if (nameToSwitchMap.get(dev).fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF):
+            leafSwitchList.append(nameToSwitchMap.get(dev))
+    return leafSwitchList
 def getAlgo(dev, dpAlgo):
     '''
     This function returns the algorithm implementation for each device. For distributed algo this is simple name to object mapping.
@@ -321,6 +328,8 @@ def getAlgo(dev, dpAlgo):
         return ecmpRouting.ECMPRouting(dev = dev)
     elif (dpAlgo == ConfConst.DataplnaeAlgorithm.DP_ALGO_TOP_K_PATH) :
         return topKPathRouting.TopKPathRouting(dev = dev)
+    elif (dpAlgo == ConfConst.DataplnaeAlgorithm.DP_ALGO_BASIC_HULA) :
+        return hulaRouting.HulaRouting(dev = dev)
 
     pass
 
@@ -336,6 +345,15 @@ def getAlgo(dev, dpAlgo):
 #     for i in range(0, )
 #     return
 
+def collectDestinationBasedLinkeUtilization(dev, counterName):
+    totalCounterToRead = ConfConst.MAX_PORTS_IN_SWITCH * ConfConst.MAX_TOR_SUBNET
+    linkUtilDataAsList = []
+    for i in range (0, totalCounterToRead):
+        val = readPacketCounter(dev, counterName,i)
+        # if(val>0):
+        #     statMap[i] = val
+        linkUtilDataAsList.append(val)
+    return linkUtilDataAsList
 def getMetricsLevelFromTuppleList(tuppleList):
     metricLevelList = []
     for t in tuppleList:

@@ -153,10 +153,10 @@ class MyP4Controller():
             swUtils.addCloneSessionForEachPort(s, s.maxPort)
             #TODO : need to save the metric level in device. So that we4 can later use dynamic scale up for metrices
 
-            s.initialCommonSetup()
+            s.initialCommonSetup(self.nameToSwitchMap)
             #====================
             # -- execute initial setup tasks
-            s.ctrlPlaneLogic.setup()
+            s.ctrlPlaneLogic.setup(self.nameToSwitchMap)
             # if (testScenario == ConfConst.TestScenario.BASIC_ECMP):
             #     print("This call is for baseline setup and should only work if in P4 file we have enabled Baseline flag.")
             #     s.initialBaseLineSetup()
@@ -171,7 +171,8 @@ class MyP4Controller():
     def startMonitoringFromController(self):
         # this method will pull various counter and register values from the switches and plot data accordingly.
         #Also save the collected statitstics for each device in corresponding data structure.
-        self.statisticsPuller = P4Runtime.StatisticsPuller.StatisticsPuller(self.nameToSwitchMap)
+        for dev in self.nameToSwitchMap:
+            self.statisticsPuller = P4Runtime.StatisticsPuller.StatisticsPuller(self.nameToSwitchMap, dev)
 
 
 

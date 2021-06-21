@@ -35,6 +35,7 @@
 #include "top_k_path.p4"
 #endif
 #include "ingress_rate_monitor.p4"
+#include "hula.p4"
 
 // *** V1MODEL
 //
@@ -95,10 +96,15 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     my_station_processing() my_station_processing_control_block;
     ndp_processing() ndp_processing_control_block;
 
-    //#ifdef DP_ALGO_ECMP
-        //upstream_routing() upstream_ecmp_routing_control_block;
-        //#endif
+
+    #ifdef DP_ALGO_ECMP
     upstream_routing() upstream_ecmp_routing_control_block;
+    #endif
+
+
+    #ifdef DP_ALGO_HULA
+    hula_load_balancing() hula_load_balancing_control_block;
+    #endif
     #ifdef DP_ALGO_TOP_K_PATH
     top_k_path_control_message_processor() top_k_path_control_message_processor_control_block;
     k_path_selector() k_path_selector_control_block;
@@ -145,6 +151,10 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
             }else{
                 #ifdef DP_ALGO_ECMP
                 upstream_ecmp_routing_control_block.apply(hdr, local_metadata, standard_metadata);
+                #endif
+
+                #ifdef DP_ALGO_HULA
+                hula_load_balancing_control_block.apply(hdr, local_metadata, standard_metadata);
                 #endif
                 #ifdef DP_ALGO_TOP_K_PATH
                 //apply the policy table here
@@ -220,7 +230,10 @@ control EgressPipeImpl (inout parsed_headers_t hdr,
        #ifdef ENABLE_DEBUG_TABLES
        debug_std_meta_egress_start.apply(hdr, local_metadata, standard_metadata);
        #endif  // ENABLE_DEBUG_TABLES
-       if(standard_metadata.deq_qdepth > ECN_THRESHOLD) hdr.ipv6.ecn = 3; //setting ecm mark
+       //if(standard_metadata.deq_qdepth > ECN_THRESHOLD) hdr.ipv6.ecn = 3; //setting ecm mark
+        bit<32> counter_index = (bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[48:32]) -1 ; //rightmost 16 bit shows the ToR ID in our scheme.
+        destination_util_counter.count((bit<32>)counter_index);
+
 
     }
 }

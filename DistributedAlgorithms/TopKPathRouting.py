@@ -26,12 +26,12 @@ class TopKPathRouting:
         self.testOperationIndex =0
         if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
             #self.topKPathManager = TopKPathManager(dev = self.p4dev, k=len(self.p4dev.portToSpineSwitchMap.keys()))
-            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=16)
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K)
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
             # self.topKPathManager = TopKPathManager(dev = self.p4dev, k=len(self.p4dev.portToSuperSpineSwitchMap.keys()))
-            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=16)
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K)
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
-            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=16) # by default add space for 16 ports in super spine. This is not actually used in our simulation
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K) # by default add space for 16 ports in super spine. This is not actually used in our simulation
             pass
 
         return
@@ -43,29 +43,18 @@ class TopKPathRouting:
             mask = BinaryMask(bitMaskLength)
             mask.setNthBitWithB(n=j,b=1)
             maskAsString = mask.getBinaryString()
-            # switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.best_path_finder_mat",
-            #                                    fieldName = "local_metadata.best_path_selector_bitmask",
-            #                                    fieldValue = allOneMAskBinaryString, mask = maskAsString,
-            #                                    actionName = "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param",
-            #                                    actionParamName = "rank",
-            #                                    actionParamValue = str(j), priority=bitMaskLength-j+1)
             switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
                                                fieldName = "local_metadata.kth_path_selector_bitmask",
                                                fieldValue = allOneMAskBinaryString, mask = maskAsString,
                                                actionName = "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
                                                actionParamName = "rank",
                                                actionParamValue = str(j), priority=bitMaskLength-j+1)
-            # switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_mat",
-            #                                    fieldName = "local_metadata.worst_path_selector_bitmask",
-            #                                    fieldValue = allOneMAskBinaryString, mask = maskAsString,
-            #                                    actionName = "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_action_with_param",
-            #                                    actionParamName = "rank",
-            #                                    actionParamValue = str(j), priority=j+1)
 
 
 
 
-    def setup(self):
+
+    def setup(self,nameToSwitchMap):
         '''
         This function setup all the relevant stuffs for running the algorithm
         '''
@@ -83,11 +72,9 @@ class TopKPathRouting:
                 pkt = self.topKPathManager.insertPort(port = int(k), k = int(k))
                 self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
-            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=16) # by default add space for 16 ports in super spine. This is not actually used in our simulation
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K) # by default add space for 16 ports in super spine. This is not actually used in our simulation
             pass
-        self.x = threading.Thread(target=self.topKpathroutingTesting, args=())
-        self.x.start()
-        logger.info("TopKpathroutingTesting thread started")
+
         return
 
     def processFeedbackPacket(self, parsedPkt, dev):
@@ -95,6 +82,30 @@ class TopKPathRouting:
         #TODO: for each of the different types of the packet, we have to write a separate function to process them
 
         pass
+
+    def p4kpUtilBasedReconfigureForLeafSwitches(self, linkUtilStats, oldLinkUtilStats):
+        # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "new Utilization data is  "+str(linkUtilStats))
+        # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
+        pathAndUtilist = []
+        for i in range (int(ConfConst.MAX_PORTS_IN_SWITCH/2), ConfConst.MAX_PORTS_IN_SWITCH):
+            index = i
+            utilInLastInterval = linkUtilStats[index] -  oldLinkUtilStats[index]
+            # rankInLastInterval = self.topKPathManager.portToRankMap.get(i)
+            # pathAndUtilist.append((i,utilInLastInterval,rankInLastInterval))
+            pathAndUtilist.append((i+1,utilInLastInterval))
+        pathAndUtilist.sort(key=lambda x:x[1])
+        if(self.p4dev.devName == ConfConst.CLB_TESTER_DEVICE_NAME):
+            print("For device "+self.p4dev.devName+" The port utilization data according to rank is "+str(pathAndUtilist))
+        controlPacketList = []
+        for i in range (0, len(pathAndUtilist)):
+            port = pathAndUtilist[i][0]
+            dltPkt = self.topKPathManager.deletePort(port)
+            controlPacketList.append(dltPkt)
+            insertPkt = self.topKPathManager.insertPort(port, i)
+            controlPacketList.append(insertPkt)
+
+        for ctrlPkt in controlPacketList:
+            self.p4dev.send_already_built_control_packet_for_top_k_path(ctrlPkt)
 
 
 

@@ -494,7 +494,7 @@ tables {
   match_fields {
     id: 1
     name: "local_metadata.kth_path_selector_bitmask"
-    bitwidth: 16
+    bitwidth: 4
     match_type: TERNARY
   }
   action_refs {
@@ -787,7 +787,18 @@ counters {
   spec {
     unit: PACKETS
   }
-  size: 256
+  size: 8
+}
+counters {
+  preamble {
+    id: 314169715
+    name: "destination_util_counter"
+    alias: "destination_util_counter"
+  }
+  spec {
+    unit: BYTES
+  }
+  size: 32
 }
 direct_counters {
   preamble {
@@ -913,7 +924,7 @@ registers {
   type_spec {
     bitstring {
       bit {
-        bitwidth: 16
+        bitwidth: 4
       }
     }
   }
@@ -932,7 +943,7 @@ registers {
       }
     }
   }
-  size: 16
+  size: 4
 }
 registers {
   preamble {
@@ -947,7 +958,7 @@ registers {
       }
     }
   }
-  size: 16
+  size: 4
 }
 registers {
   preamble {
@@ -962,7 +973,7 @@ registers {
       }
     }
   }
-  size: 256
+  size: 16
 }
 type_info {
 }

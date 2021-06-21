@@ -18,6 +18,7 @@ HOST_COMMAND_FOLDER = "./MininetSimulator/PER_HOST_COMMANDS/"
 
 # This is the file where all controller logs wil be written
 CONTROLLER_LOG_FILE_PATH = "./log/CONTROLLER.log"
+STATISTICS_LOG_FILE_PATH = "./log/STATISTICS.log"
 MAX_LOG_FILE_SIZE  =  52428800 #50 MB
 MAX_LOG_FILE_BACKUP_COUNT = 250  # MAximum 25 files will be kept
 IPERF_MAX_FLOW_RATE_FOR_SERVER = "4K"  #Iperf flow rate is made maximum to 64K. if we keep ubnlimited it swamps the buffer and experiemnts doesn't work really good
@@ -97,11 +98,12 @@ TRAFFIC_CLASS_AS_LIST = [TRAFFIC_CLASS_LOW_DELAY, TRAFFIC_CLASS_MAXIMIZE_THROUGH
 #PERCENTAGE_OF_TOTAL_UPWARD_TRAFFIC_FOR_TRAFFIC_CLASS = [40, 70, 10]
 PERCENTAGE_OF_TOTAL_UPWARD_TRAFFIC_FOR_TRAFFIC_CLASS = [10,40, 5] # How much of the link capacity should a traffic class get.
 #======================thread control and timer related
-STATISTICS_PULLING_INTERVAL = 1 # This meand after each 15 second controller will wake up the StatisticsPuller thread and collect stats from the switches
+STATISTICS_PULLING_INTERVAL = 1 # This meand after each STATISTICS_PULLING_INTERVAL second controller will wake up the StatisticsPuller thread and collect stats from the switches
 PORT_STATISTICS_HISTORY_LENGTH = 1000 # this means the history will be
 #======================= Different Test Scenarios
 class DataplnaeAlgorithm(Enum):
     DP_ALGO_BASIC_ECMP = "ecmp"
+    DP_ALGO_BASIC_HULA = "hula"
     DP_ALGO_TOP_K_PATH = "DP_ALGO_TOP_K_PATH"
 
 #ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP
@@ -193,5 +195,7 @@ INVALID = -1
 # UPWARD_PORT_METER_CONFIG_FOR_TOP_K_PATH = [40,30, 20]
 # UPWARD_PORT_BURST_RATE_FORTOP_K_PATH = 5
 
-K=16
-CLB_TESTER_DEVICE_NAME="p0l0"
+K=4
+CLB_TESTER_DEVICE_NAME="device:p0l0"
+MAX_PORTS_IN_SWITCH = 8; #Maximum Supported ports in a switch to reflect the dataplane configuration
+MAX_TOR_SUBNET = 4;  #Maximum ToR supported by our simulation

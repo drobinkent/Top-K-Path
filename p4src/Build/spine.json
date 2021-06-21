@@ -4,13 +4,14 @@
       "name" : "scalars_0",
       "id" : 0,
       "fields" : [
-        ["tmp", 16, false],
+        ["tmp", 4, false],
         ["tmp_0", 9, false],
-        ["tmp_1", 16, false],
+        ["tmp_1", 4, false],
         ["tmp_2", 9, false],
         ["tmp_3", 32, false],
         ["ndp_processing_control_block_host_ipv6_tmp", 128, false],
-        ["k_path_selector_control_block_stored_bitmask_read_value", 16, false],
+        ["k_path_selector_control_block_stored_bitmask_read_value", 4, false],
+        ["tmp_4", 32, false],
         ["userMetadata.l4_src_port", 16, false],
         ["userMetadata.l4_dst_port", 16, false],
         ["userMetadata.is_multicast", 1, false],
@@ -20,9 +21,9 @@
         ["userMetadata.flow_inter_packet_gap", 48, false],
         ["userMetadata.flowlet_last_pkt_seen_time", 48, false],
         ["userMetadata.flowlet_last_used_path", 9, false],
-        ["userMetadata.best_path_selector_bitmask", 16, false],
-        ["userMetadata.worst_path_selector_bitmask", 16, false],
-        ["userMetadata.kth_path_selector_bitmask", 16, false],
+        ["userMetadata.best_path_selector_bitmask", 4, false],
+        ["userMetadata.worst_path_selector_bitmask", 4, false],
+        ["userMetadata.kth_path_selector_bitmask", 4, false],
         ["userMetadata.rank_of_path_to_be_searched", 8, false],
         ["userMetadata.best_path_rank", 16, false],
         ["userMetadata.worst_path_rank", 16, false],
@@ -689,7 +690,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "p4src/src/spine.p4",
-        "line" : 270,
+        "line" : 283,
         "column" : 8,
         "source_fragment" : "DeparserImpl"
       },
@@ -740,11 +741,23 @@
       "id" : 3,
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
-        "line" : 156,
+        "line" : 157,
         "column" : 59,
         "source_fragment" : "egressPortCounter"
       },
-      "size" : 256,
+      "size" : 8,
+      "is_direct" : false
+    },
+    {
+      "name" : "destination_util_counter",
+      "id" : 4,
+      "source_info" : {
+        "filename" : "p4src/src/spine.p4",
+        "line" : 22,
+        "column" : 72,
+        "source_fragment" : "destination_util_counter"
+      },
+      "size" : 32,
       "is_direct" : false
     }
   ],
@@ -754,23 +767,23 @@
       "id" : 0,
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
-        "line" : 175,
-        "column" : 44,
-        "source_fragment" : "@name(\\\"stored_bitmask\\\")register<bit<16>>(1) stored_bitmask;"
+        "line" : 176,
+        "column" : 43,
+        "source_fragment" : "@name(\\\"stored_bitmask\\\")register<bit<4>>(1) stored_bitmask;"
       },
       "size" : 1,
-      "bitwidth" : 16
+      "bitwidth" : 4
     },
     {
       "name" : "rank_to_max_index",
       "id" : 1,
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
-        "line" : 176,
-        "column" : 48,
-        "source_fragment" : "@name(\\\"rank_to_max_index\\\")register<bit<32>>(16) rank_to_max_index;"
+        "line" : 177,
+        "column" : 47,
+        "source_fragment" : "@name(\\\"rank_to_max_index\\\")register<bit<32>>(4) rank_to_max_index;"
       },
-      "size" : 16,
+      "size" : 4,
       "bitwidth" : 32
     },
     {
@@ -778,11 +791,11 @@
       "id" : 2,
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
-        "line" : 177,
-        "column" : 48,
-        "source_fragment" : "@name(\\\"rank_to_min_index\\\")register<bit<32>>(16) rank_to_min_index;"
+        "line" : 178,
+        "column" : 47,
+        "source_fragment" : "@name(\\\"rank_to_min_index\\\")register<bit<32>>(4) rank_to_min_index;"
       },
-      "size" : 16,
+      "size" : 4,
       "bitwidth" : 32
     },
     {
@@ -790,11 +803,11 @@
       "id" : 3,
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
-        "line" : 178,
-        "column" : 49,
-        "source_fragment" : "@name(\\\"rank_to_port_map\\\")register<bit<9>>(16*16) rank_to_port_map;"
+        "line" : 179,
+        "column" : 47,
+        "source_fragment" : "@name(\\\"rank_to_port_map\\\")register<bit<9>>(4*4) rank_to_port_map;"
       },
-      "size" : 256,
+      "size" : 16,
       "bitwidth" : 9
     }
   ],
@@ -804,7 +817,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "p4src/src/spine.p4",
-        "line" : 240,
+        "line" : 253,
         "column" : 8,
         "source_fragment" : "update_checksum(hdr.ndp.isValid(), ..."
       },
@@ -903,7 +916,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 83,
+            "line" : 84,
             "column" : 7,
             "source_fragment" : "mark_to_drop(standard_metadata)"
           }
@@ -1179,7 +1192,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/CONSTANTS.p4",
-            "line" : 53,
+            "line" : 54,
             "column" : 33,
             "source_fragment" : "0x33_33_00_00_00_01; ..."
           }
@@ -1255,7 +1268,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/CONSTANTS.p4",
-            "line" : 49,
+            "line" : 50,
             "column" : 31,
             "source_fragment" : "58; ..."
           }
@@ -1274,7 +1287,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/CONSTANTS.p4",
-            "line" : 56,
+            "line" : 57,
             "column" : 29,
             "source_fragment" : "136; ..."
           }
@@ -1312,7 +1325,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/CONSTANTS.p4",
-            "line" : 57,
+            "line" : 58,
             "column" : 38,
             "source_fragment" : "2; ..."
           }
@@ -1454,8 +1467,8 @@
             }
           ],
           "source_info" : {
-            "filename" : "p4src/src/spine.p4",
-            "line" : 22,
+            "filename" : "p4src/src/CONSTANTS.p4",
+            "line" : 182,
             "column" : 30,
             "source_fragment" : "1; ..."
           }
@@ -1579,7 +1592,7 @@
                   },
                   "right" : {
                     "type" : "hexstr",
-                    "value" : "0xffff"
+                    "value" : "0x0f"
                   }
                 }
               }
@@ -1589,7 +1602,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 21,
             "column" : 46,
-            "source_fragment" : "hdr.packet_out.bitmask[16 - 1 :0]"
+            "source_fragment" : "hdr.packet_out.bitmask[4 - 1 :0]"
           }
         },
         {
@@ -1612,7 +1625,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 21,
             "column" : 12,
-            "source_fragment" : "stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[16 - 1 :0])"
+            "source_fragment" : "stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[4 - 1 :0])"
           }
         },
         {
@@ -1806,7 +1819,7 @@
                   },
                   "right" : {
                     "type" : "hexstr",
-                    "value" : "0xffff"
+                    "value" : "0x0f"
                   }
                 }
               }
@@ -1816,7 +1829,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 32,
             "column" : 46,
-            "source_fragment" : "hdr.packet_out.bitmask[16 - 1 :0]"
+            "source_fragment" : "hdr.packet_out.bitmask[4 - 1 :0]"
           }
         },
         {
@@ -1839,7 +1852,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 32,
             "column" : 12,
-            "source_fragment" : "stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[16 - 1 :0])"
+            "source_fragment" : "stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[4 - 1 :0])"
           }
         },
         {
@@ -1946,7 +1959,7 @@
       ]
     },
     {
-      "name" : "spine114",
+      "name" : "spine120",
       "id" : 13,
       "runtime_data" : [],
       "primitives" : [
@@ -1964,7 +1977,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 114,
+            "line" : 120,
             "column" : 7,
             "source_fragment" : "standard_metadata.egress_spec = hdr.packet_out.egress_port"
           }
@@ -1972,7 +1985,7 @@
       ]
     },
     {
-      "name" : "spine119",
+      "name" : "spine125",
       "id" : 14,
       "runtime_data" : [],
       "primitives" : [
@@ -1986,7 +1999,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 119,
+            "line" : 125,
             "column" : 7,
             "source_fragment" : "hdr.packet_out.setInvalid()"
           }
@@ -1996,7 +2009,7 @@
           "parameters" : [],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 121,
+            "line" : 127,
             "column" : 7,
             "source_fragment" : "exit"
           }
@@ -2004,7 +2017,7 @@
       ]
     },
     {
-      "name" : "spine124",
+      "name" : "spine130",
       "id" : 15,
       "runtime_data" : [],
       "primitives" : [
@@ -2032,7 +2045,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 124,
+            "line" : 130,
             "column" : 8,
             "source_fragment" : "local_metadata.flag_hdr.do_l3_l2 = false"
           }
@@ -2047,7 +2060,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 125,
+            "line" : 131,
             "column" : 8,
             "source_fragment" : "mark_to_drop(standard_metadata)"
           }
@@ -2055,7 +2068,7 @@
       ]
     },
     {
-      "name" : "spine110",
+      "name" : "spine116",
       "id" : 16,
       "runtime_data" : [],
       "primitives" : [
@@ -2083,7 +2096,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 110,
+            "line" : 116,
             "column" : 4,
             "source_fragment" : "local_metadata.flag_hdr.do_l3_l2=true"
           }
@@ -2112,7 +2125,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 111,
+            "line" : 117,
             "column" : 4,
             "source_fragment" : "local_metadata.flag_hdr.downstream_routing_table_hit = false"
           }
@@ -2221,7 +2234,7 @@
       ]
     },
     {
-      "name" : "spine135",
+      "name" : "spine141",
       "id" : 19,
       "runtime_data" : [],
       "primitives" : [
@@ -2230,7 +2243,7 @@
           "parameters" : [],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 135,
+            "line" : 141,
             "column" : 7,
             "source_fragment" : "exit"
           }
@@ -2255,7 +2268,7 @@
       ]
     },
     {
-      "name" : "top_k_path81",
+      "name" : "top_k_path86",
       "id" : 21,
       "runtime_data" : [],
       "primitives" : [
@@ -2273,7 +2286,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 151,
+            "line" : 161,
             "column" : 16,
             "source_fragment" : "local_metadata.rank_of_path_to_be_searched = 0"
           }
@@ -2296,7 +2309,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 81,
+            "line" : 86,
             "column" : 12,
             "source_fragment" : "stored_bitmask.read(stored_bitmask_read_value, (bit<32>)0)"
           }
@@ -2310,14 +2323,14 @@
             },
             {
               "type" : "hexstr",
-              "value" : "0xffff"
+              "value" : "0x0f"
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 82,
+            "line" : 87,
             "column" : 12,
-            "source_fragment" : "local_metadata.best_path_selector_bitmask = ALL_1_256_BIT[16 -1:0]"
+            "source_fragment" : "local_metadata.best_path_selector_bitmask = ALL_1_256_BIT[4 -1:0]"
           }
         },
         {
@@ -2339,7 +2352,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 83,
+            "line" : 88,
             "column" : 12,
             "source_fragment" : "            log_msg(\\\"traffic class is {}\\\", {hdr.ipv6.traffic_class});"
           }
@@ -2363,7 +2376,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 84,
+            "line" : 89,
             "column" : 12,
             "source_fragment" : "            log_msg(\\\"Stored bitmask after read is {}\\\",{stored_bitmask_read_value});"
           }
@@ -2387,7 +2400,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 85,
+            "line" : 90,
             "column" : 12,
             "source_fragment" : "            log_msg(\\\"kth path selector bitmask is {}\\\",{local_metadata.kth_path_selector_bitmask});"
           }
@@ -2419,7 +2432,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 88,
+            "line" : 93,
             "column" : 12,
             "source_fragment" : "local_metadata.kth_path_selector_bitmask = stored_bitmask_read_value & local_metadata.kth_path_selector_bitmask"
           }
@@ -2443,7 +2456,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 91,
+            "line" : 96,
             "column" : 12,
             "source_fragment" : "            log_msg(\\\"local_metadata.kth_path_selector_bitmask  after AND of stored_bitmask_read_value & local_metadata.kth_path_selector_bitmask is : {}\\\",{local_metadata.kth_path_selector_bitmask});"
           }
@@ -2451,7 +2464,7 @@
       ]
     },
     {
-      "name" : "spine155",
+      "name" : "spine165",
       "id" : 22,
       "runtime_data" : [],
       "primitives" : [
@@ -2482,7 +2495,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 155,
+            "line" : 165,
             "column" : 69,
             "source_fragment" : "(bit<32>)local_metadata.kth_path_rank"
           }
@@ -2505,7 +2518,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 155,
+            "line" : 165,
             "column" : 16,
             "source_fragment" : "rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)local_metadata.kth_path_rank)"
           }
@@ -2519,7 +2532,7 @@
       "primitives" : []
     },
     {
-      "name" : "spine210",
+      "name" : "spine220",
       "id" : 24,
       "runtime_data" : [],
       "primitives" : [
@@ -2533,7 +2546,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 210,
+            "line" : 220,
             "column" : 11,
             "source_fragment" : "hdr.packet_in.setValid()"
           }
@@ -2552,7 +2565,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 211,
+            "line" : 221,
             "column" : 11,
             "source_fragment" : "hdr.packet_in.ingress_port = standard_metadata.ingress_port"
           }
@@ -2562,7 +2575,7 @@
           "parameters" : [],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 213,
+            "line" : 223,
             "column" : 11,
             "source_fragment" : "exit"
           }
@@ -2570,7 +2583,7 @@
       ]
     },
     {
-      "name" : "spine218",
+      "name" : "spine228",
       "id" : 25,
       "runtime_data" : [],
       "primitives" : [
@@ -2584,7 +2597,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 218,
+            "line" : 228,
             "column" : 11,
             "source_fragment" : "mark_to_drop(standard_metadata)"
           }
@@ -2592,7 +2605,7 @@
       ]
     },
     {
-      "name" : "spine223",
+      "name" : "spine235",
       "id" : 26,
       "runtime_data" : [],
       "primitives" : [
@@ -2601,18 +2614,150 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["ipv6", "ecn"]
+              "value" : ["scalars", "tmp_4"]
             },
             {
-              "type" : "hexstr",
-              "value" : "0x03"
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "expression",
+                    "value" : {
+                      "op" : "+",
+                      "left" : {
+                        "type" : "expression",
+                        "value" : {
+                          "op" : "&",
+                          "left" : {
+                            "type" : "expression",
+                            "value" : {
+                              "op" : "+",
+                              "left" : {
+                                "type" : "expression",
+                                "value" : {
+                                  "op" : "&",
+                                  "left" : {
+                                    "type" : "field",
+                                    "value" : ["standard_metadata", "egress_port"]
+                                  },
+                                  "right" : {
+                                    "type" : "hexstr",
+                                    "value" : "0xffffffff"
+                                  }
+                                }
+                              },
+                              "right" : {
+                                "type" : "expression",
+                                "value" : {
+                                  "op" : "&",
+                                  "left" : {
+                                    "type" : "expression",
+                                    "value" : {
+                                      "op" : "<<",
+                                      "left" : {
+                                        "type" : "expression",
+                                        "value" : {
+                                          "op" : "&",
+                                          "left" : {
+                                            "type" : "expression",
+                                            "value" : {
+                                              "op" : "&",
+                                              "left" : {
+                                                "type" : "expression",
+                                                "value" : {
+                                                  "op" : "&",
+                                                  "left" : {
+                                                    "type" : "expression",
+                                                    "value" : {
+                                                      "op" : ">>",
+                                                      "left" : {
+                                                        "type" : "field",
+                                                        "value" : ["ipv6", "dst_addr"]
+                                                      },
+                                                      "right" : {
+                                                        "type" : "hexstr",
+                                                        "value" : "0x20"
+                                                      }
+                                                    }
+                                                  },
+                                                  "right" : {
+                                                    "type" : "hexstr",
+                                                    "value" : "0xffffffffffffffffffffffffffffffff"
+                                                  }
+                                                }
+                                              },
+                                              "right" : {
+                                                "type" : "hexstr",
+                                                "value" : "0x01ffff"
+                                              }
+                                            }
+                                          },
+                                          "right" : {
+                                            "type" : "hexstr",
+                                            "value" : "0xffffffff"
+                                          }
+                                        }
+                                      },
+                                      "right" : {
+                                        "type" : "hexstr",
+                                        "value" : "0x3"
+                                      }
+                                    }
+                                  },
+                                  "right" : {
+                                    "type" : "hexstr",
+                                    "value" : "0xffffffff"
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "right" : {
+                            "type" : "hexstr",
+                            "value" : "0xffffffff"
+                          }
+                        }
+                      },
+                      "right" : {
+                        "type" : "hexstr",
+                        "value" : "0xffffffff"
+                      }
+                    }
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 223,
-            "column" : 56,
-            "source_fragment" : "hdr.ipv6.ecn = 3"
+            "line" : 234,
+            "column" : 32,
+            "source_fragment" : "(bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[48:32]) -1"
+          }
+        },
+        {
+          "op" : "count",
+          "parameters" : [
+            {
+              "type" : "counter_array",
+              "value" : "destination_util_counter"
+            },
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_4"]
+            }
+          ],
+          "source_info" : {
+            "filename" : "p4src/src/spine.p4",
+            "line" : 235,
+            "column" : 8,
+            "source_fragment" : "destination_util_counter.count((bit<32>)counter_index)"
           }
         }
       ]
@@ -2624,18 +2769,18 @@
       "id" : 0,
       "source_info" : {
         "filename" : "p4src/src/spine.p4",
-        "line" : 71,
+        "line" : 72,
         "column" : 8,
         "source_fragment" : "IngressPipeImpl"
       },
-      "init_table" : "tbl_spine110",
+      "init_table" : "tbl_spine116",
       "tables" : [
         {
-          "name" : "tbl_spine110",
+          "name" : "tbl_spine116",
           "id" : 0,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 110,
+            "line" : 116,
             "column" : 36,
             "source_fragment" : "=true; ..."
           },
@@ -2647,10 +2792,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [16],
-          "actions" : ["spine110"],
+          "actions" : ["spine116"],
           "base_default_next" : "node_3",
           "next_tables" : {
-            "spine110" : "node_3"
+            "spine116" : "node_3"
           },
           "default_entry" : {
             "action_id" : 16,
@@ -2660,11 +2805,11 @@
           }
         },
         {
-          "name" : "tbl_spine114",
+          "name" : "tbl_spine120",
           "id" : 1,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 114,
+            "line" : 120,
             "column" : 37,
             "source_fragment" : "="
           },
@@ -2676,10 +2821,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [13],
-          "actions" : ["spine114"],
+          "actions" : ["spine120"],
           "base_default_next" : "node_5",
           "next_tables" : {
-            "spine114" : "node_5"
+            "spine120" : "node_5"
           },
           "default_entry" : {
             "action_id" : 13,
@@ -2706,9 +2851,9 @@
           "direct_meters" : null,
           "action_ids" : [11],
           "actions" : ["top_k_path_control_message_processor18"],
-          "base_default_next" : "tbl_spine119",
+          "base_default_next" : "tbl_spine125",
           "next_tables" : {
-            "top_k_path_control_message_processor18" : "tbl_spine119"
+            "top_k_path_control_message_processor18" : "tbl_spine125"
           },
           "default_entry" : {
             "action_id" : 11,
@@ -2735,9 +2880,9 @@
           "direct_meters" : null,
           "action_ids" : [12],
           "actions" : ["top_k_path_control_message_processor29"],
-          "base_default_next" : "tbl_spine119",
+          "base_default_next" : "tbl_spine125",
           "next_tables" : {
-            "top_k_path_control_message_processor29" : "tbl_spine119"
+            "top_k_path_control_message_processor29" : "tbl_spine125"
           },
           "default_entry" : {
             "action_id" : 12,
@@ -2747,11 +2892,11 @@
           }
         },
         {
-          "name" : "tbl_spine119",
+          "name" : "tbl_spine125",
           "id" : 4,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 119,
+            "line" : 125,
             "column" : 7,
             "source_fragment" : "hdr.packet_out.setInvalid(); ..."
           },
@@ -2763,10 +2908,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [14],
-          "actions" : ["spine119"],
+          "actions" : ["spine125"],
           "base_default_next" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table",
           "next_tables" : {
-            "spine119" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table"
+            "spine125" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table"
           },
           "default_entry" : {
             "action_id" : 14,
@@ -2776,11 +2921,11 @@
           }
         },
         {
-          "name" : "tbl_spine124",
+          "name" : "tbl_spine130",
           "id" : 5,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 124,
+            "line" : 130,
             "column" : 41,
             "source_fragment" : "= false; //thie means . this packet doesn;t need normal forwarding processing. It wil only be used for updating the internal routing related information ..."
           },
@@ -2792,10 +2937,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [15],
-          "actions" : ["spine124"],
+          "actions" : ["spine130"],
           "base_default_next" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table",
           "next_tables" : {
-            "spine124" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table"
+            "spine130" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table"
           },
           "default_entry" : {
             "action_id" : 15,
@@ -3075,9 +3220,9 @@
           "direct_meters" : null,
           "action_ids" : [17],
           "actions" : ["ndp43"],
-          "base_default_next" : "tbl_spine135",
+          "base_default_next" : "tbl_spine141",
           "next_tables" : {
-            "ndp43" : "tbl_spine135"
+            "ndp43" : "tbl_spine141"
           },
           "default_entry" : {
             "action_id" : 17,
@@ -3104,9 +3249,9 @@
           "direct_meters" : null,
           "action_ids" : [18],
           "actions" : ["ndp47"],
-          "base_default_next" : "tbl_spine135",
+          "base_default_next" : "tbl_spine141",
           "next_tables" : {
-            "ndp47" : "tbl_spine135"
+            "ndp47" : "tbl_spine141"
           },
           "default_entry" : {
             "action_id" : 18,
@@ -3116,11 +3261,11 @@
           }
         },
         {
-          "name" : "tbl_spine135",
+          "name" : "tbl_spine141",
           "id" : 10,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 135,
+            "line" : 141,
             "column" : 7,
             "source_fragment" : "exit"
           },
@@ -3132,10 +3277,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [19],
-          "actions" : ["spine135"],
+          "actions" : ["spine141"],
           "base_default_next" : "node_18",
           "next_tables" : {
-            "spine135" : "node_18"
+            "spine141" : "node_18"
           },
           "default_entry" : {
             "action_id" : 19,
@@ -3252,7 +3397,7 @@
           "id" : 14,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 144,
+            "line" : 150,
             "column" : 46,
             "source_fragment" : "drop()"
           },
@@ -3277,11 +3422,11 @@
           }
         },
         {
-          "name" : "tbl_top_k_path81",
+          "name" : "tbl_top_k_path86",
           "id" : 15,
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 81,
+            "line" : 86,
             "column" : 12,
             "source_fragment" : "stored_bitmask.read(stored_bitmask_read_value, (bit<32>)0); ..."
           },
@@ -3293,10 +3438,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [21],
-          "actions" : ["top_k_path81"],
+          "actions" : ["top_k_path86"],
           "base_default_next" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
           "next_tables" : {
-            "top_k_path81" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
+            "top_k_path86" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
           },
           "default_entry" : {
             "action_id" : 21,
@@ -3330,10 +3475,10 @@
           "direct_meters" : null,
           "action_ids" : [10, 9],
           "actions" : ["IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param", "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param"],
-          "base_default_next" : "tbl_spine155",
+          "base_default_next" : "tbl_spine165",
           "next_tables" : {
-            "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param" : "tbl_spine155",
-            "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param" : "tbl_spine155"
+            "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param" : "tbl_spine165",
+            "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param" : "tbl_spine165"
           },
           "default_entry" : {
             "action_id" : 10,
@@ -3343,11 +3488,11 @@
           }
         },
         {
-          "name" : "tbl_spine155",
+          "name" : "tbl_spine165",
           "id" : 17,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 155,
+            "line" : 165,
             "column" : 16,
             "source_fragment" : "rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)local_metadata.kth_path_rank)"
           },
@@ -3359,10 +3504,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [22],
-          "actions" : ["spine155"],
+          "actions" : ["spine165"],
           "base_default_next" : "IngressPipeImpl.ingress_end_debug.dbg_table",
           "next_tables" : {
-            "spine155" : "IngressPipeImpl.ingress_end_debug.dbg_table"
+            "spine165" : "IngressPipeImpl.ingress_end_debug.dbg_table"
           },
           "default_entry" : {
             "action_id" : 22,
@@ -3595,7 +3740,7 @@
           "id" : 0,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 112,
+            "line" : 118,
             "column" : 8,
             "source_fragment" : "hdr.packet_out.isValid()"
           },
@@ -3610,7 +3755,7 @@
               }
             }
           },
-          "true_next" : "tbl_spine114",
+          "true_next" : "tbl_spine120",
           "false_next" : "node_10"
         },
         {
@@ -3723,14 +3868,14 @@
             }
           },
           "true_next" : "tbl_top_k_path_control_message_processor29",
-          "false_next" : "tbl_spine119"
+          "false_next" : "tbl_spine125"
         },
         {
           "name" : "node_10",
           "id" : 3,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 122,
+            "line" : 128,
             "column" : 14,
             "source_fragment" : "hdr.packet_in.isValid() && (standard_metadata.instance_type == BMV2_V1MODEL_INSTANCE_TYPE_RECIRC)"
           },
@@ -3765,7 +3910,7 @@
               }
             }
           },
-          "true_next" : "tbl_spine124",
+          "true_next" : "tbl_spine130",
           "false_next" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table"
         },
         {
@@ -3773,7 +3918,7 @@
           "id" : 4,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 133,
+            "line" : 139,
             "column" : 8,
             "source_fragment" : "(hdr.icmpv6.type == ICMP6_TYPE_NS ) && (hdr.icmpv6.type == ICMP6_TYPE_NS)"
           },
@@ -3819,7 +3964,7 @@
           "id" : 5,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 137,
+            "line" : 143,
             "column" : 8,
             "source_fragment" : "local_metadata.flag_hdr.do_l3_l2"
           },
@@ -3842,7 +3987,7 @@
           "id" : 6,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 140,
+            "line" : 146,
             "column" : 12,
             "source_fragment" : "hdr.ipv6.isValid()"
           },
@@ -3865,7 +4010,7 @@
           "id" : 7,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 142,
+            "line" : 148,
             "column" : 15,
             "source_fragment" : "local_metadata.flag_hdr.downstream_routing_table_hit"
           },
@@ -3881,14 +4026,14 @@
             }
           },
           "true_next" : "node_24",
-          "false_next" : "tbl_top_k_path81"
+          "false_next" : "tbl_top_k_path86"
         },
         {
           "name" : "node_24",
           "id" : 8,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 144,
+            "line" : 150,
             "column" : 19,
             "source_fragment" : "hdr.ipv6.hop_limit == 0"
           },
@@ -3916,18 +4061,18 @@
       "id" : 1,
       "source_info" : {
         "filename" : "p4src/src/spine.p4",
-        "line" : 198,
+        "line" : 208,
         "column" : 8,
         "source_fragment" : "EgressPipeImpl"
       },
       "init_table" : "node_32",
       "tables" : [
         {
-          "name" : "tbl_spine210",
+          "name" : "tbl_spine220",
           "id" : 19,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 210,
+            "line" : 220,
             "column" : 11,
             "source_fragment" : "hdr.packet_in.setValid(); ..."
           },
@@ -3939,10 +4084,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [24],
-          "actions" : ["spine210"],
+          "actions" : ["spine220"],
           "base_default_next" : "node_34",
           "next_tables" : {
-            "spine210" : "node_34"
+            "spine220" : "node_34"
           },
           "default_entry" : {
             "action_id" : 24,
@@ -3952,11 +4097,11 @@
           }
         },
         {
-          "name" : "tbl_spine218",
+          "name" : "tbl_spine228",
           "id" : 20,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 218,
+            "line" : 228,
             "column" : 11,
             "source_fragment" : "mark_to_drop(standard_metadata)"
           },
@@ -3968,10 +4113,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [25],
-          "actions" : ["spine218"],
+          "actions" : ["spine228"],
           "base_default_next" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table",
           "next_tables" : {
-            "spine218" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
+            "spine228" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
           },
           "default_entry" : {
             "action_id" : 25,
@@ -4185,9 +4330,9 @@
           "direct_meters" : null,
           "action_ids" : [23],
           "actions" : ["NoAction"],
-          "base_default_next" : "node_37",
+          "base_default_next" : "tbl_spine235",
           "next_tables" : {
-            "NoAction" : "node_37"
+            "NoAction" : "tbl_spine235"
           },
           "default_entry" : {
             "action_id" : 23,
@@ -4197,13 +4342,13 @@
           }
         },
         {
-          "name" : "tbl_spine223",
+          "name" : "tbl_spine235",
           "id" : 22,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 223,
-            "column" : 69,
-            "source_fragment" : "="
+            "line" : 235,
+            "column" : 8,
+            "source_fragment" : "destination_util_counter.count((bit<32>)counter_index)"
           },
           "key" : [],
           "match_type" : "exact",
@@ -4213,10 +4358,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [26],
-          "actions" : ["spine223"],
+          "actions" : ["spine235"],
           "base_default_next" : null,
           "next_tables" : {
-            "spine223" : null
+            "spine235" : null
           },
           "default_entry" : {
             "action_id" : 26,
@@ -4233,7 +4378,7 @@
           "id" : 9,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 209,
+            "line" : 219,
             "column" : 11,
             "source_fragment" : "standard_metadata.egress_port == 255"
           },
@@ -4251,7 +4396,7 @@
               }
             }
           },
-          "true_next" : "tbl_spine210",
+          "true_next" : "tbl_spine220",
           "false_next" : "node_34"
         },
         {
@@ -4259,7 +4404,7 @@
           "id" : 10,
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
-            "line" : 216,
+            "line" : 226,
             "column" : 11,
             "source_fragment" : "local_metadata.is_multicast == true && ..."
           },
@@ -4294,34 +4439,8 @@
               }
             }
           },
-          "true_next" : "tbl_spine218",
+          "true_next" : "tbl_spine228",
           "false_next" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
-        },
-        {
-          "name" : "node_37",
-          "id" : 11,
-          "source_info" : {
-            "filename" : "p4src/src/spine.p4",
-            "line" : 223,
-            "column" : 10,
-            "source_fragment" : "standard_metadata.deq_qdepth > ECN_THRESHOLD"
-          },
-          "expression" : {
-            "type" : "expression",
-            "value" : {
-              "op" : ">",
-              "left" : {
-                "type" : "field",
-                "value" : ["standard_metadata", "deq_qdepth"]
-              },
-              "right" : {
-                "type" : "hexstr",
-                "value" : "0x000003"
-              }
-            }
-          },
-          "false_next" : null,
-          "true_next" : "tbl_spine223"
         }
       ]
     }
@@ -4332,7 +4451,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "p4src/src/spine.p4",
-        "line" : 240,
+        "line" : 253,
         "column" : 8,
         "source_fragment" : "update_checksum(hdr.ndp.isValid(), ..."
       },

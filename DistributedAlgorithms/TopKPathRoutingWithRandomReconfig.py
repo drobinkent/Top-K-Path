@@ -49,23 +49,9 @@ class TopKPathRouting:
                                                actionName = "IngressPipeImpl.k_path_selector_control_block.best_path_finder_action_with_param",
                                                actionParamName = "rank",
                                                actionParamValue = str(j), priority=bitMaskLength-j+1)
-            # switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
-            #                                    fieldName = "local_metadata.kth_path_selector_bitmask",
-            #                                    fieldValue = allOneMAskBinaryString, mask = maskAsString,
-            #                                    actionName = "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
-            #                                    actionParamName = "rank",
-            #                                    actionParamValue = str(j), priority=bitMaskLength-j+1)
-            # switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_mat",
-            #                                    fieldName = "local_metadata.worst_path_selector_bitmask",
-            #                                    fieldValue = allOneMAskBinaryString, mask = maskAsString,
-            #                                    actionName = "IngressPipeImpl.k_path_selector_control_block.worst_path_finder_action_with_param",
-            #                                    actionParamName = "rank",
-            #                                    actionParamValue = str(j), priority=j+1)
 
 
-
-
-    def setup(self):
+    def setup(self,nameToSwtichMap):
         '''
         This function setup all the relevant stuffs for running the algorithm
         '''
@@ -83,11 +69,11 @@ class TopKPathRouting:
                 pkt = self.topKPathManager.insertPort(port = int(k), k = int(k))
                 self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
-            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=16) # by default add space for 16 ports in super spine. This is not actually used in our simulation
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K)
             pass
-        self.x = threading.Thread(target=self.topKpathroutingTesting, args=())
-        self.x.start()
-        logger.info("TopKpathroutingTesting thread started")
+        # self.x = threading.Thread(target=self.topKpathroutingTesting, args=())
+        # self.x.start()
+        # logger.info("TopKpathroutingTesting thread started")
         return
 
     def processFeedbackPacket(self, parsedPkt, dev):

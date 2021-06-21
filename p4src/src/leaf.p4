@@ -30,11 +30,15 @@
 #include "my_station.p4"
 #include "l2_ternary.p4"
 #include "leaf_downstream_routing.p4"
+#include "hula.p4"
 #ifdef DP_ALGO_TOP_K_PATH
 #include "top_k_path.p4"
 #include "top_k_path_control_message_processor.p4"
 #include "ingress_rate_monitor.p4"
+
 #endif
+
+
 control VerifyChecksumImpl(inout parsed_headers_t hdr,
                            inout local_metadata_t meta)
 {
@@ -71,10 +75,16 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     my_station_processing() my_station_processing_control_block;
     ndp_processing() ndp_processing_control_block;
 
-    //#ifdef DP_ALGO_ECMP
-    //upstream_routing() upstream_ecmp_routing_control_block;
-    //#endif
+
+    #ifdef DP_ALGO_ECMP
     upstream_routing() upstream_ecmp_routing_control_block;
+    #endif
+
+
+    #ifdef DP_ALGO_HULA
+    hula_load_balancing() hula_load_balancing_control_block;
+    #endif
+
     #ifdef DP_ALGO_TOP_K_PATH
     top_k_path_control_message_processor() top_k_path_control_message_processor_control_block;
     k_path_selector() k_path_selector_control_block;
@@ -132,8 +142,11 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 upstream_ecmp_routing_control_block.apply(hdr, local_metadata, standard_metadata);
                 #endif
 
-                #ifdef DP_ALGO_TOP_K_PATH
 
+                #ifdef DP_ALGO_HULA
+                hula_load_balancing_control_block.apply(hdr, local_metadata, standard_metadata);
+                #endif
+                #ifdef DP_ALGO_TOP_K_PATH
                 {
                     // Here we will set the bitmasks for 3 experiemntal traffi classes
                     //In real life scenario other algorihtms will setup these bitmasks
@@ -143,9 +156,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                          local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 4; //skip the first 2 best path as they are reserved by low delay and special custom traffic class
                          log_msg("Bitmask for high throughout traffic class is {}",{local_metadata.kth_path_selector_bitmask});
                     }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_CUSTOM_QOS){
-                        bit<K> tempMask = ALL_1_256_BIT[K-1:0] <<2;
-                        local_metadata.kth_path_selector_bitmask = tempMask;
-
+                        local_metadata.kth_path_selector_bitmask = ALL_1_256_BIT[K-1:0] <<2;;
                     }else{
                         local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0]; //set it here
                     }
@@ -253,9 +264,11 @@ control EgressPipeImpl (inout parsed_headers_t hdr,
     #endif  // ENABLE_DEBUG_TABLES
 
 
-    if(standard_metadata.deq_qdepth > ECN_THRESHOLD) hdr.ipv6.ecn = 3; //setting ecm mark
-
+    //if(standard_metadata.deq_qdepth > ECN_THRESHOLD) hdr.ipv6.ecn = 3; //setting ecm mark
     egressPortCounter.count((bit<32>)standard_metadata.egress_port);
+
+    bit<32> counter_index = (bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[48:32]) -1 ; //rightmost 16 bit shows the ToR ID in our scheme.
+    destination_util_counter.count((bit<32>)counter_index);
 
 
     }
