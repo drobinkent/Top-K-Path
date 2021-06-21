@@ -172,8 +172,17 @@
       ]
     },
     {
-      "name" : "flag_headers_t",
+      "name" : "mdn_int_t",
       "id" : 11,
+      "fields" : [
+        ["timestamp_hop_1", 64, false],
+        ["timestamp_hop_2", 64, false],
+        ["timestamp_hop_3", 64, false]
+      ]
+    },
+    {
+      "name" : "flag_headers_t",
+      "id" : 12,
       "fields" : [
         ["is_control_pkt_from_delay_proc", 1, 0],
         ["is_control_pkt_from_ing_queue_rate", 1, 0],
@@ -279,8 +288,15 @@
       "pi_omit" : true
     },
     {
-      "name" : "flag_hdr",
+      "name" : "mdn_int",
       "id" : 11,
+      "header_type" : "mdn_int_t",
+      "metadata" : false,
+      "pi_omit" : true
+    },
+    {
+      "name" : "flag_hdr",
+      "id" : 12,
       "header_type" : "flag_headers_t",
       "metadata" : false,
       "pi_omit" : true
@@ -455,6 +471,12 @@
               "next_state" : "parse_icmpv6"
             },
             {
+              "type" : "hexstr",
+              "value" : "0xfd",
+              "mask" : null,
+              "next_state" : "parse_mdn_int"
+            },
+            {
               "type" : "default",
               "value" : null,
               "mask" : null,
@@ -610,8 +632,32 @@
           ]
         },
         {
-          "name" : "parse_ndp",
+          "name" : "parse_mdn_int",
           "id" : 8,
+          "parser_ops" : [
+            {
+              "parameters" : [
+                {
+                  "type" : "regular",
+                  "value" : "mdn_int"
+                }
+              ],
+              "op" : "extract"
+            }
+          ],
+          "transitions" : [
+            {
+              "type" : "default",
+              "value" : null,
+              "mask" : null,
+              "next_state" : null
+            }
+          ],
+          "transition_key" : []
+        },
+        {
+          "name" : "parse_ndp",
+          "id" : 9,
           "parser_ops" : [
             {
               "parameters" : [

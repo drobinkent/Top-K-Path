@@ -52,6 +52,7 @@ parser ParserImpl (packet_in packet,
             IP_PROTO_TCP:    parse_tcp;
             IP_PROTO_UDP:    parse_udp;
             IP_PROTO_ICMPV6: parse_icmpv6;
+            MDN_INT: parse_mdn_int;
             default: accept;
         }
     }
@@ -82,6 +83,11 @@ parser ParserImpl (packet_in packet,
             ICMP6_TYPE_NA: parse_ndp;
             default: accept;
         }
+    }
+
+    state parse_mdn_int {
+        packet.extract(hdr.mdn_int);
+        transition accept;
     }
 
     state parse_ndp {

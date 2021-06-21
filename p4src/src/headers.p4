@@ -77,6 +77,11 @@ header icmp_t {
     bit<16>  sequence_number;
     bit<64>  timestamp;
 }
+header mdn_int_t{
+    bit<64>  timestamp_hop_1;
+    bit<64>  timestamp_hop_2;
+    bit<64>  timestamp_hop_3;
+}
 
 header icmpv6_t {
     bit<8>   type;
@@ -246,6 +251,7 @@ struct parsed_headers_t {
     udp_t         udp;
     icmpv6_t      icmpv6;
     ndp_t         ndp;
+    mdn_int_t mdn_int;
     //=================
     //delay_event_info_t delay_event_feedback;
 
