@@ -5,7 +5,7 @@ def generateRandomProbeResult(allPortsAsList = [5,6,7,8]):
     totalNormalizedRate = len(allPortsAsList)
     newPortRateList = []
     for i in range(0, len(allPortsAsList)):
-        x = rnd.uniform(0.2, 0.5)
+        x = rnd.uniform(0.4, 0.7)
         x = round(x, 1)
         tple1 = (allPortsAsList[i], x)
         newPortRateList.append(tple1)
@@ -24,12 +24,13 @@ def generateAndStoreRandomProbeResults(times):
         probeResultsAsList.append(probeResult)
 
     print(probeResultsAsList)
+    return probeResultsAsList
         #printRandomProbeResults(probeResultsAsList)
 
-generateAndStoreRandomProbeResults(times=100) # for each 5 sec create a new config
-for i in range (0, len(tstConst.portRateConfigs)):
-    print(tstConst.portRateConfigs[i][0][0])  # this gives port
-    print("\n")
-    print(tstConst.portRateConfigs[i][0][1]) # this gives rate
+portRateConfigs = generateAndStoreRandomProbeResults(times=10000) # for each 5 sec create a new config
+# for i in range (0, len(portRateConfigs)):
+#     print(portRateConfigs[i][0][0])  # this gives port
+#     print(portRateConfigs[i][0][1]) # this gives rate
+#     print("\n\n")
 
     #if any port have rate 0 that means the port will be deleted

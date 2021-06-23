@@ -30,38 +30,6 @@ CONTROLLER_STATISTICS_RESULT_FILE_PATH = "./result/"
 #This is the path where all logs while processing the results willl be written
 RESULT_PROCESSOR_LOG_FILE_PATH = "./log/RESULT_PROCESSOR_LOG.log"
 
-# Each Time we need to change the oversubscription ration we need to recalculate it
-# Assuming 4 port switch, 2 * 10 Mbps for host to leaf. 2*10 for leaf to spine. Each po have 2 spine switch, each spine connects to 2 super spine. therefor 4 connection. 4*5 = 20
-# Currently These are unused
-# HOST_TO_LEAF_BW_10Mbps = 10
-# LEAF_TO_SPINE_BW_10Mbps = 10
-# SPINE_TO_SUPER_SPINE_BW_10Mbps = 5
-#
-#
-# HOST_TO_LEAF_BW= HOST_TO_LEAF_BW_10Mbps
-# LEAF_TO_SPINE_BW = LEAF_TO_SPINE_BW_10Mbps
-# SPINE_TO_SUPER_SPINE_BW = SPINE_TO_SUPER_SPINE_BW_10Mbps
-
-
-
-# these are required for changing the testing behavior
-# QUEUE_RATE_10 = 10
-# QUEUE_RATE_25 = 25
-# QUEUE_RATE_40 = 40
-# QUEUE_RATE_50 = 50
-# LEAF_SWITCH_QUEUE_RATE = QUEUE_RATE_10
-# SPINE_SWITCH_QUEUE_RATE = QUEUE_RATE_10
-# SUPER_SPINE_SWITCH_QUEUE_RATE = QUEUE_RATE_10
-
-#
-# QUEUE_DEPTH_10 = 10
-# QUEUE_DEPTH_25 = 25
-# QUEUE_DEPTH_40 = 40
-# QUEUE_DEPTH_50 = 50
-# LEAF_SWITCH_QUEUE_DEPTH = QUEUE_DEPTH_10
-# SPINE_SWITCH_QUEUE_DEPTH = QUEUE_DEPTH_10
-# SUPER_SPINE_SWITCH_QUEUE_DEPTH = QUEUE_DEPTH_10
-
 
 #------------Usually  buffer size should be Delay *  bandwidth . for bmv2 based testing this have to be represented and configured through Queue depth.
 # ------ So we will multiply port bandwidth by a factor to estimate the Delay *  BW . So by this factor we are actually estimating the Delay factor.
@@ -110,12 +78,12 @@ class DataplnaeAlgorithm(Enum):
 ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_TOP_K_PATH
 
 
-queueRateForHostFacingPortsOfLeafSwitch = 400
-queueRateForSpineFacingPortsOfLeafSwitch = 400
-queueRateForLeafSwitchFacingPortsOfSpineSwitch= 100
-queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch=100
-queueRateForSpineSwitchFacingPortsOfSuperSpineSwitch=100
-queueRateForExternalInternetFacingPortsOfSuperSpineSwitch=100
+queueRateForHostFacingPortsOfLeafSwitch = 32
+queueRateForSpineFacingPortsOfLeafSwitch = 16
+queueRateForLeafSwitchFacingPortsOfSpineSwitch= 16
+queueRateForSuperSpineSwitchFacingPortsOfSpineSwitch=512
+queueRateForSpineSwitchFacingPortsOfSuperSpineSwitch=512
+queueRateForExternalInternetFacingPortsOfSuperSpineSwitch=2048
 
 
 
@@ -142,8 +110,11 @@ EGRESS_QUEUE_DEPTH_DELAY_LEVELS_LINEAR = [(0, 2, 0, 0),(3,5,1,0), (6, 10,2,00)]
 #######################################################################################################################################################################################
 #######################################################################################################################################################################################
 
-FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB = [512, 512]  # These means in our experiments we will consider 2 types of traffic . one with 50 KB size another 1 MB or 1024 KB
+FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB = [ 50, 256,2048]  # These means in our experiments we will consider 2 types of traffic . one with 50 KB size another 1 MB or 1024 KB
+FLOW_TYPE_TRAFFIC_CLASS= [ 18, 10, 14]
+FLOW_TYPE_LOAD_RATIO = [ 20,40, 40]
 FLOW_VOLUME_IDENTIFIER_VARIATION_LIMIT_IN_PERCENTAGE = 80 # this means any flow size within range of 15% defined in previous array will be categorized as flow of same type. 80 percent is configured to acoomdate both 10kb and 50 kb flow
+PACKET_SIZE = 1024 # Each packet will be 1200 Byte size
 
 
 

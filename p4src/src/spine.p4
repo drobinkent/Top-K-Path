@@ -230,7 +230,8 @@ control EgressPipeImpl (inout parsed_headers_t hdr,
        #ifdef ENABLE_DEBUG_TABLES
        debug_std_meta_egress_start.apply(hdr, local_metadata, standard_metadata);
        #endif  // ENABLE_DEBUG_TABLES
-       //if(standard_metadata.deq_qdepth > ECN_THRESHOLD) hdr.ipv6.ecn = 3; //setting ecm mark
+       if(standard_metadata.deq_qdepth > ECN_THRESHOLD) hdr.ipv6.ecn = 3; //setting ecm mark
+
         bit<32> counter_index = (bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[48:32]) -1 ; //rightmost 16 bit shows the ToR ID in our scheme.
         destination_util_counter.count((bit<32>)counter_index);
 

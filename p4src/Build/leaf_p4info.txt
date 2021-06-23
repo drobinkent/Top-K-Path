@@ -761,6 +761,13 @@ actions {
 }
 actions {
   preamble {
+    id: 23370174
+    name: "IngressPipeImpl.lookup_flowlet_map"
+    alias: "lookup_flowlet_map"
+  }
+}
+actions {
+  preamble {
     id: 24517793
     name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param"
     alias: "kth_path_finder_action_with_param"
@@ -974,6 +981,36 @@ registers {
     }
   }
   size: 16
+}
+registers {
+  preamble {
+    id: 379969013
+    name: "IngressPipeImpl.ecmp_flowlet_id_map"
+    alias: "ecmp_flowlet_id_map"
+  }
+  type_spec {
+    bitstring {
+      bit {
+        bitwidth: 9
+      }
+    }
+  }
+  size: 8192
+}
+registers {
+  preamble {
+    id: 377012014
+    name: "IngressPipeImpl.ecmp_flowlet_lasttime_map"
+    alias: "ecmp_flowlet_lasttime_map"
+  }
+  type_spec {
+    bitstring {
+      bit {
+        bitwidth: 48
+      }
+    }
+  }
+  size: 8192
 }
 type_info {
 }

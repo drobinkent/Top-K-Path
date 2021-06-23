@@ -82,6 +82,12 @@ start_ctrlr: Mycontroller.py
 	rm -rf log/controller.log
 	python3 Mycontroller.py
 
+create-result-folders:
+	mkdir ./testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.2
+	mkdir ./testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.4
+	mkdir ./testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.5
+	mkdir ./testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.7
+	mkdir ./testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.8
 
 clear-logs:
 	sudo rm -rf /tmp/*

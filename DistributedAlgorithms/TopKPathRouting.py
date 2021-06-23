@@ -94,8 +94,8 @@ class TopKPathRouting:
             # pathAndUtilist.append((i,utilInLastInterval,rankInLastInterval))
             pathAndUtilist.append((i+1,utilInLastInterval))
         pathAndUtilist.sort(key=lambda x:x[1])
-        if(self.p4dev.devName == ConfConst.CLB_TESTER_DEVICE_NAME):
-            print("For device "+self.p4dev.devName+" The port utilization data according to rank is "+str(pathAndUtilist))
+        # if(self.p4dev.devName == ConfConst.CLB_TESTER_DEVICE_NAME):
+        #     print("For device "+self.p4dev.devName+" The port utilization data according to rank is "+str(pathAndUtilist))
         controlPacketList = []
         for i in range (0, len(pathAndUtilist)):
             port = pathAndUtilist[i][0]

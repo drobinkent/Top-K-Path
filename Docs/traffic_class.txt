@@ -1,0 +1,10 @@
+000100 10 -- 18 decimal all 1 -- latency sensitive short flow
+
+000010 10 -- 10 decimal only 2nd and 3rd bit on -- for high throughput flow. do not interupt two other high prioity flows
+
+000011 10-- 14 decimal all 1 wxcept highest priority  -- query response traffic
+
+
+
+
+

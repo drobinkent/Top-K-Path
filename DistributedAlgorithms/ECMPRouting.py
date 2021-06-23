@@ -33,33 +33,33 @@ class ECMPRouting:
         self.egressQueueDepthBasedRoutingInfo = RoutingInfo(name = "Egress queue Depth Based Routing Info Store")
         pass
 
-    def setup(self):
+    def setup(self, nameToSwitchMap):
         '''
         This function setup all the relevant stuffs for running the algorithm
         '''
-        j = 0
-        if(self.p4dev.devName == "device:p0l0"):
-            portCfg = tstConst.TOP_K_PATH_EXPERIMENT_PORT_RATE_CONFIGS[j]
-            for k in range(0,len(portCfg[1])): # k gives the rank iteslf as the port configs are already sorted
-                if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
-                    port =portCfg[1][k][0]
-                    portRank = portCfg[1][k][1]
-                    portRate = portCfg[1][k][2]
-                    bufferSize = portCfg[1][k][3]
-                    if(portRate <= 0): # if 0 that means the port is  down
-                        del self.p4dev.portToSpineSwitchMap[port]
-                    setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
-            leafUtils.addUpStreamRoutingGroupForLeafSwitch(self.p4dev, list(
-                self.p4dev.portToSpineSwitchMap.keys()))  # this creates a group for upstream routing with  group_id=InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP
-            self.p4dev.addLPMMatchEntryWithGroupAction(
-                tableName="IngressPipeImpl.upstream_ecmp_routing_control_block.upstream_routing_table",
-                fieldName="hdr.ipv6.dst_addr",
-                fieldValue=InternalConfig.DCN_CORE_IPv6_PREFIX, prefixLength=InternalConfig.DCN_CORE_IPv6_PREFIX_LENGTH,
-                actionName="IngressPipeImpl.upstream_ecmp_routing_control_block.set_upstream_egress_port",
-                actionParamName=None, actionParamValue=None,
-                groupID=InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP, priority=None)
-        else:
-            self.p4dev.setupECMPUpstreamRouting()
+        # j = 0
+        # if(self.p4dev.devName == "device:p0l0"):
+        #     portCfg = tstConst.TOP_K_PATH_EXPERIMENT_PORT_RATE_CONFIGS[j]
+        #     for k in range(0,len(portCfg[1])): # k gives the rank iteslf as the port configs are already sorted
+        #         if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
+        #             port =portCfg[1][k][0]
+        #             portRank = portCfg[1][k][1]
+        #             portRate = portCfg[1][k][2]
+        #             bufferSize = portCfg[1][k][3]
+        #             if(portRate <= 0): # if 0 that means the port is  down
+        #                 del self.p4dev.portToSpineSwitchMap[port]
+        #             setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
+        #     leafUtils.addUpStreamRoutingGroupForLeafSwitch(self.p4dev, list(
+        #         self.p4dev.portToSpineSwitchMap.keys()))  # this creates a group for upstream routing with  group_id=InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP
+        #     self.p4dev.addLPMMatchEntryWithGroupAction(
+        #         tableName="IngressPipeImpl.upstream_ecmp_routing_control_block.upstream_routing_table",
+        #         fieldName="hdr.ipv6.dst_addr",
+        #         fieldValue=InternalConfig.DCN_CORE_IPv6_PREFIX, prefixLength=InternalConfig.DCN_CORE_IPv6_PREFIX_LENGTH,
+        #         actionName="IngressPipeImpl.upstream_ecmp_routing_control_block.set_upstream_egress_port",
+        #         actionParamName=None, actionParamValue=None,
+        #         groupID=InternalConfig.LEAF_SWITCH_UPSTREAM_PORTS_GROUP, priority=None)
+        # else:
+        self.p4dev.setupECMPUpstreamRouting()
         # self.x = threading.Thread(target=self.topKpathroutingTesting, args=())
         # self.x.start()
         # logger.info("ECMP-VS-TopKpathroutingTesting thread started( This Thread is ECMP)")
