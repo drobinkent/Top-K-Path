@@ -20,12 +20,6 @@ logger.addHandler(hdlr)
 logging.StreamHandler(stream=None)
 logger.setLevel(logging.INFO)
 
-NETWORK_CAPACITIY= 400 # the network can handle load of 400 packets per second
-TIME = 150 # we want to stat all the flows within 150 sec
-SHORT_FLOW_SIZE = 256 #256KB size flow
-LARGE_FLOW_SIZE = 2048 #256KB size flow
-PACKET_SIZE = 1000 ## 1000 bytes packet size
-
 
 
 def makeDirectory(folderPath, accessRights):
@@ -34,7 +28,7 @@ def makeDirectory(folderPath, accessRights):
 
 
 def calculateFlowArrivalTimes(loadFactor, duration):
-    networkRate = int(confConst.queueRateForHostFacingPortsOfLeafSwitch*loadFactor) #Each host need to generate this many packets per second.
+    networkRate = int(confConst.queueRateForSpineFacingPortsOfLeafSwitch * loadFactor) #Each host need to generate this many packets per second.
     networkRateForFlowType = []
     totalFlowRequiredForFlowType=[]
     lambdaForFlowType=[]
@@ -96,12 +90,13 @@ def l2StridePatternTestPairCreator(nameToHostMap, maxPortcountInSwitch):
         hostIndex, leafSwitchIndex, podIndex = srcHost.getLocationIndexes()
         peerName = getL2StrdePeerHostName(hostIndex, leafSwitchIndex, podIndex, maxPortcountInSwitch)
         peerHostObject = nameToHostMap.get(peerName)
-        if (srcHost!=None) and (peerHostObject != None):
+        if (srcHost!=None) and (peerHostObject != None) and (not(srcHost  in srcList)) and (not(srcHost  in destList)) and (not(peerName in srcList)) and (not(peerName  in destList)):
             srcList.append(srcHost)
             destList.append((peerHostObject))
             count = count+1
-        # print("Src: "+srcHostName+" peer host:"+peerName)
-        if(count>=(len(nameToHostMap))):
+            print("Src: "+srcHostName+" peer host:"+peerName)
+
+        if(count>=(len(nameToHostMap)/2)):
             break;
 
 
@@ -112,6 +107,8 @@ def getStrideDeploymentPairs(nameToHostMap,maxPortcountInSwitch,testCaseName, lo
     #       foreach of the flows
     #               build corresponding cmdString and deploy
     srcList, destList= l2StridePatternTestPairCreator(nameToHostMap,maxPortcountInSwitch)
+    # print("Srclist is ",srcList)
+    # print("destList is ",destList)
     deploymentPairList= []
 
     if (len(srcList) != len(destList)):
@@ -266,3 +263,9 @@ if __name__ == "__main__":
                                         serverPortStart=confConst.IPERF3_SERVER_PORT_START, testStartDelay=10)
     testEvaluator.setupTestCaseFolder()
     testEvaluator.generateTestCommands( testCaseNAme= "WebSearchWorkLoad_load_factor_0.8",loadFactor=0.8,testDuration=120,maxPortcountInSwitch=ConfigConst.MAX_PORTS_IN_SWITCH)
+
+    #--------------------
+    testEvaluator = TestCommandDeployer(topologyConfigFilePath = confConst.TOPOLOGY_CONFIG_FILE,resultFolder = "FlowInfos" , clientPortStart=confConst.IPERF3_CLIENT_PORT_START,
+                                        serverPortStart=confConst.IPERF3_SERVER_PORT_START, testStartDelay=10)
+    testEvaluator.setupTestCaseFolder()
+    testEvaluator.generateTestCommands( testCaseNAme= "WebSearchWorkLoad_load_factor_1.0",loadFactor=1,testDuration=120,maxPortcountInSwitch=ConfigConst.MAX_PORTS_IN_SWITCH)

@@ -88,6 +88,7 @@ create-result-folders:
 	mkdir ./testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.5
 	mkdir ./testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.7
 	mkdir ./testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.8
+	mkdir ./testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_1.0
 
 clear-logs:
 	sudo rm -rf /tmp/*

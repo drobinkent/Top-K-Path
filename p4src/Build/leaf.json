@@ -5292,7 +5292,7 @@
               },
               "right" : {
                 "type" : "hexstr",
-                "value" : "0x02"
+                "value" : "0x03"
               }
             }
           },
@@ -5318,7 +5318,7 @@
               },
               "right" : {
                 "type" : "hexstr",
-                "value" : "0x03"
+                "value" : "0x02"
               }
             }
           },

@@ -8,3 +8,20 @@
 
 
 
+# Isolation test :
+
+run typical 3 types of flows and with that start a flow of special type with total volume = capacity of one link * duration.
+
+At the end besides the other 3 types of flow, this special flow should get it's wcplicit bandwidth = one link capacity.
+
+ECMP can not give this.
+
+
+
+QoS Pefromance test:
+
+random distribution generation. change the link capacity randdomly.
+
+then say for each tenant link capacity is different. but ecmp can not adopt to thiese things.
+
+so compare hula and p4kp

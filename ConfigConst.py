@@ -112,7 +112,7 @@ EGRESS_QUEUE_DEPTH_DELAY_LEVELS_LINEAR = [(0, 2, 0, 0),(3,5,1,0), (6, 10,2,00)]
 
 FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB = [ 50, 256,2048]  # These means in our experiments we will consider 2 types of traffic . one with 50 KB size another 1 MB or 1024 KB
 FLOW_TYPE_TRAFFIC_CLASS= [ 18, 10, 14]
-FLOW_TYPE_LOAD_RATIO = [ 20,40, 40]
+FLOW_TYPE_LOAD_RATIO = [ 20,20, 60]
 FLOW_VOLUME_IDENTIFIER_VARIATION_LIMIT_IN_PERCENTAGE = 80 # this means any flow size within range of 15% defined in previous array will be categorized as flow of same type. 80 percent is configured to acoomdate both 10kb and 50 kb flow
 PACKET_SIZE = 1024 # Each packet will be 1200 Byte size
 

@@ -64,7 +64,7 @@ class TopKPathRouting:
         if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
             i=0
             for k in self.p4dev.portToSpineSwitchMap.keys():
-                pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
+                pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem+i)
                 self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
                 i=i+1
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
