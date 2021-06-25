@@ -150,16 +150,17 @@ struct local_metadata_t {
     bit<9> flowlet_last_used_path;
 
     //all these 3 will be of length k
-    #ifdef DP_ALGO_TOP_K_PATH
     bit <K> best_path_selector_bitmask;
     bit <K> worst_path_selector_bitmask;
     bit <K> kth_path_selector_bitmask;
-    #endif
 
     bit <8> rank_of_path_to_be_searched; //We are forced to keep this to 8 bit. Because in bmv2 this amount of right shift is limited to 8 bits
     bit <16> best_path_rank;
     bit <16> worst_path_rank;
     bit <16> kth_path_rank;
+    bit<9>  ecmp_egress_spec;
+    bit<9>  p4kp_egress_spec;
+    bit<9>  hula_egress_spec;
 
     //bit<32> linkLocation ;
 

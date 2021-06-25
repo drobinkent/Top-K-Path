@@ -71,9 +71,28 @@ def makeDirectoryWithIndex(folderPath, accessRights):
         print("Exiting")
         exit(1)
 # for each src destination in stride pair deloy these flows
+# def getL2StrdePeerHostName(hostIndex, leafSwitchIndex, podIndex , portCount):
+#     peerHostIndex = int((int(hostIndex)+1+ int(portCount)/2) % (int(portCount)/2))
+#     peerLeafSwitchIndex = int( (int(leafSwitchIndex)+1+ (int(portCount)/2)) % int((portCount)/2))
+#     peerPodIndex = int(podIndex)
+#     peerHostName = "h"+str(peerHostIndex)+"p"+str(peerPodIndex)+"l"+str(peerLeafSwitchIndex)
+#     return peerHostName
+
+def getPeerIndex(index):
+    index = int(index)
+    if(index == 0):
+        return 1
+    if(index == 1):
+        return 2
+    if(index == 2):
+        return 3
+    if(index == 3):
+        return 0
+
+
 def getL2StrdePeerHostName(hostIndex, leafSwitchIndex, podIndex , portCount):
-    peerHostIndex = int((int(hostIndex)+1+ int(portCount)/2) % (int(portCount)/2))
-    peerLeafSwitchIndex = int( (int(leafSwitchIndex)+1+ (int(portCount)/2)) % int((portCount)/2))
+    peerHostIndex = getPeerIndex(hostIndex)
+    peerLeafSwitchIndex = getPeerIndex(leafSwitchIndex)
     peerPodIndex = int(podIndex)
     peerHostName = "h"+str(peerHostIndex)+"p"+str(peerPodIndex)+"l"+str(peerLeafSwitchIndex)
     return peerHostName
@@ -89,6 +108,7 @@ def l2StridePatternTestPairCreator(nameToHostMap, maxPortcountInSwitch):
         peerName = getL2StrdePeerHostName(hostIndex, leafSwitchIndex, podIndex, maxPortcountInSwitch)
         peerHostObject = nameToHostMap.get(peerName)
         if (srcHost!=None) and (peerHostObject != None) and (not(srcHost  in srcList)) and (not(srcHost  in destList)) and (not(peerName in srcList)) and (not(peerName  in destList)):
+        # if (srcHost!=None) and (peerHostObject != None) :
             srcList.append(srcHost)
             destList.append((peerHostObject))
             count = count+1
@@ -127,8 +147,25 @@ def getStrideDeploymentPairs(nameToHostMap,maxPortcountInSwitch,testCaseName, lo
                                   startTime= flowArrivalTimesByflowType[i][j]+float(testStartDelay),flowSizeinPackets= flowsizeAsPacketCount,
                                   trafficClass = ConfigConst.FLOW_TYPE_TRAFFIC_CLASS[i], bitrate = ConfigConst.FLOW_TYPE_BITRATE[i])
                 deploymentPairList.append(newDeploymentPair)
-
-
+        src = nameToHostMap.get("h0p0l0")
+        dst = nameToHostMap.get("h1p0l1")
+        flowSize = testDuration * ConfigConst.queueRateForSpineFacingPortsOfLeafSwitch
+        # print("Spoecial flow size is "+str(flowSize))
+        bitrate = ConfigConst.queueRateForSpineFacingPortsOfLeafSwitch * 1024
+        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+                          dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+                          srcHostName=src.hostName, destHostName= dst.hostName,
+                          startTime= 10+float(testStartDelay),flowSizeinPackets= flowSize,
+                          trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        deploymentPairList.append(newDeploymentPair)
+        src = nameToHostMap.get("h0p0l2")
+        dst = nameToHostMap.get("h1p0l3")
+        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+                          dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+                          srcHostName=src.hostName, destHostName= dst.hostName,
+                          startTime= 10+float(testStartDelay),flowSizeinPackets= flowSize,
+                          trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        deploymentPairList.append(newDeploymentPair)
 
         # i = 0
         # j=0

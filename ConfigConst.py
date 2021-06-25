@@ -172,9 +172,10 @@ CLB_TESTER_DEVICE_NAME="device:p0l0"
 MAX_PORTS_IN_SWITCH = 8 #Maximum Supported ports in a switch to reflect the dataplane configuration
 MAX_TOR_SUBNET = 4;  #Maximum ToR supported by our simulation
 
-reservedPortList = {77}
-reservedRanks = {22}
-switchesOfreservedTunnel= {"p0l0", "p0l1"}
+reservedPortList = [8]
+reservedRanks = [3]
+switchesOfreservedTunnel= ["p0l0", "p0l1"]
 
-specialTunnelStartingHost = "h1p0l0"
-specialTunnelEndingHost = "h1p0l3"
+specialTunnelStartingSwitch = "p0l0"
+specialTunnelEndingSwitch = "p0l3"
+tunnelTrafficClass = 20

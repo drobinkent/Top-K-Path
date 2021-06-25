@@ -18,10 +18,11 @@ def getAVGFCTByFolder(folderName):
     files = getAllFilesInDirectory(folderName)
     flowTypeVsFCTMap = {}
     flowTypeVsFlowCountMap = {}
+    ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB.append(3200)
     for flowVolume in ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB:
         flowTypeVsFCTMap[flowVolume]  = 0
         flowTypeVsFlowCountMap[flowVolume] = 0
-
+    # ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB.append(3200)
     for f in files:
         filePath = folderName+"/"+str(f)
         try:
@@ -32,6 +33,7 @@ def getAVGFCTByFolder(folderName):
             tokens = line.split()
             flowSize = float(tokens[3])
             fct = float(tokens[8])
+
             for flowVolume in ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB:
                 if abs(flowVolume*1024 - flowSize) <= (.1*flowVolume*1024):
                     flowTypeVsFCTMap[flowVolume] = flowTypeVsFCTMap.get(flowVolume) + fct
@@ -48,10 +50,11 @@ def getPercentileFCTByFolder(folderName):
     files = getAllFilesInDirectory(folderName)
     flowTypeVsFCTMap = {}
     flowTypeVsFlowCountMap = {}
+    ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB.append(3200)
     for flowVolume in ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB:
         flowTypeVsFCTMap[flowVolume]  = []
         flowTypeVsFlowCountMap[flowVolume] = 0
-
+    # ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB.append(3200)
     for f in files:
         filePath = folderName+"/"+str(f)
         try:
@@ -62,11 +65,14 @@ def getPercentileFCTByFolder(folderName):
             tokens = line.split()
             flowSize = float(tokens[3])
             fct = float(tokens[8])
+
             for flowVolume in ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB:
-                if abs(flowVolume*1024 - flowSize) <= (.1*flowVolume*1024):
+                if abs(flowVolume*1024 - flowSize) <= (.0005*flowVolume*1024):
                     flowTypeVsFCTMap.get(flowVolume).append(fct)
                     # flowTypeVsFCTMap[flowVolume] = flowTypeVsFCTMap.get(flowVolume).append(fct)
                     flowTypeVsFlowCountMap[flowVolume] = flowTypeVsFlowCountMap.get(flowVolume) + 1
+                    if(flowVolume == 3200):
+                        print("filename is "+str(f))
         except Exception as e:
             print("Exception occcured in processing results from folder "+folderName+ ". Excemtion is ",str(e))
     totalFlowsize = 0
@@ -81,8 +87,8 @@ def getPercentileFCTByFolder(folderName):
         # print(str(f) + " -- ",np.average(flowTypeVsFCTMap.get(f)))
         # print(str(f) + " -- ",np.std(flowTypeVsFCTMap.get(f)))
 
-        totalOfFlowSizeMultipliedByAvgFct = totalOfFlowSizeMultipliedByAvgFct + ( float(f) * np.percentile(flowTypeVsFCTMap.get(f),50))
-        print(str(f) + " -- ",np.percentile(flowTypeVsFCTMap.get(f),50))
+        totalOfFlowSizeMultipliedByAvgFct = totalOfFlowSizeMultipliedByAvgFct + ( float(f) * np.percentile(flowTypeVsFCTMap.get(f),100))
+        print(str(f) + " -- ",np.percentile(flowTypeVsFCTMap.get(f),100))
     print("Average FCT  = ", totalOfFlowSizeMultipliedByAvgFct/totalFlowsize)
 
     pass
@@ -92,28 +98,28 @@ def getPercentileFCTByFolder(folderName):
 # print("For WebSearch Workload, with Load Factor 1.0")
 # # print("Algorithms Nanme : HULA ")
 # # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.8")
-# print("Algorithms Nanme : P4KP ")
-# getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_1.0")
-# print("Algorithms Nanme : ECMP ")
-# getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_1.0")
-# # print("\n\n\n")
+print("Algorithms Nanme : P4KP ")
+getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_1.0")
+print("Algorithms Nanme : ECMP ")
+getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_1.0")
+print("\n\n\n")
 
 
 # print("For WebSearch Workload, with Load Factor 0.8")
 # # # print("Algorithms Nanme : HULA ")
 # # # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.8")
-# print("Algorithms Nanme : P4KP ")
-# getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
-# print("Algorithms Nanme : ECMP ")
-# getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
-# print("\n\n\n")
+print("Algorithms Nanme : P4KP ")
+getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
+print("Algorithms Nanme : ECMP ")
+getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
+print("\n\n\n")
 # print("For WebSearch Workload, with Load Factor 0.7")
 # # print("Algorithms Nanme : HULA ")
 # # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.7")
-print("Algorithms Nanme : P4KP ")
-getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.7")
-print("Algorithms Nanme : ECMP ")
-getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_0.7")
+# print("Algorithms Nanme : P4KP ")
+# getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_0.7")
+# print("Algorithms Nanme : ECMP ")
+# getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_0.7")
 # print("\n\n\n")
 # print("For WebSearch Workload, with Load Factor 0.5")
 # # print("Algorithms Nanme : HULA ")

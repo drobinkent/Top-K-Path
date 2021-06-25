@@ -31,12 +31,11 @@
 #include "l2_ternary.p4"
 #include "leaf_downstream_routing.p4"
 #include "hula.p4"
-#ifdef DP_ALGO_TOP_K_PATH
 #include "top_k_path.p4"
 #include "top_k_path_control_message_processor.p4"
 #include "ingress_rate_monitor.p4"
 
-#endif
+
 
 
 control VerifyChecksumImpl(inout parsed_headers_t hdr,
@@ -76,16 +75,10 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     ndp_processing() ndp_processing_control_block;
 
 
-    #ifdef DP_ALGO_ECMP
+
     upstream_routing() upstream_ecmp_routing_control_block;
-    #endif
-
-
-    #ifdef DP_ALGO_HULA
     hula_load_balancing() hula_load_balancing_control_block;
-    #endif
 
-    #ifdef DP_ALGO_TOP_K_PATH
     @name("ecmp_flowlet_id_map") register<bit<9>>(32w8192) flowlet_last_used_port;
     @name("ecmp_flowlet_lasttime_map") register<bit<48>>(32w8192) ecmp_flowlet_lasttime_map;
     @name("lookup_flowlet_map") action lookup_flowlet_map() {
@@ -99,7 +92,6 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     top_k_path_control_message_processor() top_k_path_control_message_processor_control_block;
     k_path_selector() k_path_selector_control_block;
     ingress_rate_monitor() ingress_rate_monitor_control_block;
-    #endif
 
 
     apply {
@@ -109,9 +101,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
        // Set the egress port to that found in the packet-out metadata...
        standard_metadata.egress_spec = hdr.packet_out.egress_port;
        // Remove the packet-out header...
-       #ifdef DP_ALGO_TOP_K_PATH
        top_k_path_control_message_processor_control_block.apply(hdr, local_metadata, standard_metadata);
-       #endif
        hdr.packet_out.setInvalid();
        // Exit the pipeline here, no need to go through other tables.
        mark_to_drop(standard_metadata);
@@ -148,16 +138,11 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
             }else{
                 //Route the packet to upstream paths
                 local_metadata.flag_hdr.is_pkt_toward_host = false;
-                #ifdef DP_ALGO_ECMP
+                bool ecmpFlag = false;
+
                 upstream_ecmp_routing_control_block.apply(hdr, local_metadata, standard_metadata);
-                #endif
 
-
-                #ifdef DP_ALGO_HULA
-                hula_load_balancing_control_block.apply(hdr, local_metadata, standard_metadata);
-                #endif
-                #ifdef DP_ALGO_TOP_K_PATH
-                /*{
+                {
                     // Here we will set the bitmasks for 3 experiemntal traffi classes
                     //In real life scenario other algorihtms will setup these bitmasks
                     if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_LOW_DELAY){
@@ -167,44 +152,36 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                          //log_msg("Bitmask for high throughout traffic class is {}",{local_metadata.kth_path_selector_bitmask});
                     }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_CUSTOM_QOS){
                         local_metadata.kth_path_selector_bitmask = ALL_1_256_BIT[K-1:0] <<0;
-                    }else{
-                        local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0]; //set it here
+                    }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_TUNNEL_QOS){
+                         //local_metadata.kth_path_selector_bitmask = ((bit<K>)ALL_1_256_BIT) ^ ((bit<K>)ALL_1_256_BIT_EXCEPT_RESERVED);
+                         local_metadata.kth_path_selector_bitmask = 0b1000;
+                         //log_msg("In the if-else of leaf.p4 traffic class is {} bitmask is {} selected port is {} ", {hdr.ipv6.traffic_class, local_metadata.kth_path_selector_bitmask,local_metadata.p4kp_egress_spec  } );
+
                     }
+                   /* else{
+                        local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT_EXCEPT_RESERVED[K-1:0]; //set it here
+                    }*/
                 }
-                k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);*/
-                /*if ( local_metadata.flag_hdr.kth_path_finderMat_hit == false){
-                    bit<32> rankMinLocation = 0;
-                    bit<32> rankMaxLocation = 0;
-                    rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.best_path_rank);
-                    rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.best_path_rank);
-                    bit<32> linkLocation = 0;
-                    hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)(rankMaxLocation-rankMinLocation));
-                    rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
-                    log_msg("Using best path");
-                    log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
-                }else{
-                lookup_flowlet_map();
-                if (local_metadata.flow_inter_packet_gap  > FLOWLET_INTER_PACKET_GAP_THRESHOLD){*/
-                local_metadata.kth_path_rank = 0;
-                    bit<32> rankMinLocation = 0;
-                    bit<32> rankMaxLocation = 0;
-                    rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank);
-                    rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.kth_path_rank);
-                    bit<32> linkLocation = 0;
-                    hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, local_metadata.l4_src_port,local_metadata.l4_dst_port,
-                            local_metadata.flowlet_id }, (bit<32>)(rankMaxLocation-rankMinLocation));
-                    rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
-                    flowlet_last_used_port.write((bit<32>)local_metadata.flowlet_id, standard_metadata.egress_spec);
-                    //log_msg("Using Kth path");
-                    //log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
-                /*}else{
+                k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
+                bit<32> rankMinLocation = 0;
+                bit<32> rankMaxLocation = 0;
+                rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank);
+                rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.kth_path_rank);
+                bit<32> linkLocation = 0;
+                hash(linkLocation, HashAlgorithm.crc16, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, local_metadata.l4_src_port,local_metadata.l4_dst_port,
+                        local_metadata.flowlet_id }, (bit<32>)(rankMaxLocation-rankMinLocation));
+                rank_to_port_map.read(local_metadata.p4kp_egress_spec, (bit<32>)linkLocation);
+                //flowlet_last_used_port.write((bit<32>)local_metadata.flowlet_id, standard_metadata.egress_spec);
+                log_msg("traffic class is {} bitmask is {} selected port is {} ", {hdr.ipv6.traffic_class, local_metadata.kth_path_selector_bitmask,local_metadata.p4kp_egress_spec  } );
 
-                    flowlet_last_used_port.read(standard_metadata.egress_spec, (bit<32>)local_metadata.flowlet_id);
 
-                }*/
-
+                #ifdef DP_ALGO_ECMP
+                standard_metadata.egress_spec = local_metadata.ecmp_egress_spec;
                 #endif
-                //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
+
+                #ifdef DP_ALGO_TOP_K_PATH
+                standard_metadata.egress_spec = local_metadata.p4kp_egress_spec;
+                #endif
             }
         }
     }else{
@@ -290,10 +267,11 @@ control EgressPipeImpl (inout parsed_headers_t hdr,
      destination_util_counter.count((bit<32>)counter_index);
     #endif
 
-     #ifdef DP_ALGO_TOP_K_PATH
-    bit<32> counter_index = (bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[48:32]) -1 ;
+
+    //bit<32> counter_index = (bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[31:16]) -1 ;
+    bit<32> counter_index = (bit<32>)standard_metadata.egress_port ;
     destination_util_counter.count((bit<32>)counter_index);
-    #endif
+
     }
 }
 

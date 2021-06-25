@@ -99,4 +99,4 @@ HOST_COMMAND_LOGS = "./MininetSimulator/TEST_LOG/"
 TCP_SERVER_COMAND_FILE = "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/FlowInfos/WebSearchWorkLoad_load_factor_0.7.serverdat"
 TCP_CLIENT_COMAND_FILE = "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/FlowInfos/WebSearchWorkLoad_load_factor_0.7.clientdat"
 
-TEST_START_DELAY= 125   #After starting the hosts. after 125 secsonds the client and host for simulatiing the traffic load will start
+TEST_START_DELAY= 100   #After starting the hosts. after 125 secsonds the client and host for simulatiing the traffic load will start

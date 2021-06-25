@@ -30,10 +30,8 @@
 #include "my_station.p4"
 #include "l2_ternary.p4"
 #include "spine_downstream_routing.p4"
-#ifdef DP_ALGO_TOP_K_PATH
 #include "top_k_path_control_message_processor.p4"
 #include "top_k_path.p4"
-#endif
 #include "ingress_rate_monitor.p4"
 #include "hula.p4"
 
@@ -96,20 +94,16 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     my_station_processing() my_station_processing_control_block;
     ndp_processing() ndp_processing_control_block;
 
-
-    #ifdef DP_ALGO_ECMP
-    upstream_routing() upstream_ecmp_routing_control_block;
-    #endif
-
-
-    #ifdef DP_ALGO_HULA
+/*#ifdef DP_ALGO_HULA
     hula_load_balancing() hula_load_balancing_control_block;
-    #endif
-    #ifdef DP_ALGO_TOP_K_PATH
+    #endif*/
+
+    upstream_routing() upstream_ecmp_routing_control_block;
+
     top_k_path_control_message_processor() top_k_path_control_message_processor_control_block;
     k_path_selector() k_path_selector_control_block;
     ingress_rate_monitor() ingress_rate_monitor_control_block;
-    #endif
+
 
     // *** APPLY BLOCK STATEMENT
     apply {
@@ -149,23 +143,47 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 //if (local_metadata.m_color >1) {drop();}
                 if(hdr.ipv6.hop_limit == 0) { drop(); }
             }else{
-                #ifdef DP_ALGO_ECMP
+                //Route the packet to upstream paths
+                local_metadata.flag_hdr.is_pkt_toward_host = false;
+                bool ecmpFlag = false;
+
                 upstream_ecmp_routing_control_block.apply(hdr, local_metadata, standard_metadata);
+
+                {
+                    // Here we will set the bitmasks for 3 experiemntal traffi classes
+                    //In real life scenario other algorihtms will setup these bitmasks
+                    if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_LOW_DELAY){
+                        local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0]; //set it here
+                    }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_HIGH_THROUGHPUT){
+                         local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 0; //skip the first  best path as they are reserved by low delay and special custom traffic class
+                         //log_msg("Bitmask for high throughout traffic class is {}",{local_metadata.kth_path_selector_bitmask});
+                    }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_CUSTOM_QOS){
+                        local_metadata.kth_path_selector_bitmask = ALL_1_256_BIT[K-1:0] <<0;
+                    }else{
+                        local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0]; //set it here
+                    }
+                }
+                k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
+                bit<32> rankMinLocation = 0;
+                bit<32> rankMaxLocation = 0;
+                rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank);
+                rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.kth_path_rank);
+                bit<32> linkLocation = 0;
+                hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, local_metadata.l4_src_port,local_metadata.l4_dst_port,
+                        local_metadata.flowlet_id }, (bit<32>)(rankMaxLocation-rankMinLocation));
+                rank_to_port_map.read(local_metadata.p4kp_egress_spec, (bit<32>)linkLocation);
+                //flowlet_last_used_port.write((bit<32>)local_metadata.flowlet_id, standard_metadata.egress_spec);
+
+
+                #ifdef DP_ALGO_ECMP
+                standard_metadata.egress_spec = local_metadata.ecmp_egress_spec;
                 #endif
 
-                #ifdef DP_ALGO_HULA
-                hula_load_balancing_control_block.apply(hdr, local_metadata, standard_metadata);
-                #endif
                 #ifdef DP_ALGO_TOP_K_PATH
-                //apply the policy table here
-                local_metadata.rank_of_path_to_be_searched = 0;
-                //ingress_rate_monitor_control_block.apply(hdr, local_metadata, standard_metadata);
-                k_path_selector_control_block.apply(hdr, local_metadata, standard_metadata);
-                //Here we are showing how to use k'th path
-                rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)local_metadata.kth_path_rank);
-                //standard_metadata.egress_spec = port_num;
+                standard_metadata.egress_spec = local_metadata.p4kp_egress_spec;
                 #endif
-            //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
+
+
             }
         }
     }else{

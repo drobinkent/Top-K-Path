@@ -7,6 +7,8 @@ import socket
 import sys
 from datetime import datetime
 from time import sleep
+
+TUNNEL_TRAFFIC_CLASS = 20
 SEND_BUF_SIZE = 1024
 logger = logging.getLogger('TRAFFIC_DEPLOYER_CLIET.py')
 hdlr = logging.FileHandler('./log/TRAFFIC_DEPLOYER_CLIENT.log')
@@ -56,7 +58,8 @@ try:
 	x = 0
 	for x in range(0, int(round(PACKETS_TO_SEND))):
 		s.send(bytes(MESSAGE, 'utf-8'))
-		sleep(1/BIT_RATE)
+		if(TRAFFIC_CLASS == TUNNEL_TRAFFIC_CLASS):
+			sleep(1/BIT_RATE)
 	logger.info("Data sending complete")
 	end=datetime.now()
 	sender = s.getsockname()

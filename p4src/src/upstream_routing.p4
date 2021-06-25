@@ -89,7 +89,7 @@ control upstream_routing(inout parsed_headers_t    hdr,
 
 
     action set_upstream_egress_port(port_num_t port_num) {
-        standard_metadata.egress_spec = port_num;
+        local_metadata.ecmp_egress_spec = port_num;
         // Decrement TTL
         hdr.ipv6.hop_limit = hdr.ipv6.hop_limit - 1;
     }

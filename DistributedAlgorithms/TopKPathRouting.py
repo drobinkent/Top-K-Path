@@ -116,16 +116,22 @@ class TopKPathRouting:
         '''
         This function setup all the relevant stuffs for running the algorithm
         '''
+        self.p4dev.setupECMPUpstreamRouting()
         startingRankForTestingTopKPathProblem = 0
         #swUtils.setupFlowtypeBasedIngressRateMonitoringForKPathProblem(self.p4dev)
-        # self.initMAT(self.p4dev, ConfConst.K)
+        self.initMAT(self.p4dev, ConfConst.K)
         if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
             for k in self.p4dev.portToSpineSwitchMap.keys():
-                if(k in ConfigConst.reservedPortList):
+                if(k in ConfigConst.reservedPortList) and ((ConfigConst.specialTunnelStartingSwitch in self.p4dev.devName) or (ConfigConst.specialTunnelEndingSwitch in self.p4dev.devName)):
                     continue
                 else:
                     pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
                     self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+            i=0
+            while i< len(ConfigConst.reservedPortList):
+                pkt = self.topKPathManager.insertPort(port = int(ConfigConst.reservedPortList[i]), k = ConfigConst.reservedRanks[i])
+                self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+                i=i+1
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
             for k in self.p4dev.portToSuperSpineSwitchMap.keys():
                 if(k in ConfigConst.reservedPortList):
