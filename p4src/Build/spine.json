@@ -1463,14 +1463,14 @@
             },
             {
               "type" : "hexstr",
-              "value" : "0xffff"
+              "value" : "0x0000"
             }
           ],
           "source_info" : {
-            "filename" : "p4src/src/CONSTANTS.p4",
-            "line" : 182,
-            "column" : 30,
-            "source_fragment" : "1; ..."
+            "filename" : "p4src/src/top_k_path.p4",
+            "line" : 60,
+            "column" : 8,
+            "source_fragment" : "local_metadata.kth_path_rank =0"
           }
         },
         {
@@ -2704,7 +2704,7 @@
                                                       },
                                                       "right" : {
                                                         "type" : "hexstr",
-                                                        "value" : "0x20"
+                                                        "value" : "0x10"
                                                       }
                                                     }
                                                   },
@@ -2716,7 +2716,7 @@
                                               },
                                               "right" : {
                                                 "type" : "hexstr",
-                                                "value" : "0x01ffff"
+                                                "value" : "0xffff"
                                               }
                                             }
                                           },
@@ -2763,8 +2763,8 @@
           "source_info" : {
             "filename" : "p4src/src/spine.p4",
             "line" : 235,
-            "column" : 32,
-            "source_fragment" : "(bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[48:32]) -1"
+            "column" : 31,
+            "source_fragment" : "(bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[31:16]) -1"
           }
         },
         {

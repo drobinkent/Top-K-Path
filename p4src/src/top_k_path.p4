@@ -57,7 +57,7 @@ control k_path_selector(inout parsed_headers_t    hdr,
         local_metadata.flag_hdr.kth_path_finderMat_hit = true;
     }
     action kth_path_finder_action_without_param() {
-        local_metadata.kth_path_rank =INVALID_RANK;
+        local_metadata.kth_path_rank =0;
         local_metadata.flag_hdr.kth_path_finderMat_hit = false;
     }
 

@@ -41,7 +41,7 @@ def deployClientCommands(myhostName):
             host = tokens[0]
             if(host == myhostName):
                 # command = "sudo python3 ./MininetSimulator/Server.py "+tokens[3] + " "+tokens[4]+" \n"
-                command = "sudo python3 ./MininetSimulator/Client.py "+tokens[3] + " "+tokens[4]+ " "+tokens[5]+" "+tokens[6]+ " "+str(float(tokens[7])+float(TEST_START_DELAY))+ " "+ tokens[8]+ "\n"
+                command = "sudo python3 ./MininetSimulator/Client.py "+tokens[3] + " "+tokens[4]+ " "+tokens[5]+" "+tokens[6]+ " "+str(float(tokens[7])+float(TEST_START_DELAY))+ " "+ tokens[8]+ " "+ tokens[9]+"\n"
                 logger.info("Client side command for host "+myhostName+ "is :"+command)
                 out = os.popen(command)
     except OSError as oe:

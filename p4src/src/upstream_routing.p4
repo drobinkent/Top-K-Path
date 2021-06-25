@@ -114,9 +114,9 @@ control upstream_routing(inout parsed_headers_t    hdr,
         counters = direct_counter(CounterType.packets_and_bytes);
     }
     apply {
-        lookup_flowlet_map();
+        /*lookup_flowlet_map();
         if (local_metadata.flow_inter_packet_gap  > FLOWLET_INTER_PACKET_GAP_THRESHOLD)
-             update_flowlet_id();
+             update_flowlet_id();*/
         upstream_routing_table.apply();
     }
 }

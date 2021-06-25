@@ -332,7 +332,7 @@ def makeDirectory(folderPath, accessRights):
 
 
 class IPerfDeplymentPair:
-    def __init__(self,src, dest, srcPort, destPort,srcHostName, destHostName, testCaseName,trafficClass, startTime = 0,flowSizeinPackets=100):
+    def __init__(self,src, dest, srcPort, destPort,srcHostName, destHostName, testCaseName,trafficClass, bitrate,startTime = 0,flowSizeinPackets=100, ):
         '''
         startTime is required when we want to repeat a flow. So assume we want to repeat a flow 10 times. So if we start a specfic test at time x,
         This deployment Pari will be started at x+startTime time
@@ -350,6 +350,7 @@ class IPerfDeplymentPair:
         self.srcHostName = srcHostName
         self.destHostName = destHostName
         self.trafficClass = trafficClass
+        self.bitrate = bitrate
         access_rights = 0o777
 
         try:
@@ -368,7 +369,7 @@ class IPerfDeplymentPair:
     def getCleintCommand(self):
         self.clientCmdString = self.srcHostName + " "+ "python Client.py "+ str(self.destIP) + " "+ str(self.destPort) + "  "+str(self.flowSizeinPackets) \
                                + " "+self.testResultFolder+ "/"+str(self.srcIP)+"_"+str(self.srcPort)+"_"+self.destIP+"_"+str(self.destPort) +\
-                               " "+str(self.startTime) + " "+str(self.trafficClass)
+                               " "+str(self.startTime) + " "+str(self.trafficClass)+" "+str(self.bitrate)
         return self.clientCmdString
 
     def generateIPerf3Command(self, testResultFolderRoot, clientResultLogSubFolder, serverResultLogSubFolder):

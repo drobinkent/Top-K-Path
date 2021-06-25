@@ -87,6 +87,8 @@ class TopKPathManager:
         bit<32> rank_min_index;
         bit<32> new_port_index;
         '''
+        # logger.info("for device "+self.p4dev.devName+"  Packet built for rank : "+str(rank)+" port :"+str(port)+" minindex : "+
+        #             str(rankMinIndex)+" maxindex :"+str(rankMaxIndex)+" portIndex "+str(newPortIndex)+" Packet type "+(str(isDelete)))
 
         rawPktContent = (255).to_bytes(2,'big') # first 2 byte egressport and padding
         if(isDelete == True):
@@ -176,6 +178,7 @@ class TopKPathManager:
         #kth bit in bitmask will be 1
         pktForInsertPort = self.buildMetadataBasedPacketOut(isDelete=False,   rank = k, port = port, rankMinIndex=self.getMinIndex(k),
                         rankMaxIndex = self.getMaxIndex(rank=k), newPortIndex=self.getMaxIndex(rank=k),bitmask = self.getBitmask())
+
         return pktForInsertPort
 
     def getBitmask(self):

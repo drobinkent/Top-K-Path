@@ -38,6 +38,7 @@ try:
 	RESULT_FILE = sys.argv[4]
 	START_DELAY = float(sys.argv[5])
 	TRAFFIC_CLASS = int(sys.argv[6])
+	BIT_RATE = int(sys.argv[7])/BUFFER_SIZE
 	MESSAGE = "d" * BUFFER_SIZE		# packet to send
 	sleep(START_DELAY)
 	start=datetime.now()
@@ -55,6 +56,7 @@ try:
 	x = 0
 	for x in range(0, int(round(PACKETS_TO_SEND))):
 		s.send(bytes(MESSAGE, 'utf-8'))
+		sleep(1/BIT_RATE)
 	logger.info("Data sending complete")
 	end=datetime.now()
 	sender = s.getsockname()

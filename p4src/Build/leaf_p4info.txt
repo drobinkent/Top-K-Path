@@ -487,26 +487,6 @@ tables {
 }
 tables {
   preamble {
-    id: 36185609
-    name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
-    alias: "kth_path_finder_mat"
-  }
-  match_fields {
-    id: 1
-    name: "local_metadata.kth_path_selector_bitmask"
-    bitwidth: 4
-    match_type: TERNARY
-  }
-  action_refs {
-    id: 25442642
-  }
-  action_refs {
-    id: 24517793
-  }
-  size: 1024
-}
-tables {
-  preamble {
     id: 39819042
     name: "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
     alias: "debug_std_meta_egress_start.dbg_table"
@@ -757,32 +737,6 @@ actions {
     id: 1
     name: "target_mac"
     bitwidth: 48
-  }
-}
-actions {
-  preamble {
-    id: 23370174
-    name: "IngressPipeImpl.lookup_flowlet_map"
-    alias: "lookup_flowlet_map"
-  }
-}
-actions {
-  preamble {
-    id: 24517793
-    name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param"
-    alias: "kth_path_finder_action_with_param"
-  }
-  params {
-    id: 1
-    name: "rank"
-    bitwidth: 16
-  }
-}
-actions {
-  preamble {
-    id: 25442642
-    name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param"
-    alias: "kth_path_finder_action_without_param"
   }
 }
 counters {

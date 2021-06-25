@@ -1,6 +1,8 @@
 import logging.handlers
 import threading
 import time
+
+import ConfigConst
 import DistributedAlgorithms.Testingconst as tstConst
 import ConfigConst as ConfConst
 import InternalConfig
@@ -18,6 +20,27 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
 logging.StreamHandler(stream=None)
 logger.setLevel(logging.INFO)
+
+
+def getRank(pathUtil):
+    rankList = []
+    if(pathUtil>=0) and (pathUtil <= 0.125):
+        return 0
+    if(pathUtil>0.125) and (pathUtil <= 0.250):
+        return 1
+    if(pathUtil>0.250) and (pathUtil <= 0.375):
+        return 2
+    if(pathUtil>0.375) and (pathUtil <= .500):
+        return 3
+    if(pathUtil>0.500) and (pathUtil <= .625):
+        return 4
+    if(pathUtil>0.625) and (pathUtil <= .750):
+        return 5
+    if(pathUtil>0.750) and (pathUtil <= .875):
+        return 6
+    if(pathUtil>0.875) and (pathUtil <= .1000):
+        return 7
+    return 0
 
 class TopKPathRouting:
 
@@ -51,7 +74,42 @@ class TopKPathRouting:
                                                actionParamValue = str(j), priority=bitMaskLength-j+1)
 
 
-
+    def p4kpUtilBasedReconfigureForLeafSwitches(self, linkUtilStats, oldLinkUtilStats):
+        # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "new Utilization data is  "+str(linkUtilStats))
+        # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
+        pathAndUtilist = []
+        for i in range (int(ConfConst.MAX_PORTS_IN_SWITCH/2), ConfConst.MAX_PORTS_IN_SWITCH):
+            if((i+1) in ConfigConst.reservedPortList):
+                continue
+            else:
+                index = i
+                utilInLastInterval = linkUtilStats[index] -  oldLinkUtilStats[index]
+                # rankInLastInterval = self.topKPathManager.portToRankMap.get(i)
+                # pathAndUtilist.append((i,utilInLastInterval,rankInLastInterval))
+                pathAndUtilist.append((i+1,utilInLastInterval))
+        pathAndUtilist.sort(key=lambda x:x[1])
+        # if(self.p4dev.devName == ConfConst.CLB_TESTER_DEVICE_NAME):
+        #     print("For device "+self.p4dev.devName+" The port utilization data according to rank is "+str(pathAndUtilist))
+        controlPacketList = []
+        rankInsertedIncurrentIteration = {} #In our simulation ew are just using only one port per rank. but in case when you have more than one port per rank, basically you have to keep
+        #another copy oth the K-path manager. then in that copy you will maintain the port and ranks configured in current iteraition. if at some point, the rank or location is
+        #already iused in current iteration then you do not need to delete the path
+        i=0
+        extraIncrementToAvoidReserverRank = 0
+        while i< len(pathAndUtilist):
+            if (i in ConfigConst.reservedRanks) :
+                extraIncrementToAvoidReserverRank = extraIncrementToAvoidReserverRank + 1
+            port = pathAndUtilist[i][0]
+            rank = i + extraIncrementToAvoidReserverRank
+            if(rankInsertedIncurrentIteration.get(rank)== None):
+                dltPkt = self.topKPathManager.deletePort(port)
+                controlPacketList.append(dltPkt)
+            rankInsertedIncurrentIteration[rank] = rank
+            insertPkt = self.topKPathManager.insertPort(port, rank)
+            controlPacketList.append(insertPkt)
+            i=i+1
+        for ctrlPkt in controlPacketList:
+            self.p4dev.send_already_built_control_packet_for_top_k_path(ctrlPkt)
 
 
     def setup(self,nameToSwitchMap):
@@ -60,17 +118,21 @@ class TopKPathRouting:
         '''
         startingRankForTestingTopKPathProblem = 0
         #swUtils.setupFlowtypeBasedIngressRateMonitoringForKPathProblem(self.p4dev)
-        self.initMAT(self.p4dev, ConfConst.K)
+        # self.initMAT(self.p4dev, ConfConst.K)
         if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
-            i=0
             for k in self.p4dev.portToSpineSwitchMap.keys():
-                pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem+i)
-                self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
-                i=i+1
+                if(k in ConfigConst.reservedPortList):
+                    continue
+                else:
+                    pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
+                    self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
             for k in self.p4dev.portToSuperSpineSwitchMap.keys():
-                pkt = self.topKPathManager.insertPort(port = int(k), k = int(k))
-                self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+                if(k in ConfigConst.reservedPortList):
+                    continue
+                else:
+                    pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
+                    self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
             self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K) # by default add space for 16 ports in super spine. This is not actually used in our simulation
             pass
@@ -80,32 +142,9 @@ class TopKPathRouting:
     def processFeedbackPacket(self, parsedPkt, dev):
         #print("Called the algo")
         #TODO: for each of the different types of the packet, we have to write a separate function to process them
-
         pass
 
-    def p4kpUtilBasedReconfigureForLeafSwitches(self, linkUtilStats, oldLinkUtilStats):
-        # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "new Utilization data is  "+str(linkUtilStats))
-        # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
-        pathAndUtilist = []
-        for i in range (int(ConfConst.MAX_PORTS_IN_SWITCH/2), ConfConst.MAX_PORTS_IN_SWITCH):
-            index = i
-            utilInLastInterval = linkUtilStats[index] -  oldLinkUtilStats[index]
-            # rankInLastInterval = self.topKPathManager.portToRankMap.get(i)
-            # pathAndUtilist.append((i,utilInLastInterval,rankInLastInterval))
-            pathAndUtilist.append((i+1,utilInLastInterval))
-        pathAndUtilist.sort(key=lambda x:x[1])
-        # if(self.p4dev.devName == ConfConst.CLB_TESTER_DEVICE_NAME):
-        #     print("For device "+self.p4dev.devName+" The port utilization data according to rank is "+str(pathAndUtilist))
-        controlPacketList = []
-        for i in range (0, len(pathAndUtilist)):
-            port = pathAndUtilist[i][0]
-            dltPkt = self.topKPathManager.deletePort(port)
-            controlPacketList.append(dltPkt)
-            insertPkt = self.topKPathManager.insertPort(port, i)
-            controlPacketList.append(insertPkt)
 
-        for ctrlPkt in controlPacketList:
-            self.p4dev.send_already_built_control_packet_for_top_k_path(ctrlPkt)
 
 
 

@@ -25,3 +25,40 @@ random distribution generation. change the link capacity randdomly.
 then say for each tenant link capacity is different. but ecmp can not adopt to thiese things.
 
 so compare hula and p4kp
+
+
+------------------
+We simulated a multi tenant (t tenants) data cne ter environemnet using mininet. In this scenario, each tenant
+consume some portion of a link's bandwidth capacity. Among  the  multiple tenants we focsued on 2 tenants
+we focused on 2 specific tenant's performance in terms of qos performance in this case. The link bandwidth consumption
+of rest of the t-2 tenants were modeled using a normal distriution. here each link's l_f portion was reserved for the rest t-2 tenants
+and 1- l_f portion was used for the 2 tenants in sondiertation.
+
+traffic designa and measurement :
+
+the first tenants runs a real life workload observed in production data center. Where as the 2 nd tenant runs a dedicated
+long term flow
+
+
+
+First we evaluate Can P4KP be used as a data strucuture or api for qos aware routing to other algorithms.
+
+then using simulated multitenant environment we measured how P4KP can be tranlsted into performance and qos gain.
+
+ a real life workload was used
+
+
+ for packet loss and jitter same traffic with udp protocol was used.
+
+
+
+
+
+
+ =======================
+ task:
+ ======================
+
+ convert the traffic generator to json based scheme. use those json scheme for tcp test using iperf.
+ from their we can monitor rtt variation and other stuffs.
+

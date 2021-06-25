@@ -212,6 +212,7 @@ header packet_in_t {
 header packet_out_t {
     port_num_t  egress_port;
     bit<7>      _pad;
+    //bit<16> tor_id;
     //Previous all fields are not necessary for CLB. TODO  at sometime we will trey to clean up them. But at this moment we are not focusing on that
     bit<8> top_k_path_flags; //Here we will keep various falgs for topKpath
     //--------bit-7--------|| If this bit is set then this is a delete port else this is a add port insturction

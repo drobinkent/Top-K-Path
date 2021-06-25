@@ -4,24 +4,18 @@
       "name" : "scalars_0",
       "id" : 0,
       "fields" : [
-        ["tmp", 32, false],
-        ["tmp_0", 32, false],
+        ["tmp", 4, false],
+        ["tmp_0", 9, false],
         ["tmp_1", 4, false],
         ["tmp_2", 9, false],
-        ["tmp_3", 4, false],
-        ["tmp_4", 9, false],
-        ["tmp_5", 32, false],
-        ["tmp_6", 32, false],
-        ["tmp_7", 32, false],
-        ["tmp_8", 32, false],
-        ["tmp_9", 32, false],
+        ["tmp_3", 32, false],
+        ["tmp_4", 32, false],
         ["rankMinLocation_0", 32, false],
         ["rankMaxLocation_0", 32, false],
         ["linkLocation_0", 32, false],
         ["ndp_processing_control_block_host_ipv6_tmp", 128, false],
-        ["k_path_selector_control_block_stored_bitmask_read_value", 4, false],
-        ["tmp_10", 32, false],
-        ["tmp_11", 32, false],
+        ["tmp_5", 32, false],
+        ["tmp_6", 32, false],
         ["userMetadata.l4_src_port", 16, false],
         ["userMetadata.l4_dst_port", 16, false],
         ["userMetadata.is_multicast", 1, false],
@@ -38,7 +32,7 @@
         ["userMetadata.best_path_rank", 16, false],
         ["userMetadata.worst_path_rank", 16, false],
         ["userMetadata.kth_path_rank", 16, false],
-        ["_padding_0", 3, false]
+        ["_padding_0", 7, false]
       ]
     },
     {
@@ -700,7 +694,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "p4src/src/leaf.p4",
-        "line" : 337,
+        "line" : 343,
         "column" : 8,
         "source_fragment" : "DeparserImpl"
       },
@@ -861,33 +855,6 @@
     {
       "name" : "calc",
       "id" : 0,
-      "algo" : "crc16",
-      "input" : [
-        {
-          "type" : "field",
-          "value" : ["ipv6", "src_addr"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv6", "dst_addr"]
-        },
-        {
-          "type" : "field",
-          "value" : ["ipv6", "next_hdr"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp", "src_port"]
-        },
-        {
-          "type" : "field",
-          "value" : ["tcp", "dst_port"]
-        }
-      ]
-    },
-    {
-      "name" : "calc_0",
-      "id" : 1,
       "algo" : "crc32",
       "input" : [
         {
@@ -904,16 +871,24 @@
         },
         {
           "type" : "field",
-          "value" : ["tcp", "src_port"]
+          "value" : ["scalars", "userMetadata.l4_src_port"]
+        },
+        {
+          "type" : "field",
+          "value" : ["scalars", "userMetadata.l4_dst_port"]
+        },
+        {
+          "type" : "field",
+          "value" : ["scalars", "userMetadata.flowlet_id"]
         }
       ]
     },
     {
-      "name" : "calc_1",
-      "id" : 2,
+      "name" : "calc_0",
+      "id" : 1,
       "source_info" : {
         "filename" : "p4src/src/leaf.p4",
-        "line" : 307,
+        "line" : 313,
         "column" : 8,
         "source_fragment" : "update_checksum(hdr.ndp.isValid(), ..."
       },
@@ -1470,328 +1445,8 @@
       ]
     },
     {
-      "name" : "IngressPipeImpl.lookup_flowlet_map",
-      "id" : 9,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "modify_field_with_hash_based_offset",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.flowlet_id"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x0000"
-            },
-            {
-              "type" : "calculation",
-              "value" : "calc"
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x1fff"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 92,
-            "column" : 8,
-            "source_fragment" : "hash(local_metadata.flowlet_id, HashAlgorithm.crc16, (bit<13>)0, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port, hdr.tcp.dst_port}, (bit<13>)8191)"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.flow_inter_packet_gap"]
-            },
-            {
-              "type" : "field",
-              "value" : ["standard_metadata", "ingress_global_timestamp"]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 93,
-            "column" : 8,
-            "source_fragment" : "local_metadata.flow_inter_packet_gap = (bit<48>)standard_metadata.ingress_global_timestamp"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["scalars", "userMetadata.flowlet_id"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 94,
-            "column" : 82,
-            "source_fragment" : "(bit<32>)local_metadata.flowlet_id"
-          }
-        },
-        {
-          "op" : "register_read",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.flowlet_last_pkt_seen_time"]
-            },
-            {
-              "type" : "register_array",
-              "value" : "IngressPipeImpl.ecmp_flowlet_lasttime_map"
-            },
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp"]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 94,
-            "column" : 8,
-            "source_fragment" : "ecmp_flowlet_lasttime_map.read(local_metadata.flowlet_last_pkt_seen_time, (bit<32>)local_metadata.flowlet_id)"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.flow_inter_packet_gap"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "expression",
-                    "value" : {
-                      "op" : "-",
-                      "left" : {
-                        "type" : "field",
-                        "value" : ["standard_metadata", "ingress_global_timestamp"]
-                      },
-                      "right" : {
-                        "type" : "field",
-                        "value" : ["scalars", "userMetadata.flowlet_last_pkt_seen_time"]
-                      }
-                    }
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffffffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 95,
-            "column" : 8,
-            "source_fragment" : "local_metadata.flow_inter_packet_gap = local_metadata.flow_inter_packet_gap - local_metadata.flowlet_last_pkt_seen_time"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_0"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["scalars", "userMetadata.flowlet_id"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 96,
-            "column" : 40,
-            "source_fragment" : "(bit<32>)local_metadata.flowlet_id"
-          }
-        },
-        {
-          "op" : "register_write",
-          "parameters" : [
-            {
-              "type" : "register_array",
-              "value" : "IngressPipeImpl.ecmp_flowlet_lasttime_map"
-            },
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_0"]
-            },
-            {
-              "type" : "field",
-              "value" : ["standard_metadata", "ingress_global_timestamp"]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 96,
-            "column" : 8,
-            "source_fragment" : "ecmp_flowlet_lasttime_map.write((bit<32>)local_metadata.flowlet_id, standard_metadata.ingress_global_timestamp)"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
-      "id" : 10,
-      "runtime_data" : [
-        {
-          "name" : "rank",
-          "bitwidth" : 16
-        }
-      ],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.kth_path_rank"]
-            },
-            {
-              "type" : "runtime_data",
-              "value" : 0
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 56,
-            "column" : 8,
-            "source_fragment" : "local_metadata.kth_path_rank =rank"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["flag_hdr", "kth_path_finderMat_hit"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "b2d",
-                  "left" : null,
-                  "right" : {
-                    "type" : "bool",
-                    "value" : true
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 57,
-            "column" : 8,
-            "source_fragment" : "local_metadata.flag_hdr.kth_path_finderMat_hit = true"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param",
-      "id" : 11,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.kth_path_rank"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0xffff"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/CONSTANTS.p4",
-            "line" : 182,
-            "column" : 30,
-            "source_fragment" : "1; ..."
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["flag_hdr", "kth_path_finderMat_hit"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "b2d",
-                  "left" : null,
-                  "right" : {
-                    "type" : "bool",
-                    "value" : false
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 61,
-            "column" : 8,
-            "source_fragment" : "local_metadata.flag_hdr.kth_path_finderMat_hit = false"
-          }
-        }
-      ]
-    },
-    {
       "name" : "top_k_path_control_message_processor18",
-      "id" : 12,
+      "id" : 9,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -1863,7 +1518,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_1"]
+              "value" : ["scalars", "tmp"]
             },
             {
               "type" : "expression",
@@ -1903,7 +1558,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_1"]
+              "value" : ["scalars", "tmp"]
             }
           ],
           "source_info" : {
@@ -1964,7 +1619,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_2"]
+              "value" : ["scalars", "tmp_0"]
             },
             {
               "type" : "expression",
@@ -2004,7 +1659,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_2"]
+              "value" : ["scalars", "tmp_0"]
             }
           ],
           "source_info" : {
@@ -2018,7 +1673,7 @@
     },
     {
       "name" : "top_k_path_control_message_processor29",
-      "id" : 13,
+      "id" : 10,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2090,7 +1745,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_3"]
+              "value" : ["scalars", "tmp_1"]
             },
             {
               "type" : "expression",
@@ -2130,7 +1785,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_3"]
+              "value" : ["scalars", "tmp_1"]
             }
           ],
           "source_info" : {
@@ -2191,7 +1846,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_4"]
+              "value" : ["scalars", "tmp_2"]
             },
             {
               "type" : "expression",
@@ -2231,7 +1886,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_4"]
+              "value" : ["scalars", "tmp_2"]
             }
           ],
           "source_info" : {
@@ -2245,7 +1900,7 @@
     },
     {
       "name" : "leaf110",
-      "id" : 14,
+      "id" : 11,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2271,7 +1926,7 @@
     },
     {
       "name" : "leaf115",
-      "id" : 15,
+      "id" : 12,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2318,7 +1973,7 @@
     },
     {
       "name" : "leaf106",
-      "id" : 16,
+      "id" : 13,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2383,7 +2038,7 @@
     },
     {
       "name" : "ndp43",
-      "id" : 17,
+      "id" : 14,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2448,7 +2103,7 @@
     },
     {
       "name" : "ndp47",
-      "id" : 18,
+      "id" : 15,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2484,7 +2139,7 @@
     },
     {
       "name" : "leaf133",
-      "id" : 19,
+      "id" : 16,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2501,7 +2156,7 @@
     },
     {
       "name" : "l2_ternary44",
-      "id" : 20,
+      "id" : 17,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2518,7 +2173,7 @@
     },
     {
       "name" : "my_station24",
-      "id" : 21,
+      "id" : 18,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2554,7 +2209,7 @@
     },
     {
       "name" : "my_station25",
-      "id" : 22,
+      "id" : 19,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2590,7 +2245,7 @@
     },
     {
       "name" : "leaf147",
-      "id" : 23,
+      "id" : 20,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2612,7 +2267,7 @@
     },
     {
       "name" : "leaf146",
-      "id" : 24,
+      "id" : 21,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2647,136 +2302,8 @@
       ]
     },
     {
-      "name" : "leaf164",
-      "id" : 25,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.kth_path_selector_bitmask"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x0f"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 164,
-            "column" : 24,
-            "source_fragment" : "local_metadata.kth_path_selector_bitmask = ALL_1_256_BIT[4 -1:0]"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "leaf166",
-      "id" : 26,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.kth_path_selector_bitmask"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x0c"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 166,
-            "column" : 25,
-            "source_fragment" : "local_metadata.kth_path_selector_bitmask = ALL_1_256_BIT[4 -1:0] << 2"
-          }
-        },
-        {
-          "op" : "log_msg",
-          "parameters" : [
-            {
-              "type" : "string",
-              "value" : "Bitmask for high throughout traffic class is {}"
-            },
-            {
-              "type" : "parameters_vector",
-              "value" : [
-                {
-                  "type" : "hexstr",
-                  "value" : "0x0c"
-                }
-              ]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 167,
-            "column" : 25,
-            "source_fragment" : "                         log_msg(\\\"Bitmask for high throughout traffic class is {}\\\",{local_metadata.kth_path_selector_bitmask});"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "leaf169",
-      "id" : 27,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.kth_path_selector_bitmask"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x0e"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 169,
-            "column" : 24,
-            "source_fragment" : "local_metadata.kth_path_selector_bitmask = ALL_1_256_BIT[4 -1:0] <<1"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "leaf171",
-      "id" : 28,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.kth_path_selector_bitmask"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x0f"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 171,
-            "column" : 24,
-            "source_fragment" : "local_metadata.kth_path_selector_bitmask = ALL_1_256_BIT[4 -1:0]"
-          }
-        }
-      ]
-    },
-    {
       "name" : "leaf158",
-      "id" : 29,
+      "id" : 22,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -2807,221 +2334,24 @@
             "column" : 16,
             "source_fragment" : "local_metadata.flag_hdr.is_pkt_toward_host = false"
           }
-        }
-      ]
-    },
-    {
-      "name" : "top_k_path86",
-      "id" : 30,
-      "runtime_data" : [],
-      "primitives" : [
+        },
         {
-          "op" : "register_read",
+          "op" : "assign",
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "k_path_selector_control_block_stored_bitmask_read_value"]
-            },
-            {
-              "type" : "register_array",
-              "value" : "stored_bitmask"
+              "value" : ["scalars", "userMetadata.kth_path_rank"]
             },
             {
               "type" : "hexstr",
-              "value" : "0x00000000"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 86,
-            "column" : 12,
-            "source_fragment" : "stored_bitmask.read(stored_bitmask_read_value, (bit<32>)0)"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.best_path_selector_bitmask"]
-            },
-            {
-              "type" : "hexstr",
-              "value" : "0x0f"
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 87,
-            "column" : 12,
-            "source_fragment" : "local_metadata.best_path_selector_bitmask = ALL_1_256_BIT[4 -1:0]"
-          }
-        },
-        {
-          "op" : "log_msg",
-          "parameters" : [
-            {
-              "type" : "string",
-              "value" : "traffic class is {}"
-            },
-            {
-              "type" : "parameters_vector",
-              "value" : [
-                {
-                  "type" : "field",
-                  "value" : ["ipv6", "traffic_class"]
-                }
-              ]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 88,
-            "column" : 12,
-            "source_fragment" : "            log_msg(\\\"traffic class is {}\\\", {hdr.ipv6.traffic_class});"
-          }
-        },
-        {
-          "op" : "log_msg",
-          "parameters" : [
-            {
-              "type" : "string",
-              "value" : "Stored bitmask after read is {}"
-            },
-            {
-              "type" : "parameters_vector",
-              "value" : [
-                {
-                  "type" : "field",
-                  "value" : ["scalars", "k_path_selector_control_block_stored_bitmask_read_value"]
-                }
-              ]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 89,
-            "column" : 12,
-            "source_fragment" : "            log_msg(\\\"Stored bitmask after read is {}\\\",{stored_bitmask_read_value});"
-          }
-        },
-        {
-          "op" : "log_msg",
-          "parameters" : [
-            {
-              "type" : "string",
-              "value" : "kth path selector bitmask is {}"
-            },
-            {
-              "type" : "parameters_vector",
-              "value" : [
-                {
-                  "type" : "field",
-                  "value" : ["scalars", "userMetadata.kth_path_selector_bitmask"]
-                }
-              ]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 90,
-            "column" : 12,
-            "source_fragment" : "            log_msg(\\\"kth path selector bitmask is {}\\\",{local_metadata.kth_path_selector_bitmask});"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.kth_path_selector_bitmask"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["scalars", "k_path_selector_control_block_stored_bitmask_read_value"]
-                  },
-                  "right" : {
-                    "type" : "field",
-                    "value" : ["scalars", "userMetadata.kth_path_selector_bitmask"]
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 93,
-            "column" : 12,
-            "source_fragment" : "local_metadata.kth_path_selector_bitmask = stored_bitmask_read_value & local_metadata.kth_path_selector_bitmask"
-          }
-        },
-        {
-          "op" : "log_msg",
-          "parameters" : [
-            {
-              "type" : "string",
-              "value" : "local_metadata.kth_path_selector_bitmask  after AND of stored_bitmask_read_value & local_metadata.kth_path_selector_bitmask is : {}"
-            },
-            {
-              "type" : "parameters_vector",
-              "value" : [
-                {
-                  "type" : "field",
-                  "value" : ["scalars", "userMetadata.kth_path_selector_bitmask"]
-                }
-              ]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 96,
-            "column" : 12,
-            "source_fragment" : "            log_msg(\\\"local_metadata.kth_path_selector_bitmask  after AND of stored_bitmask_read_value & local_metadata.kth_path_selector_bitmask is : {}\\\",{local_metadata.kth_path_selector_bitmask});"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "leaf190",
-      "id" : 31,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_5"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["scalars", "userMetadata.kth_path_rank"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
+              "value" : "0x0000"
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 190,
-            "column" : 60,
-            "source_fragment" : "(bit<32>)local_metadata.kth_path_rank"
+            "line" : 188,
+            "column" : 16,
+            "source_fragment" : "local_metadata.kth_path_rank = 0"
           }
         },
         {
@@ -3036,47 +2366,15 @@
               "value" : "rank_to_min_index"
             },
             {
-              "type" : "field",
-              "value" : ["scalars", "tmp_5"]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 190,
-            "column" : 20,
-            "source_fragment" : "rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank)"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_6"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["scalars", "userMetadata.kth_path_rank"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
+              "type" : "hexstr",
+              "value" : "0x00000000"
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
             "line" : 191,
-            "column" : 60,
-            "source_fragment" : "(bit<32>)local_metadata.kth_path_rank"
+            "column" : 20,
+            "source_fragment" : "rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank)"
           }
         },
         {
@@ -3091,13 +2389,13 @@
               "value" : "rank_to_max_index"
             },
             {
-              "type" : "field",
-              "value" : ["scalars", "tmp_6"]
+              "type" : "hexstr",
+              "value" : "0x00000000"
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 191,
+            "line" : 192,
             "column" : 20,
             "source_fragment" : "rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.kth_path_rank)"
           }
@@ -3107,7 +2405,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_7"]
+              "value" : ["scalars", "tmp_3"]
             },
             {
               "type" : "expression",
@@ -3139,8 +2437,8 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 193,
-            "column" : 174,
+            "line" : 195,
+            "column" : 67,
             "source_fragment" : "rankMaxLocation-rankMinLocation"
           }
         },
@@ -3157,18 +2455,18 @@
             },
             {
               "type" : "calculation",
-              "value" : "calc_0"
+              "value" : "calc"
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_7"]
+              "value" : ["scalars", "tmp_3"]
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 193,
+            "line" : 194,
             "column" : 20,
-            "source_fragment" : "hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port }, (bit<32>)(rankMaxLocation-rankMinLocation))"
+            "source_fragment" : "hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, local_metadata.l4_src_port,local_metadata.l4_dst_port, ..."
           }
         },
         {
@@ -3189,7 +2487,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 194,
+            "line" : 196,
             "column" : 20,
             "source_fragment" : "rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation)"
           }
@@ -3199,7 +2497,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_8"]
+              "value" : ["scalars", "tmp_4"]
             },
             {
               "type" : "expression",
@@ -3221,7 +2519,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 195,
+            "line" : 197,
             "column" : 49,
             "source_fragment" : "(bit<32>)local_metadata.flowlet_id"
           }
@@ -3235,149 +2533,31 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_8"]
+              "value" : ["scalars", "tmp_4"]
             },
             {
               "type" : "field",
               "value" : ["standard_metadata", "egress_spec"]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 195,
-            "column" : 20,
-            "source_fragment" : "flowlet_last_used_port.write((bit<32>)local_metadata.flowlet_id, standard_metadata.egress_spec)"
-          }
-        },
-        {
-          "op" : "log_msg",
-          "parameters" : [
-            {
-              "type" : "string",
-              "value" : "Using Kth path"
-            },
-            {
-              "type" : "parameters_vector",
-              "value" : {
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 196,
-            "column" : 20,
-            "source_fragment" : "                    log_msg(\\\"Using Kth path\\\");"
-          }
-        },
-        {
-          "op" : "log_msg",
-          "parameters" : [
-            {
-              "type" : "string",
-              "value" : "Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. "
-            },
-            {
-              "type" : "parameters_vector",
-              "value" : [
-                {
-                  "type" : "field",
-                  "value" : ["scalars", "rankMinLocation_0"]
-                },
-                {
-                  "type" : "field",
-                  "value" : ["scalars", "rankMaxLocation_0"]
-                },
-                {
-                  "type" : "field",
-                  "value" : ["scalars", "linkLocation_0"]
-                },
-                {
-                  "type" : "field",
-                  "value" : ["standard_metadata", "egress_spec"]
-                }
-              ]
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
             "line" : 197,
             "column" : 20,
-            "source_fragment" : "                    log_msg(\\\"Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. \\\", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec } );"
-          }
-        }
-      ]
-    },
-    {
-      "name" : "leaf200",
-      "id" : 32,
-      "runtime_data" : [],
-      "primitives" : [
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_9"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "field",
-                    "value" : ["scalars", "userMetadata.flowlet_id"]
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 200,
-            "column" : 79,
-            "source_fragment" : "(bit<32>)local_metadata.flowlet_id"
-          }
-        },
-        {
-          "op" : "register_read",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["standard_metadata", "egress_spec"]
-            },
-            {
-              "type" : "register_array",
-              "value" : "IngressPipeImpl.ecmp_flowlet_id_map"
-            },
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_9"]
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 200,
-            "column" : 20,
-            "source_fragment" : "flowlet_last_used_port.read(standard_metadata.egress_spec, (bit<32>)local_metadata.flowlet_id)"
+            "source_fragment" : "flowlet_last_used_port.write((bit<32>)local_metadata.flowlet_id, standard_metadata.egress_spec)"
           }
         }
       ]
     },
     {
       "name" : "NoAction",
-      "id" : 33,
+      "id" : 23,
       "runtime_data" : [],
       "primitives" : []
     },
     {
-      "name" : "leaf263",
-      "id" : 34,
+      "name" : "leaf265",
+      "id" : 24,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -3390,7 +2570,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 263,
+            "line" : 265,
             "column" : 11,
             "source_fragment" : "hdr.packet_in.setValid()"
           }
@@ -3409,7 +2589,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 264,
+            "line" : 266,
             "column" : 11,
             "source_fragment" : "hdr.packet_in.ingress_port = standard_metadata.ingress_port"
           }
@@ -3419,7 +2599,7 @@
           "parameters" : [],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 266,
+            "line" : 268,
             "column" : 11,
             "source_fragment" : "exit"
           }
@@ -3427,8 +2607,8 @@
       ]
     },
     {
-      "name" : "leaf275",
-      "id" : 35,
+      "name" : "leaf277",
+      "id" : 25,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -3441,7 +2621,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 275,
+            "line" : 277,
             "column" : 11,
             "source_fragment" : "mark_to_drop(standard_metadata)"
           }
@@ -3449,8 +2629,8 @@
       ]
     },
     {
-      "name" : "leaf284",
-      "id" : 36,
+      "name" : "leaf286",
+      "id" : 26,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -3467,7 +2647,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 284,
+            "line" : 286,
             "column" : 53,
             "source_fragment" : "hdr.ipv6.ecn = 3"
           }
@@ -3475,8 +2655,8 @@
       ]
     },
     {
-      "name" : "leaf285",
-      "id" : 37,
+      "name" : "leaf287",
+      "id" : 27,
       "runtime_data" : [],
       "primitives" : [
         {
@@ -3484,7 +2664,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_10"]
+              "value" : ["scalars", "tmp_5"]
             },
             {
               "type" : "expression",
@@ -3506,7 +2686,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 285,
+            "line" : 287,
             "column" : 28,
             "source_fragment" : "(bit<32>)standard_metadata.egress_port"
           }
@@ -3520,12 +2700,12 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_10"]
+              "value" : ["scalars", "tmp_5"]
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 285,
+            "line" : 287,
             "column" : 4,
             "source_fragment" : "egressPortCounter.count((bit<32>)standard_metadata.egress_port)"
           }
@@ -3535,7 +2715,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_11"]
+              "value" : ["scalars", "tmp_6"]
             },
             {
               "type" : "expression",
@@ -3657,7 +2837,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 287,
+            "line" : 294,
             "column" : 28,
             "source_fragment" : "(bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[48:32]) -1"
           }
@@ -3671,12 +2851,12 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_11"]
+              "value" : ["scalars", "tmp_6"]
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 288,
+            "line" : 295,
             "column" : 4,
             "source_fragment" : "destination_util_counter.count((bit<32>)counter_index)"
           }
@@ -3712,14 +2892,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [16],
+          "action_ids" : [13],
           "actions" : ["leaf106"],
           "base_default_next" : "node_3",
           "next_tables" : {
             "leaf106" : "node_3"
           },
           "default_entry" : {
-            "action_id" : 16,
+            "action_id" : 13,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3741,14 +2921,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [14],
+          "action_ids" : [11],
           "actions" : ["leaf110"],
           "base_default_next" : "node_5",
           "next_tables" : {
             "leaf110" : "node_5"
           },
           "default_entry" : {
-            "action_id" : 14,
+            "action_id" : 11,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3770,14 +2950,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [12],
+          "action_ids" : [9],
           "actions" : ["top_k_path_control_message_processor18"],
           "base_default_next" : "tbl_leaf115",
           "next_tables" : {
             "top_k_path_control_message_processor18" : "tbl_leaf115"
           },
           "default_entry" : {
-            "action_id" : 12,
+            "action_id" : 9,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3799,14 +2979,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [13],
+          "action_ids" : [10],
           "actions" : ["top_k_path_control_message_processor29"],
           "base_default_next" : "tbl_leaf115",
           "next_tables" : {
             "top_k_path_control_message_processor29" : "tbl_leaf115"
           },
           "default_entry" : {
-            "action_id" : 13,
+            "action_id" : 10,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -3828,14 +3008,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [15],
+          "action_ids" : [12],
           "actions" : ["leaf115"],
           "base_default_next" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table",
           "next_tables" : {
             "leaf115" : "IngressPipeImpl.debug_std_meta_ingress_start.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 15,
+            "action_id" : 12,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4110,14 +3290,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [17],
+          "action_ids" : [14],
           "actions" : ["ndp43"],
           "base_default_next" : "tbl_leaf133",
           "next_tables" : {
             "ndp43" : "tbl_leaf133"
           },
           "default_entry" : {
-            "action_id" : 17,
+            "action_id" : 14,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4139,14 +3319,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [18],
+          "action_ids" : [15],
           "actions" : ["ndp47"],
           "base_default_next" : "tbl_leaf133",
           "next_tables" : {
             "ndp47" : "tbl_leaf133"
           },
           "default_entry" : {
-            "action_id" : 18,
+            "action_id" : 15,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4168,14 +3348,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [19],
+          "action_ids" : [16],
           "actions" : ["leaf133"],
           "base_default_next" : "node_16",
           "next_tables" : {
             "leaf133" : "node_16"
           },
           "default_entry" : {
-            "action_id" : 19,
+            "action_id" : 16,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4234,14 +3414,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [20],
+          "action_ids" : [17],
           "actions" : ["l2_ternary44"],
           "base_default_next" : "IngressPipeImpl.my_station_processing_control_block.my_station_table",
           "next_tables" : {
             "l2_ternary44" : "IngressPipeImpl.my_station_processing_control_block.my_station_table"
           },
           "default_entry" : {
-            "action_id" : 20,
+            "action_id" : 17,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4300,14 +3480,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [21],
+          "action_ids" : [18],
           "actions" : ["my_station24"],
           "base_default_next" : "node_22",
           "next_tables" : {
             "my_station24" : "node_22"
           },
           "default_entry" : {
-            "action_id" : 21,
+            "action_id" : 18,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4329,14 +3509,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [22],
+          "action_ids" : [19],
           "actions" : ["my_station25"],
           "base_default_next" : "node_22",
           "next_tables" : {
             "my_station25" : "node_22"
           },
           "default_entry" : {
-            "action_id" : 22,
+            "action_id" : 19,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4395,14 +3575,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [24],
+          "action_ids" : [21],
           "actions" : ["leaf146"],
           "base_default_next" : "node_26",
           "next_tables" : {
             "leaf146" : "node_26"
           },
           "default_entry" : {
-            "action_id" : 24,
+            "action_id" : 21,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4424,14 +3604,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [23],
+          "action_ids" : [20],
           "actions" : ["leaf147"],
           "base_default_next" : "IngressPipeImpl.ingress_end_debug.dbg_table",
           "next_tables" : {
             "leaf147" : "IngressPipeImpl.ingress_end_debug.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 23,
+            "action_id" : 20,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4444,7 +3624,7 @@
             "filename" : "p4src/src/leaf.p4",
             "line" : 158,
             "column" : 59,
-            "source_fragment" : "="
+            "source_fragment" : "= false; ..."
           },
           "key" : [],
           "match_type" : "exact",
@@ -4453,283 +3633,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [29],
+          "action_ids" : [22],
           "actions" : ["leaf158"],
-          "base_default_next" : "node_29",
-          "next_tables" : {
-            "leaf158" : "node_29"
-          },
-          "default_entry" : {
-            "action_id" : 29,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "tbl_leaf164",
-          "id" : 19,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 164,
-            "column" : 65,
-            "source_fragment" : "="
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [25],
-          "actions" : ["leaf164"],
-          "base_default_next" : "tbl_top_k_path86",
-          "next_tables" : {
-            "leaf164" : "tbl_top_k_path86"
-          },
-          "default_entry" : {
-            "action_id" : 25,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "tbl_leaf166",
-          "id" : 20,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 166,
-            "column" : 66,
-            "source_fragment" : "= ALL_1_256_BIT[4 -1:0] << 2; //skip the first  best path as they are reserved by low delay and special custom traffic class ..."
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [26],
-          "actions" : ["leaf166"],
-          "base_default_next" : "tbl_top_k_path86",
-          "next_tables" : {
-            "leaf166" : "tbl_top_k_path86"
-          },
-          "default_entry" : {
-            "action_id" : 26,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "tbl_leaf169",
-          "id" : 21,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 169,
-            "column" : 65,
-            "source_fragment" : "="
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [27],
-          "actions" : ["leaf169"],
-          "base_default_next" : "tbl_top_k_path86",
-          "next_tables" : {
-            "leaf169" : "tbl_top_k_path86"
-          },
-          "default_entry" : {
-            "action_id" : 27,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "tbl_leaf171",
-          "id" : 22,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 171,
-            "column" : 65,
-            "source_fragment" : "="
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [28],
-          "actions" : ["leaf171"],
-          "base_default_next" : "tbl_top_k_path86",
-          "next_tables" : {
-            "leaf171" : "tbl_top_k_path86"
-          },
-          "default_entry" : {
-            "action_id" : 28,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "tbl_top_k_path86",
-          "id" : 23,
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 86,
-            "column" : 12,
-            "source_fragment" : "stored_bitmask.read(stored_bitmask_read_value, (bit<32>)0); ..."
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [30],
-          "actions" : ["top_k_path86"],
-          "base_default_next" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
-          "next_tables" : {
-            "top_k_path86" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
-          },
-          "default_entry" : {
-            "action_id" : 30,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
-          "id" : 24,
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path.p4",
-            "line" : 64,
-            "column" : 10,
-            "source_fragment" : "kth_path_finder_mat"
-          },
-          "key" : [
-            {
-              "match_type" : "ternary",
-              "name" : "local_metadata.kth_path_selector_bitmask",
-              "target" : ["scalars", "userMetadata.kth_path_selector_bitmask"],
-              "mask" : null
-            }
-          ],
-          "match_type" : "ternary",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [11, 10],
-          "actions" : ["IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param", "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param"],
-          "base_default_next" : "tbl_lookup_flowlet_map",
-          "next_tables" : {
-            "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_without_param" : "tbl_lookup_flowlet_map",
-            "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param" : "tbl_lookup_flowlet_map"
-          },
-          "default_entry" : {
-            "action_id" : 11,
-            "action_const" : false,
-            "action_data" : [],
-            "action_entry_const" : false
-          }
-        },
-        {
-          "name" : "tbl_lookup_flowlet_map",
-          "id" : 25,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 186,
-            "column" : 16,
-            "source_fragment" : "lookup_flowlet_map()"
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [9],
-          "actions" : ["IngressPipeImpl.lookup_flowlet_map"],
-          "base_default_next" : "node_39",
-          "next_tables" : {
-            "IngressPipeImpl.lookup_flowlet_map" : "node_39"
-          },
-          "default_entry" : {
-            "action_id" : 9,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "tbl_leaf190",
-          "id" : 26,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 190,
-            "column" : 20,
-            "source_fragment" : "rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank); ..."
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [31],
-          "actions" : ["leaf190"],
           "base_default_next" : "IngressPipeImpl.ingress_end_debug.dbg_table",
           "next_tables" : {
-            "leaf190" : "IngressPipeImpl.ingress_end_debug.dbg_table"
+            "leaf158" : "IngressPipeImpl.ingress_end_debug.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 31,
-            "action_const" : true,
-            "action_data" : [],
-            "action_entry_const" : true
-          }
-        },
-        {
-          "name" : "tbl_leaf200",
-          "id" : 27,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 200,
-            "column" : 20,
-            "source_fragment" : "flowlet_last_used_port.read(standard_metadata.egress_spec, (bit<32>)local_metadata.flowlet_id)"
-          },
-          "key" : [],
-          "match_type" : "exact",
-          "type" : "simple",
-          "max_size" : 1024,
-          "with_counters" : false,
-          "support_timeout" : false,
-          "direct_meters" : null,
-          "action_ids" : [32],
-          "actions" : ["leaf200"],
-          "base_default_next" : "IngressPipeImpl.ingress_end_debug.dbg_table",
-          "next_tables" : {
-            "leaf200" : "IngressPipeImpl.ingress_end_debug.dbg_table"
-          },
-          "default_entry" : {
-            "action_id" : 32,
+            "action_id" : 22,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -4737,7 +3648,7 @@
         },
         {
           "name" : "IngressPipeImpl.ingress_end_debug.dbg_table",
-          "id" : 28,
+          "id" : 19,
           "source_info" : {
             "filename" : "p4src/src/debug.p4",
             "line" : 12,
@@ -5246,110 +4157,6 @@
           },
           "true_next" : "tbl_leaf147",
           "false_next" : "IngressPipeImpl.ingress_end_debug.dbg_table"
-        },
-        {
-          "name" : "node_29",
-          "id" : 8,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 163,
-            "column" : 24,
-            "source_fragment" : "hdr.ipv6.traffic_class == TRAFFIC_CLASS_LOW_DELAY"
-          },
-          "expression" : {
-            "type" : "expression",
-            "value" : {
-              "op" : "==",
-              "left" : {
-                "type" : "field",
-                "value" : ["ipv6", "traffic_class"]
-              },
-              "right" : {
-                "type" : "hexstr",
-                "value" : "0x04"
-              }
-            }
-          },
-          "true_next" : "tbl_leaf164",
-          "false_next" : "node_31"
-        },
-        {
-          "name" : "node_31",
-          "id" : 9,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 165,
-            "column" : 30,
-            "source_fragment" : "hdr.ipv6.traffic_class == TRAFFIC_CLASS_HIGH_THROUGHPUT"
-          },
-          "expression" : {
-            "type" : "expression",
-            "value" : {
-              "op" : "==",
-              "left" : {
-                "type" : "field",
-                "value" : ["ipv6", "traffic_class"]
-              },
-              "right" : {
-                "type" : "hexstr",
-                "value" : "0x03"
-              }
-            }
-          },
-          "true_next" : "tbl_leaf166",
-          "false_next" : "node_33"
-        },
-        {
-          "name" : "node_33",
-          "id" : 10,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 168,
-            "column" : 30,
-            "source_fragment" : "hdr.ipv6.traffic_class == TRAFFIC_CLASS_CUSTOM_QOS"
-          },
-          "expression" : {
-            "type" : "expression",
-            "value" : {
-              "op" : "==",
-              "left" : {
-                "type" : "field",
-                "value" : ["ipv6", "traffic_class"]
-              },
-              "right" : {
-                "type" : "hexstr",
-                "value" : "0x02"
-              }
-            }
-          },
-          "true_next" : "tbl_leaf169",
-          "false_next" : "tbl_leaf171"
-        },
-        {
-          "name" : "node_39",
-          "id" : 11,
-          "source_info" : {
-            "filename" : "p4src/src/leaf.p4",
-            "line" : 187,
-            "column" : 20,
-            "source_fragment" : "local_metadata.flow_inter_packet_gap > FLOWLET_INTER_PACKET_GAP_THRESHOLD"
-          },
-          "expression" : {
-            "type" : "expression",
-            "value" : {
-              "op" : ">",
-              "left" : {
-                "type" : "field",
-                "value" : ["scalars", "userMetadata.flow_inter_packet_gap"]
-              },
-              "right" : {
-                "type" : "hexstr",
-                "value" : "0x00000000c350"
-              }
-            }
-          },
-          "true_next" : "tbl_leaf190",
-          "false_next" : "tbl_leaf200"
         }
       ]
     },
@@ -5358,18 +4165,18 @@
       "id" : 1,
       "source_info" : {
         "filename" : "p4src/src/leaf.p4",
-        "line" : 248,
+        "line" : 250,
         "column" : 8,
         "source_fragment" : "EgressPipeImpl"
       },
-      "init_table" : "node_45",
+      "init_table" : "node_32",
       "tables" : [
         {
-          "name" : "tbl_leaf263",
-          "id" : 29,
+          "name" : "tbl_leaf265",
+          "id" : 20,
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 263,
+            "line" : 265,
             "column" : 11,
             "source_fragment" : "hdr.packet_in.setValid(); ..."
           },
@@ -5380,25 +4187,25 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [34],
-          "actions" : ["leaf263"],
-          "base_default_next" : "node_47",
+          "action_ids" : [24],
+          "actions" : ["leaf265"],
+          "base_default_next" : "node_34",
           "next_tables" : {
-            "leaf263" : "node_47"
+            "leaf265" : "node_34"
           },
           "default_entry" : {
-            "action_id" : 34,
+            "action_id" : 24,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
           }
         },
         {
-          "name" : "tbl_leaf275",
-          "id" : 30,
+          "name" : "tbl_leaf277",
+          "id" : 21,
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 275,
+            "line" : 277,
             "column" : 11,
             "source_fragment" : "mark_to_drop(standard_metadata)"
           },
@@ -5409,14 +4216,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [35],
-          "actions" : ["leaf275"],
+          "action_ids" : [25],
+          "actions" : ["leaf277"],
           "base_default_next" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table",
           "next_tables" : {
-            "leaf275" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
+            "leaf277" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
           },
           "default_entry" : {
-            "action_id" : 35,
+            "action_id" : 25,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -5424,7 +4231,7 @@
         },
         {
           "name" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table",
-          "id" : 31,
+          "id" : 22,
           "source_info" : {
             "filename" : "p4src/src/debug.p4",
             "line" : 12,
@@ -5625,25 +4432,25 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [33],
+          "action_ids" : [23],
           "actions" : ["NoAction"],
-          "base_default_next" : "node_50",
+          "base_default_next" : "node_37",
           "next_tables" : {
-            "NoAction" : "node_50"
+            "NoAction" : "node_37"
           },
           "default_entry" : {
-            "action_id" : 33,
+            "action_id" : 23,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
           }
         },
         {
-          "name" : "tbl_leaf284",
-          "id" : 32,
+          "name" : "tbl_leaf286",
+          "id" : 23,
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 284,
+            "line" : 286,
             "column" : 66,
             "source_fragment" : "="
           },
@@ -5654,25 +4461,25 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [36],
-          "actions" : ["leaf284"],
-          "base_default_next" : "tbl_leaf285",
+          "action_ids" : [26],
+          "actions" : ["leaf286"],
+          "base_default_next" : "tbl_leaf287",
           "next_tables" : {
-            "leaf284" : "tbl_leaf285"
+            "leaf286" : "tbl_leaf287"
           },
           "default_entry" : {
-            "action_id" : 36,
+            "action_id" : 26,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
           }
         },
         {
-          "name" : "tbl_leaf285",
-          "id" : 33,
+          "name" : "tbl_leaf287",
+          "id" : 24,
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 285,
+            "line" : 287,
             "column" : 4,
             "source_fragment" : "egressPortCounter.count((bit<32>)standard_metadata.egress_port); ..."
           },
@@ -5683,14 +4490,14 @@
           "with_counters" : false,
           "support_timeout" : false,
           "direct_meters" : null,
-          "action_ids" : [37],
-          "actions" : ["leaf285"],
+          "action_ids" : [27],
+          "actions" : ["leaf287"],
           "base_default_next" : null,
           "next_tables" : {
-            "leaf285" : null
+            "leaf287" : null
           },
           "default_entry" : {
-            "action_id" : 37,
+            "action_id" : 27,
             "action_const" : true,
             "action_data" : [],
             "action_entry_const" : true
@@ -5700,11 +4507,11 @@
       "action_profiles" : [],
       "conditionals" : [
         {
-          "name" : "node_45",
-          "id" : 12,
+          "name" : "node_32",
+          "id" : 8,
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 260,
+            "line" : 262,
             "column" : 11,
             "source_fragment" : "standard_metadata.egress_port == 255"
           },
@@ -5722,15 +4529,15 @@
               }
             }
           },
-          "true_next" : "tbl_leaf263",
-          "false_next" : "node_47"
+          "true_next" : "tbl_leaf265",
+          "false_next" : "node_34"
         },
         {
-          "name" : "node_47",
-          "id" : 13,
+          "name" : "node_34",
+          "id" : 9,
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 273,
+            "line" : 275,
             "column" : 11,
             "source_fragment" : "local_metadata.is_multicast == true && ..."
           },
@@ -5765,15 +4572,15 @@
               }
             }
           },
-          "true_next" : "tbl_leaf275",
+          "true_next" : "tbl_leaf277",
           "false_next" : "EgressPipeImpl.debug_std_meta_egress_start.dbg_table"
         },
         {
-          "name" : "node_50",
-          "id" : 14,
+          "name" : "node_37",
+          "id" : 10,
           "source_info" : {
             "filename" : "p4src/src/leaf.p4",
-            "line" : 284,
+            "line" : 286,
             "column" : 7,
             "source_fragment" : "standard_metadata.deq_qdepth > ECN_THRESHOLD"
           },
@@ -5791,8 +4598,8 @@
               }
             }
           },
-          "true_next" : "tbl_leaf284",
-          "false_next" : "tbl_leaf285"
+          "true_next" : "tbl_leaf286",
+          "false_next" : "tbl_leaf287"
         }
       ]
     }
@@ -5803,13 +4610,13 @@
       "id" : 0,
       "source_info" : {
         "filename" : "p4src/src/leaf.p4",
-        "line" : 307,
+        "line" : 313,
         "column" : 8,
         "source_fragment" : "update_checksum(hdr.ndp.isValid(), ..."
       },
       "target" : ["icmpv6", "checksum"],
       "type" : "generic",
-      "calculation" : "calc_1",
+      "calculation" : "calc_0",
       "verify" : false,
       "update" : true,
       "if_cond" : {
