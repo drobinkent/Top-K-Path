@@ -124,6 +124,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     }
 
 
+
     if (local_metadata.flag_hdr.do_l3_l2) {
         l2_ternary_processing_control_block.apply(hdr, local_metadata, standard_metadata);  //If it is a local broadcast packet we have to process it. but for spine and superspine we d not need it
         //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
