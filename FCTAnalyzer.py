@@ -50,7 +50,8 @@ def getPercentileFCTByFolder(folderName):
     files = getAllFilesInDirectory(folderName)
     flowTypeVsFCTMap = {}
     flowTypeVsFlowCountMap = {}
-    ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB.append(3200)
+    if (not (3200 in ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB)):
+        ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB.append(3200)
     for flowVolume in ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB:
         flowTypeVsFCTMap[flowVolume]  = []
         flowTypeVsFlowCountMap[flowVolume] = 0
@@ -80,6 +81,8 @@ def getPercentileFCTByFolder(folderName):
     for f in flowTypeVsFCTMap:
         # print(str(f) + " -- ",np.percentile(flowTypeVsFCTMap.get(f), 80))
         print(str(f) + " -- ",flowTypeVsFlowCountMap.get(f))
+        if(flowTypeVsFlowCountMap.get(f) <=0):
+            break
         # print(str(f) + " -- ",flowTypeVsFCTMap.get(f)/flowTypeVsFlowCountMap.get(f))
         totalFlowsize= totalFlowsize+ float(f)
 
@@ -98,21 +101,21 @@ def getPercentileFCTByFolder(folderName):
 # print("For WebSearch Workload, with Load Factor 1.0")
 # # print("Algorithms Nanme : HULA ")
 # # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.8")
-print("Algorithms Nanme : P4KP ")
-getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_1.0")
-print("Algorithms Nanme : ECMP ")
-getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_1.0")
-print("\n\n\n")
+# print("Algorithms Nanme : P4KP ")
+# getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_1.0")
+# print("Algorithms Nanme : ECMP ")
+# getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_1.0")
+# print("\n\n\n")
 
 
 # print("For WebSearch Workload, with Load Factor 0.8")
 # # # print("Algorithms Nanme : HULA ")
 # # # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.8")
-print("Algorithms Nanme : P4KP ")
-getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
-print("Algorithms Nanme : ECMP ")
-getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
-print("\n\n\n")
+# print("Algorithms Nanme : P4KP ")
+# getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
+# print("Algorithms Nanme : ECMP ")
+# getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
+# print("\n\n\n")
 # print("For WebSearch Workload, with Load Factor 0.7")
 # # print("Algorithms Nanme : HULA ")
 # # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.7")
@@ -144,3 +147,9 @@ print("\n\n\n")
 # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_0.2")
 # print("Algorithms Nanme : ECMP ")
 # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_0.2")
+
+
+print("Algorithms Nanme : P4KP ")
+getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_1.0")
+print("Algorithms Nanme : ECMP ")
+getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_1.0")

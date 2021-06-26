@@ -797,6 +797,13 @@ actions {
 }
 actions {
   preamble {
+    id: 23370174
+    name: "IngressPipeImpl.lookup_flowlet_map"
+    alias: "lookup_flowlet_map"
+  }
+}
+actions {
+  preamble {
     id: 24517793
     name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param"
     alias: "kth_path_finder_action_with_param"
@@ -1036,7 +1043,7 @@ registers {
   preamble {
     id: 370808593
     name: "IngressPipeImpl.upstream_ecmp_routing_control_block.ecmp_flowlet_id_map"
-    alias: "upstream_ecmp_routing_control_block.ecmp_flowlet_id_map"
+    alias: "ecmp_flowlet_id_map"
   }
   type_spec {
     bitstring {
@@ -1051,7 +1058,7 @@ registers {
   preamble {
     id: 383017684
     name: "IngressPipeImpl.upstream_ecmp_routing_control_block.ecmp_flowlet_lasttime_map"
-    alias: "upstream_ecmp_routing_control_block.ecmp_flowlet_lasttime_map"
+    alias: "ecmp_flowlet_lasttime_map"
   }
   type_spec {
     bitstring {
@@ -1064,9 +1071,9 @@ registers {
 }
 registers {
   preamble {
-    id: 379969013
-    name: "IngressPipeImpl.ecmp_flowlet_id_map"
-    alias: "IngressPipeImpl.ecmp_flowlet_id_map"
+    id: 378699635
+    name: "IngressPipeImpl.p4kp_flowlet_last_used_port"
+    alias: "p4kp_flowlet_last_used_port"
   }
   type_spec {
     bitstring {
@@ -1079,9 +1086,9 @@ registers {
 }
 registers {
   preamble {
-    id: 377012014
-    name: "IngressPipeImpl.ecmp_flowlet_lasttime_map"
-    alias: "IngressPipeImpl.ecmp_flowlet_lasttime_map"
+    id: 381472542
+    name: "IngressPipeImpl.p4kp_flowlet_lasttime_map"
+    alias: "p4kp_flowlet_lasttime_map"
   }
   type_spec {
     bitstring {

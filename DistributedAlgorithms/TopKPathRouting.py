@@ -79,21 +79,46 @@ class TopKPathRouting:
         # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
         pathAndUtilist = []
         for i in range (int(ConfConst.MAX_PORTS_IN_SWITCH/2), ConfConst.MAX_PORTS_IN_SWITCH):
-            if((i+1) in ConfigConst.reservedPortList):
+            if((i+1) in ConfigConst.reservedPortList) and ((ConfigConst.specialTunnelStartingSwitch in self.p4dev.devName) or (ConfigConst.specialTunnelEndingSwitch in self.p4dev.devName)):
                 continue
             else:
                 index = i
                 utilInLastInterval = linkUtilStats[index] -  oldLinkUtilStats[index]
-                # rankInLastInterval = self.topKPathManager.portToRankMap.get(i)
-                # pathAndUtilist.append((i,utilInLastInterval,rankInLastInterval))
                 pathAndUtilist.append((i+1,utilInLastInterval))
         pathAndUtilist.sort(key=lambda x:x[1])
-        # if(self.p4dev.devName == ConfConst.CLB_TESTER_DEVICE_NAME):
-        #     print("For device "+self.p4dev.devName+" The port utilization data according to rank is "+str(pathAndUtilist))
         controlPacketList = []
-        rankInsertedIncurrentIteration = {} #In our simulation ew are just using only one port per rank. but in case when you have more than one port per rank, basically you have to keep
-        #another copy oth the K-path manager. then in that copy you will maintain the port and ranks configured in current iteraition. if at some point, the rank or location is
-        #already iused in current iteration then you do not need to delete the path
+        rankInsertedIncurrentIteration = {}
+        i=0
+        extraIncrementToAvoidReserverRank = 0
+        while i< len(pathAndUtilist):
+            if (i in ConfigConst.reservedRanks) and ((ConfigConst.specialTunnelStartingSwitch in self.p4dev.devName) or (ConfigConst.specialTunnelEndingSwitch in self.p4dev.devName)):
+                extraIncrementToAvoidReserverRank = extraIncrementToAvoidReserverRank + 1
+            port = pathAndUtilist[i][0]
+            rank = i + extraIncrementToAvoidReserverRank
+            if(rankInsertedIncurrentIteration.get(rank)== None):
+                dltPkt = self.topKPathManager.deletePort(port)
+                self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt)
+            rankInsertedIncurrentIteration[rank] = rank
+            # print("INserting rank "+str(rank)+" and port "+str(port))
+            insertPkt = self.topKPathManager.insertPort(port, rank)
+            self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
+            i=i+1
+
+
+    def p4kpUtilBasedReconfigureForLeafSwitchesbackup(self, linkUtilStats, oldLinkUtilStats):
+        # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "new Utilization data is  "+str(linkUtilStats))
+        # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
+        pathAndUtilist = []
+        for i in range (int(ConfConst.MAX_PORTS_IN_SWITCH/2), ConfConst.MAX_PORTS_IN_SWITCH):
+            if((i+1) in ConfigConst.reservedPortList) and ((ConfigConst.specialTunnelStartingSwitch in self.p4dev.devName) or (ConfigConst.specialTunnelEndingSwitch in self.p4dev.devName)):
+                continue
+            else:
+                index = i
+                utilInLastInterval = linkUtilStats[index] -  oldLinkUtilStats[index]
+                pathAndUtilist.append((i+1,utilInLastInterval))
+        pathAndUtilist.sort(key=lambda x:x[1])
+        controlPacketList = []
+        rankInsertedIncurrentIteration = {}
         i=0
         extraIncrementToAvoidReserverRank = 0
         while i< len(pathAndUtilist):
@@ -112,7 +137,42 @@ class TopKPathRouting:
             self.p4dev.send_already_built_control_packet_for_top_k_path(ctrlPkt)
 
 
-    def setup(self,nameToSwitchMap):
+    def setupOld(self,nameToSwitchMap):  #This one initially setup three path in three different ranks
+        '''
+        This function setup all the relevant stuffs for running the algorithm
+        '''
+        self.p4dev.setupECMPUpstreamRouting()
+        startingRankForTestingTopKPathProblem = 0
+        #swUtils.setupFlowtypeBasedIngressRateMonitoringForKPathProblem(self.p4dev)
+        self.initMAT(self.p4dev, ConfConst.K)
+        if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
+            i=0
+            for k in self.p4dev.portToSpineSwitchMap.keys():
+                if(k in ConfigConst.reservedPortList) and ((ConfigConst.specialTunnelStartingSwitch in self.p4dev.devName) or (ConfigConst.specialTunnelEndingSwitch in self.p4dev.devName)):
+                    continue
+                else:
+                    pkt = self.topKPathManager.insertPort(port = int(k), k = i)
+                    self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+                    i=i+1
+            i=0
+            while i< len(ConfigConst.reservedPortList):
+                pkt = self.topKPathManager.insertPort(port = int(ConfigConst.reservedPortList[i]), k = ConfigConst.reservedRanks[i])
+                self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+                i=i+1
+        elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
+            for k in self.p4dev.portToSuperSpineSwitchMap.keys():
+                if(k in ConfigConst.reservedPortList):
+                    continue
+                else:
+                    pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
+                    self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K) # by default add space for 16 ports in super spine. This is not actually used in our simulation
+            pass
+
+        return
+
+    def setup(self,nameToSwitchMap): #This one initially setup three path in same rank
         '''
         This function setup all the relevant stuffs for running the algorithm
         '''

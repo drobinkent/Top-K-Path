@@ -9,7 +9,7 @@ from datetime import datetime
 from time import sleep
 
 TUNNEL_TRAFFIC_CLASS = 20
-SEND_BUF_SIZE = 1024
+SEND_BUF_SIZE = 8192
 logger = logging.getLogger('TRAFFIC_DEPLOYER_CLIET.py')
 hdlr = logging.FileHandler('./log/TRAFFIC_DEPLOYER_CLIENT.log')
 formatter = logging.Formatter('[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s','%m-%d %H:%M:%S')

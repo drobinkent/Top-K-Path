@@ -158,6 +158,24 @@ def getStrideDeploymentPairs(nameToHostMap,maxPortcountInSwitch,testCaseName, lo
                           startTime= 10+float(testStartDelay),flowSizeinPackets= flowSize,
                           trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
         deploymentPairList.append(newDeploymentPair)
+        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+                                                  srcHostName=src.hostName, destHostName= dst.hostName,
+                                                  startTime= 10+float(testStartDelay+testDuration/3),flowSizeinPackets= flowSize,
+                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        deploymentPairList.append(newDeploymentPair)
+        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+                                                  srcHostName=src.hostName, destHostName= dst.hostName,
+                                                  startTime= 10+float(testStartDelay+testDuration*2/3),flowSizeinPackets= flowSize,
+                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        deploymentPairList.append(newDeploymentPair)
+        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+                                                  srcHostName=src.hostName, destHostName= dst.hostName,
+                                                  startTime= 10+float(testStartDelay+testDuration),flowSizeinPackets= flowSize,
+                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        deploymentPairList.append(newDeploymentPair)
         src = nameToHostMap.get("h0p0l2")
         dst = nameToHostMap.get("h1p0l3")
         newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
@@ -165,6 +183,24 @@ def getStrideDeploymentPairs(nameToHostMap,maxPortcountInSwitch,testCaseName, lo
                           srcHostName=src.hostName, destHostName= dst.hostName,
                           startTime= 10+float(testStartDelay),flowSizeinPackets= flowSize,
                           trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        deploymentPairList.append(newDeploymentPair)
+        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+                                                  srcHostName=src.hostName, destHostName= dst.hostName,
+                                                  startTime= 10+float(testStartDelay+testDuration/3),flowSizeinPackets= flowSize,
+                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        deploymentPairList.append(newDeploymentPair)
+        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+                                                  srcHostName=src.hostName, destHostName= dst.hostName,
+                                                  startTime= 10+float(testStartDelay+testDuration*2/3),flowSizeinPackets= flowSize,
+                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        deploymentPairList.append(newDeploymentPair)
+        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+                                                  srcHostName=src.hostName, destHostName= dst.hostName,
+                                                  startTime= 10+float(testStartDelay+testDuration),flowSizeinPackets= flowSize,
+                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
         deploymentPairList.append(newDeploymentPair)
 
         # i = 0
@@ -319,3 +355,10 @@ if __name__ == "__main__":
                                         serverPortStart=confConst.IPERF3_SERVER_PORT_START, testStartDelay=10)
     testEvaluator.setupTestCaseFolder()
     testEvaluator.generateTestCommands( testCaseNAme= "WebSearchWorkLoad_load_factor_1.0",loadFactor=1,testDuration=200,maxPortcountInSwitch=ConfigConst.MAX_PORTS_IN_SWITCH/2)
+
+
+    # #--------------------
+    # testEvaluator = TestCommandDeployer(topologyConfigFilePath = confConst.TOPOLOGY_CONFIG_FILE,resultFolder = "FlowInfos" , clientPortStart=confConst.IPERF3_CLIENT_PORT_START,
+    #                                     serverPortStart=confConst.IPERF3_SERVER_PORT_START, testStartDelay=10)
+    # testEvaluator.setupTestCaseFolder()
+    # testEvaluator.generateTestCommands( testCaseNAme= "WebSearchWorkLoad_load_factor_2.0",loadFactor=2.0,testDuration=200,maxPortcountInSwitch=ConfigConst.MAX_PORTS_IN_SWITCH/2)
