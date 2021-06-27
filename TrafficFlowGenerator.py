@@ -147,61 +147,61 @@ def getStrideDeploymentPairs(nameToHostMap,maxPortcountInSwitch,testCaseName, lo
                                   startTime= flowArrivalTimesByflowType[i][j]+float(testStartDelay),flowSizeinPackets= flowsizeAsPacketCount,
                                   trafficClass = ConfigConst.FLOW_TYPE_TRAFFIC_CLASS[i], bitrate = ConfigConst.FLOW_TYPE_BITRATE[i])
                 deploymentPairList.append(newDeploymentPair)
-        src = nameToHostMap.get("h0p0l0")
-        dst = nameToHostMap.get("h1p0l1")
-        flowSize = testDuration * ConfigConst.queueRateForSpineFacingPortsOfLeafSwitch
-        # print("Spoecial flow size is "+str(flowSize))
-        bitrate = ConfigConst.queueRateForSpineFacingPortsOfLeafSwitch * 1024
-        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
-                          dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
-                          srcHostName=src.hostName, destHostName= dst.hostName,
-                          startTime= 10+float(testStartDelay),flowSizeinPackets= flowSize,
-                          trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
-        deploymentPairList.append(newDeploymentPair)
-        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
-                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
-                                                  srcHostName=src.hostName, destHostName= dst.hostName,
-                                                  startTime= 10+float(testStartDelay+testDuration/3),flowSizeinPackets= flowSize,
-                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
-        deploymentPairList.append(newDeploymentPair)
-        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
-                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
-                                                  srcHostName=src.hostName, destHostName= dst.hostName,
-                                                  startTime= 10+float(testStartDelay+testDuration*2/3),flowSizeinPackets= flowSize,
-                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
-        deploymentPairList.append(newDeploymentPair)
-        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
-                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
-                                                  srcHostName=src.hostName, destHostName= dst.hostName,
-                                                  startTime= 10+float(testStartDelay+testDuration),flowSizeinPackets= flowSize,
-                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
-        deploymentPairList.append(newDeploymentPair)
-        src = nameToHostMap.get("h0p0l2")
-        dst = nameToHostMap.get("h1p0l3")
-        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
-                          dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
-                          srcHostName=src.hostName, destHostName= dst.hostName,
-                          startTime= 10+float(testStartDelay),flowSizeinPackets= flowSize,
-                          trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
-        deploymentPairList.append(newDeploymentPair)
-        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
-                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
-                                                  srcHostName=src.hostName, destHostName= dst.hostName,
-                                                  startTime= 10+float(testStartDelay+testDuration/3),flowSizeinPackets= flowSize,
-                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
-        deploymentPairList.append(newDeploymentPair)
-        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
-                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
-                                                  srcHostName=src.hostName, destHostName= dst.hostName,
-                                                  startTime= 10+float(testStartDelay+testDuration*2/3),flowSizeinPackets= flowSize,
-                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
-        deploymentPairList.append(newDeploymentPair)
-        newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
-                                                  dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
-                                                  srcHostName=src.hostName, destHostName= dst.hostName,
-                                                  startTime= 10+float(testStartDelay+testDuration),flowSizeinPackets= flowSize,
-                                                  trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
-        deploymentPairList.append(newDeploymentPair)
+        # src = nameToHostMap.get("h0p0l0")
+        # dst = nameToHostMap.get("h1p0l1")
+        # flowSize = testDuration * ConfigConst.queueRateForSpineFacingPortsOfLeafSwitch
+        # # print("Spoecial flow size is "+str(flowSize))
+        # bitrate = ConfigConst.queueRateForSpineFacingPortsOfLeafSwitch * 1024
+        # newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+        #                   dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+        #                   srcHostName=src.hostName, destHostName= dst.hostName,
+        #                   startTime= 10+float(testStartDelay),flowSizeinPackets= flowSize,
+        #                   trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        # deploymentPairList.append(newDeploymentPair)
+        # newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+        #                                           dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+        #                                           srcHostName=src.hostName, destHostName= dst.hostName,
+        #                                           startTime= 10+float(testStartDelay+testDuration/3),flowSizeinPackets= flowSize,
+        #                                           trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        # deploymentPairList.append(newDeploymentPair)
+        # newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+        #                                           dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+        #                                           srcHostName=src.hostName, destHostName= dst.hostName,
+        #                                           startTime= 10+float(testStartDelay+testDuration*2/3),flowSizeinPackets= flowSize,
+        #                                           trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        # deploymentPairList.append(newDeploymentPair)
+        # newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+        #                                           dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+        #                                           srcHostName=src.hostName, destHostName= dst.hostName,
+        #                                           startTime= 10+float(testStartDelay+testDuration),flowSizeinPackets= flowSize,
+        #                                           trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        # deploymentPairList.append(newDeploymentPair)
+        # src = nameToHostMap.get("h0p0l2")
+        # dst = nameToHostMap.get("h1p0l3")
+        # newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+        #                   dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+        #                   srcHostName=src.hostName, destHostName= dst.hostName,
+        #                   startTime= 10+float(testStartDelay),flowSizeinPackets= flowSize,
+        #                   trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        # deploymentPairList.append(newDeploymentPair)
+        # newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+        #                                           dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+        #                                           srcHostName=src.hostName, destHostName= dst.hostName,
+        #                                           startTime= 10+float(testStartDelay+testDuration/3),flowSizeinPackets= flowSize,
+        #                                           trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        # deploymentPairList.append(newDeploymentPair)
+        # newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+        #                                           dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+        #                                           srcHostName=src.hostName, destHostName= dst.hostName,
+        #                                           startTime= 10+float(testStartDelay+testDuration*2/3),flowSizeinPackets= flowSize,
+        #                                           trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        # deploymentPairList.append(newDeploymentPair)
+        # newDeploymentPair = tc.IPerfDeplymentPair(src,dst, src.getNextIPerf3ClientPort(),
+        #                                           dst.getNextIPerf3ServerPort(),testCaseName = testCaseName,
+        #                                           srcHostName=src.hostName, destHostName= dst.hostName,
+        #                                           startTime= 10+float(testStartDelay+testDuration),flowSizeinPackets= flowSize,
+        #                                           trafficClass = ConfigConst.tunnelTrafficClass, bitrate = bitrate)
+        # deploymentPairList.append(newDeploymentPair)
 
         # i = 0
         # j=0

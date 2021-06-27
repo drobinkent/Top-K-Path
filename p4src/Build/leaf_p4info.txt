@@ -487,30 +487,6 @@ tables {
 }
 tables {
   preamble {
-    id: 36992381
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.upstream_routing_table"
-    alias: "upstream_routing_table"
-  }
-  match_fields {
-    id: 1
-    name: "hdr.ipv6.dst_addr"
-    bitwidth: 128
-    match_type: LPM
-  }
-  action_refs {
-    id: 30149272
-  }
-  action_refs {
-    id: 21257015
-    annotations: "@defaultonly"
-    scope: DEFAULT_ONLY
-  }
-  implementation_id: 295678503
-  direct_resource_ids: 321186985
-  size: 1024
-}
-tables {
-  preamble {
     id: 36185609
     name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
     alias: "kth_path_finder_mat"
@@ -785,25 +761,6 @@ actions {
 }
 actions {
   preamble {
-    id: 30149272
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.set_upstream_egress_port"
-    alias: "set_upstream_egress_port"
-  }
-  params {
-    id: 1
-    name: "port_num"
-    bitwidth: 9
-  }
-}
-actions {
-  preamble {
-    id: 23370174
-    name: "IngressPipeImpl.lookup_flowlet_map"
-    alias: "lookup_flowlet_map"
-  }
-}
-actions {
-  preamble {
     id: 24517793
     name: "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param"
     alias: "kth_path_finder_action_with_param"
@@ -821,16 +778,6 @@ actions {
     alias: "kth_path_finder_action_without_param"
   }
 }
-action_profiles {
-  preamble {
-    id: 295678503
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.upstream_path_selector"
-    alias: "upstream_path_selector"
-  }
-  table_ids: 36992381
-  with_selector: true
-  size: 128
-}
 counters {
   preamble {
     id: 312468779
@@ -840,18 +787,7 @@ counters {
   spec {
     unit: PACKETS
   }
-  size: 8
-}
-counters {
-  preamble {
-    id: 314169715
-    name: "destination_util_counter"
-    alias: "destination_util_counter"
-  }
-  spec {
-    unit: BYTES
-  }
-  size: 32
+  size: 256
 }
 direct_counters {
   preamble {
@@ -896,17 +832,6 @@ direct_counters {
     unit: BOTH
   }
   direct_table_id: 44899682
-}
-direct_counters {
-  preamble {
-    id: 321186985
-    name: "upstream_routing_table_counter"
-    alias: "upstream_routing_table_counter"
-  }
-  spec {
-    unit: BOTH
-  }
-  direct_table_id: 36992381
 }
 controller_packet_metadata {
   preamble {
@@ -1038,66 +963,6 @@ registers {
     }
   }
   size: 16
-}
-registers {
-  preamble {
-    id: 370808593
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.ecmp_flowlet_id_map"
-    alias: "ecmp_flowlet_id_map"
-  }
-  type_spec {
-    bitstring {
-      bit {
-        bitwidth: 16
-      }
-    }
-  }
-  size: 8192
-}
-registers {
-  preamble {
-    id: 383017684
-    name: "IngressPipeImpl.upstream_ecmp_routing_control_block.ecmp_flowlet_lasttime_map"
-    alias: "ecmp_flowlet_lasttime_map"
-  }
-  type_spec {
-    bitstring {
-      bit {
-        bitwidth: 48
-      }
-    }
-  }
-  size: 8192
-}
-registers {
-  preamble {
-    id: 378699635
-    name: "IngressPipeImpl.p4kp_flowlet_last_used_port"
-    alias: "p4kp_flowlet_last_used_port"
-  }
-  type_spec {
-    bitstring {
-      bit {
-        bitwidth: 9
-      }
-    }
-  }
-  size: 8192
-}
-registers {
-  preamble {
-    id: 381472542
-    name: "IngressPipeImpl.p4kp_flowlet_lasttime_map"
-    alias: "p4kp_flowlet_lasttime_map"
-  }
-  type_spec {
-    bitstring {
-      bit {
-        bitwidth: 48
-      }
-    }
-  }
-  size: 8192
 }
 type_info {
 }

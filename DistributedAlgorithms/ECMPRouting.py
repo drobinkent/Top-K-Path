@@ -2,6 +2,8 @@ import logging.handlers
 
 
 import logging.handlers
+import math
+import threading
 import time
 
 import ConfigConst
@@ -72,58 +74,9 @@ class ECMPRouting:
             pass
 
         return
-    def initMAT(self, switchObject, bitMaskLength):
-        allOneMAsk = BinaryMask(bitMaskLength)
-        allOneMAsk.setAllBitOne()
-        allOneMAskBinaryString = allOneMAsk.getBinaryString()
-        for j in range(0, bitMaskLength):
-            mask = BinaryMask(bitMaskLength)
-            mask.setNthBitWithB(n=j,b=1)
-            maskAsString = mask.getBinaryString()
-            switchObject.addTernaryMatchEntry( "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
-                                               fieldName = "local_metadata.kth_path_selector_bitmask",
-                                               fieldValue = allOneMAskBinaryString, mask = maskAsString,
-                                               actionName = "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_action_with_param",
-                                               actionParamName = "rank",
-                                               actionParamValue = str(j), priority=bitMaskLength-j+1)
 
 
-    def p4kpUtilBasedReconfigureForLeafSwitches(self, linkUtilStats, oldLinkUtilStats):
-        # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "new Utilization data is  "+str(linkUtilStats))
-        # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
-        pathAndUtilist = []
-        for i in range (int(ConfConst.MAX_PORTS_IN_SWITCH/2), ConfConst.MAX_PORTS_IN_SWITCH):
-            if((i+1) in ConfigConst.reservedPortList):
-                continue
-            else:
-                index = i
-                utilInLastInterval = linkUtilStats[index] -  oldLinkUtilStats[index]
-                # rankInLastInterval = self.topKPathManager.portToRankMap.get(i)
-                # pathAndUtilist.append((i,utilInLastInterval,rankInLastInterval))
-                pathAndUtilist.append((i+1,utilInLastInterval))
-        pathAndUtilist.sort(key=lambda x:x[1])
-        # if(self.p4dev.devName == ConfConst.CLB_TESTER_DEVICE_NAME):
-        #     print("For device "+self.p4dev.devName+" The port utilization data according to rank is "+str(pathAndUtilist))
-        controlPacketList = []
-        rankInsertedIncurrentIteration = {} #In our simulation ew are just using only one port per rank. but in case when you have more than one port per rank, basically you have to keep
-        #another copy oth the K-path manager. then in that copy you will maintain the port and ranks configured in current iteraition. if at some point, the rank or location is
-        #already iused in current iteration then you do not need to delete the path
-        i=0
-        extraIncrementToAvoidReserverRank = 0
-        while i< len(pathAndUtilist):
-            if (i in ConfigConst.reservedRanks) :
-                extraIncrementToAvoidReserverRank = extraIncrementToAvoidReserverRank + 1
-            port = pathAndUtilist[i][0]
-            rank = i + extraIncrementToAvoidReserverRank
-            if(rankInsertedIncurrentIteration.get(rank)== None):
-                dltPkt = self.topKPathManager.deletePort(port)
-                controlPacketList.append(dltPkt)
-            rankInsertedIncurrentIteration[rank] = rank
-            insertPkt = self.topKPathManager.insertPort(port, rank)
-            controlPacketList.append(insertPkt)
-            i=i+1
-        for ctrlPkt in controlPacketList:
-            self.p4dev.send_already_built_control_packet_for_top_k_path(ctrlPkt)
+
 
 
     def setup(self,nameToSwitchMap):
@@ -131,26 +84,10 @@ class ECMPRouting:
         This function setup all the relevant stuffs for running the algorithm
         '''
         self.p4dev.setupECMPUpstreamRouting()
-        startingRankForTestingTopKPathProblem = 0
-        #swUtils.setupFlowtypeBasedIngressRateMonitoringForKPathProblem(self.p4dev)
-        self.initMAT(self.p4dev, ConfConst.K)
         if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
-            for k in self.p4dev.portToSpineSwitchMap.keys():
-                if(k in ConfigConst.reservedPortList):
-                    continue
-                else:
-                    pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
-                    self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
-        elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
-            for k in self.p4dev.portToSuperSpineSwitchMap.keys():
-                if(k in ConfigConst.reservedPortList):
-                    continue
-                else:
-                    pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
-                    self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
-        elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
-            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K) # by default add space for 16 ports in super spine. This is not actually used in our simulation
-            pass
+            self.link_reconfiguration_thread = threading.Thread(target=self.linkReconfigurator, args=())
+            self.link_reconfiguration_thread.start()
+            logger.info("ECMP Routing link_reconfiguration_thread  started")
 
         return
 
@@ -160,95 +97,28 @@ class ECMPRouting:
         pass
 
 
-
-
-
-    def topKpathroutingTesting(self):
+    def linkReconfigurator(self):
         time.sleep(25)
         i = 0
+        # if(self.p4dev.devName != "device:p0l0"):
+        #     return
         while(True):
-            j = i % len(tstConst.TOP_K_PATH_EXPERIMENT_PORT_RATE_CONFIGS)
-            if(self.p4dev.devName != "device:p0l0"):
-                return
-            portCfg = tstConst.TOP_K_PATH_EXPERIMENT_PORT_RATE_CONFIGS[j]
-            time.sleep(portCfg[0])
-            for k in range(0,len(portCfg[1])): # k gives the rank iteslf as the port configs are already sorted
-                if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF:
-                    port =portCfg[1][k][0]
-                    portRank = portCfg[1][k][1]
-                    portRate = portCfg[1][k][2]
-                    bufferSize = portCfg[1][k][3]
-                    setPortQueueRatesAndDepth(self.p4dev, port, portRate, bufferSize)
-                if self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.SPINE:
-                    port =portCfg[1][k][0]
-                    portRank = portCfg[1][k][1]
-                    portRate = portCfg[1][k][2]
-                    bufferSize = portCfg[1][k][3]
-                dltPkt = self.topKPathManager.deletePort(port)
-                self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt)
-                if(portRate> 0): # if 0 that means the port is not down . So need to iinsert it. but for rate < 0 we delete the port but do not insert it agian to simulate delete behavior
-                    insertPkt = self.topKPathManager.insertPort(port, portRank)
-                    self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
-                else:
-                    logger.info("Port : "+str(port)+" will not be configured into system as it's rate is <0 = ")
-            print("Installed routes ",portCfg)
-            topologyConfigFilePath =  ConfConst.TOPOLOGY_CONFIG_FILE
-            # if(self.p4dev.devName == "device:p0l0"):
-            #     testEvaluator = TestCommandDeployer(topologyConfigFilePath,
-            #                                         "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TestConfigs/TopKPathTesterWithTopKPath.json",
-            #                                         ConfConst.IPERF3_CLIENT_PORT_START, ConfConst.IPERF3_SERVER_PORT_START, testStartDelay= 5)
-            # testEvaluator.setupTestCase()
-            i = i+ 1
-
-
-            # after reconfiguration start the testcase with 3 special flows
-
-
-
-
-
-class BinaryMask:
-    def __init__(self, length):
-        self.bits=[]
-        self.length = length
-        for i in range(0,self.length):
-            self.bits.append(0)
-
-    def setNthBitWithB(self,n,b):
-        self.bits[(len(self.bits) - 1 )-n] = b
-    def setAllBitOne(self):
-        for i in range(0,self.length):
-            self.bits[i]  = 1
-
-    def setAllBitMinuxOneEqualX(self):
-        for i in range(0,self.length):
-            self.bits[i]  = -1
-
-    def getBinaryString(self):
-        val = "0b"
-        for i in range(0, self.length):
-            if(self.bits[i] == 0):
-                val = val + "0"
-            elif (self.bits[i] == 1):
-                val = val + "1"
-            else:
-                val = val + "X"
-        return  val
-
-
-def modifyBit(n, position, b):
-    '''
-    # Python3 program to modify a bit at position
-    # p in n to b.
-
-    # Returns modified n.
-        :param n:
-        :param position:
-        :param b:
-        :return:
-    '''
-    mask = 1 << position
-    return (n & ~mask) | ((b << position) & mask)
+            j = i % len(tstConst.MULTI_TENANCY_PORT_RATE_CONFIGS)
+            portRates = tstConst.MULTI_TENANCY_PORT_RATE_CONFIGS[j]
+            # logger.info("PortRates are : "+str(portRates))
+            rankInsertedIncurrentIteration = {}
+            for k in range (0,len(portRates)):
+                print(portRates[k])
+                port = portRates[k][0]
+                rate = int(math.floor(portRates[k][1] * ConfConst.queueRateForSpineFacingPortsOfLeafSwitch))
+                bufferSize = int(math.floor(ConfigConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR * rate))
+                if(bufferSize<200):
+                    bufferSize = 200
+                rank = getRank(portRates[k][1])
+                # logger.info("Port "+str(port)+ " rate :"+str(portRates[k][1])+" rank:"+str(rank))
+                setPortQueueRatesAndDepth(dev = self.p4dev, port = port, queueRate = rate , bufferSize = ConfigConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
+            time.sleep(ConfigConst.MULTITENANCY_RATE_RECONFIGURATION_INTERVAL)
+            i=i+1
 
 def setPortQueueRatesAndDepth(dev, port, queueRate, bufferSize):
     cmdString = ""

@@ -88,7 +88,7 @@ class TopKPathManager:
         bit<32> new_port_index;
         '''
         # logger.info("for device "+self.p4dev.devName+"  Packet built for rank : "+str(rank)+" port :"+str(port)+" minindex : "+
-        #             str(rankMinIndex)+" maxindex :"+str(rankMaxIndex)+" portIndex "+str(newPortIndex)+" Packet type "+(str(isDelete)))
+        #             str(rankMinIndex)+" maxindex :"+str(rankMaxIndex)+" portIndex "+str(newPortIndex)+" Packet type "+(str(isDelete))+ " Bitmask "+str(bitmask))
 
         rawPktContent = (255).to_bytes(2,'big') # first 2 byte egressport and padding
         if(isDelete == True):
@@ -160,7 +160,7 @@ class TopKPathManager:
             return None
         if((oldRank != None) and (oldRank > ConfConst.INVALID) and  (oldRank==k)):
             logger.info(self.p4dev.devName+"-The port is already in rank-"+str(k))
-            print(self.p4dev.devName+"-The port is already in rank-",k)
+            # print(self.p4dev.devName+"-The port is already in rank-",k)
             return None
 
         oldIndex = self.portToIndexAtCurrentRankMap.get(port)
@@ -178,6 +178,7 @@ class TopKPathManager:
         #kth bit in bitmask will be 1
         pktForInsertPort = self.buildMetadataBasedPacketOut(isDelete=False,   rank = k, port = port, rankMinIndex=self.getMinIndex(k),
                         rankMaxIndex = self.getMaxIndex(rank=k), newPortIndex=self.getMaxIndex(rank=k),bitmask = self.getBitmask())
+        # logger.info("Inserting port: "+str(port)+" at rank: "+str(k)+" is done. rank to port map is "+str(self.rankToPort2dMap))
 
         return pktForInsertPort
 
@@ -207,7 +208,6 @@ class TopKPathManager:
         '''
         oldRank = self.portToRankMap.get(port)
         if(oldRank == None):
-
             logger.info(self.p4dev.devName+"-Old rank of port to be deleted("+str(port)+") is None. If you are deleting a port before inserting it then you are ok. otherwise There is some bug.")
             logger.info("To ensure consistency we are exiting.")
             return None
@@ -216,13 +216,18 @@ class TopKPathManager:
             logger.info(self.p4dev.devName+"-Old index of port "+str(port)+" to be deleted is None. This means the port is already not existing ")
             logger.info("This can not happen. Please Debug. !!!!")
             return None
+        # logger.info("Port "+str(port)+" is being deleted from rank: "+str(oldRank))
         self.portToRankMap[port] = ConfConst.INVALID
         self.rankToCounterMap[oldRank] = self.rankToCounterMap.get(oldRank) - 1
         portAtMaxIndex = self.rankToPortAtMaxIndexMap.get(oldRank)
+        # logger.info("Port at "+str(oldRank)+"'s max location is : "+str(portAtMaxIndex))
         newMaxIndexOfTheRank = self.portToIndexAtCurrentRankMap.get(portAtMaxIndex)-1
+
         self.portToIndexAtCurrentRankMap[port] = ConfConst.INVALID
         self.rankToPort2dMap[oldRank][oldIndex] = portAtMaxIndex
-        #TODO special case when we delete a port from a group. the port itself was the last port in the group. Need s[ecial test for that
+        #logger.info("Port at "+str(oldRank)+"'s max location: "+str(newMaxIndexOfTheRank)+" is now : "+str(self.rankToPort2dMap[oldRank][oldIndex]))
+        # logger.info("Port at "+str(oldRank)+"'s max location: "+str(newMaxIndexOfTheRank)+" is now : "+str(self.rankToPort2dMap[oldRank][oldIndex]))
+        #special case when we delete a port from a group. the port itself was the last port in the group. Need s[ecial test for that
         if(port == self.rankToPortAtMaxIndexMap[oldRank]):
             self.portToRankMap[port] = ConfConst.INVALID
             self.portToIndexAtCurrentRankMap[portAtMaxIndex] = ConfConst.INVALID #this case means we are deleting the last port of the group
@@ -237,6 +242,9 @@ class TopKPathManager:
         pktForDeletePort = self.buildMetadataBasedPacketOut(isDelete=True, rank = oldRank, port = portAtMaxIndex,
                             rankMinIndex=self.getMinIndex(oldRank), rankMaxIndex = self.getMaxIndex(rank=oldRank),
                                                             newPortIndex= (oldRank * self.maxRank )+oldIndex,bitmask = self.getBitmask())
+        # logger.info("Deleting port: "+str(port)+" from rank: "+str(oldRank)+" is done. rank to port map is "+str(self.rankToPort2dMap))
+
+
         return pktForDeletePort
 
 

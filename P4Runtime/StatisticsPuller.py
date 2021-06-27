@@ -73,13 +73,16 @@ class StatisticsPuller:
         self.oldLinkUtilStats = self.pullStatsFromSwitch(dev=switchObject)
         while(self.isRunning):
             time.sleep(ConfConst.STATISTICS_PULLING_INTERVAL)
-            index=0
-            switchObject = self.p4dev
-            linkUtilStats = self.pullStatsFromSwitch(dev=switchObject)
-            self.useLinkUtilForPathReconfigure(linkUtilStats, self.oldLinkUtilStats)
-            self.oldLinkUtilStats = linkUtilStats
+            #----this part is for record pulling
+            # index=0
+            # switchObject = self.p4dev
+            # linkUtilStats = self.pullStatsFromSwitch(dev=switchObject)
+            # self.useLinkUtilForPathReconfigure(linkUtilStats, self.oldLinkUtilStats)
+            # self.oldLinkUtilStats = linkUtilStats
             # switchObject.controllerStatsFile.write(json.dumps(statJson, cls=statJsonWrapper.PortStatisticsJSONWrapper))
             # switchObject.controllerStatsFile.flush()
+
+            # this part is for simulating link stats reconfig
         logger.info("Thread %s: finishing", "StatisticsPuller", str(self.p4dev.devName))
 
     def useLinkUtilForPathReconfigure(self, linkUtilStats,oldLinkUtilStats):
