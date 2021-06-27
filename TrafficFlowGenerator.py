@@ -29,7 +29,7 @@ def makeDirectory(folderPath, accessRights):
 
 
 def calculateFlowArrivalTimes(loadFactor, duration):
-    networkRate = int(math.ceil(confConst.queueRateForSpineFacingPortsOfLeafSwitch * loadFactor * ConfigConst.MAX_PORTS_IN_SWITCH/2)) # from each tor we need these many flows
+    networkRate = int(math.ceil(confConst.queueRateForSpineFacingPortsOfLeafSwitch * loadFactor * ConfigConst.MAX_PORTS_IN_SWITCH)) # from each tor we need these many flows
     networkRateForFlowType = []
     totalFlowRequiredForFlowType=[]
     lambdaForFlowType=[]
@@ -107,14 +107,14 @@ def l2StridePatternTestPairCreator(nameToHostMap, maxPortcountInSwitch):
         hostIndex, leafSwitchIndex, podIndex = srcHost.getLocationIndexes()
         peerName = getL2StrdePeerHostName(hostIndex, leafSwitchIndex, podIndex, maxPortcountInSwitch)
         peerHostObject = nameToHostMap.get(peerName)
-        if (srcHost!=None) and (peerHostObject != None) and (not(srcHost  in srcList)) and (not(srcHost  in destList)) and (not(peerName in srcList)) and (not(peerName  in destList)):
-        # if (srcHost!=None) and (peerHostObject != None) :
+        # if (srcHost!=None) and (peerHostObject != None) and (not(srcHost  in srcList)) and (not(srcHost  in destList)) and (not(peerName in srcList)) and (not(peerName  in destList)):
+        if (srcHost!=None) and (peerHostObject != None) :
             srcList.append(srcHost)
             destList.append((peerHostObject))
             count = count+1
             print("Src: "+srcHostName+" peer host:"+peerName)
 
-        if(count>=((maxPortcountInSwitch*2))):
+        if(count>=((len(nameToHostMap)))):
             break;
 
 

@@ -98,7 +98,7 @@ def getPercentileFCTByFolder(folderName):
 
 
 
-# print("For WebSearch Workload, with Load Factor 1.0")
+print("For WebSearch Workload, with Load Factor 1.0")
 # # print("Algorithms Nanme : HULA ")
 # # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.8")
 print("Algorithms Nanme : P4KP ")
@@ -106,19 +106,19 @@ getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_
 print("Algorithms Nanme : ECMP ")
 getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_1.0")
 print("\n\n\n")
-
-
+#
+#
 print("For WebSearch Workload, with Load Factor 0.8")
-# # # print("Algorithms Nanme : HULA ")
-# # # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.8")
+# # # # # print("Algorithms Nanme : HULA ")
+# # # # # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.8")
 print("Algorithms Nanme : P4KP ")
 getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
 print("Algorithms Nanme : ECMP ")
 getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
 print("\n\n\n")
 print("For WebSearch Workload, with Load Factor 0.7")
-# # print("Algorithms Nanme : HULA ")
-# # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.7")
+# # # print("Algorithms Nanme : HULA ")
+# # # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.7")
 print("Algorithms Nanme : P4KP ")
 getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_0.7")
 print("Algorithms Nanme : ECMP ")
