@@ -171,8 +171,8 @@ class MyP4Controller():
     def startMonitoringFromController(self):
         # this method will pull various counter and register values from the switches and plot data accordingly.
         #Also save the collected statitstics for each device in corresponding data structure.
-        # for dev in self.nameToSwitchMap:
-        #     self.statisticsPuller = P4Runtime.StatisticsPuller.StatisticsPuller(self.nameToSwitchMap, dev)
+        for dev in self.nameToSwitchMap:
+            self.statisticsPuller = P4Runtime.StatisticsPuller.StatisticsPuller(self.nameToSwitchMap, dev)
         pass
 
 

@@ -64,11 +64,12 @@ class TopKPathManager:
         for i in range (0, self.maxRank):
             print(self.rankToPort2dMap[i])
         pass
-    def buildMetadataBasedPacketOut(self,  isDelete,   rank, port, rankMinIndex, rankMaxIndex, newPortIndex,bitmask, packet_out_port = 255):
+    def buildMetadataBasedPacketOut(self,  isDelete,   rank, port, rankMinIndex, rankMaxIndex, newPortIndex,bitmask, packet_out_port = 255, torid=0):
         '''
 
         port_num_t  egress_port;
         bit<7>      _pad;
+
         //Previous all fields are not necessary for CLB. TODO  at sometime we will trey to clean up them. But at this moment we are not focusing on that
         bit<8> top_k_path_flags; //Here we will keep various falgs for CLB
         //--------bit-7--------|| If this bit is set then reet the counter
@@ -86,6 +87,7 @@ class TopKPathManager:
         bit<32> rank_max_index;
         bit<32> rank_min_index;
         bit<32> new_port_index;
+        bit<32> tor_id;
         '''
         # logger.info("for device "+self.p4dev.devName+"  Packet built for rank : "+str(rank)+" port :"+str(port)+" minindex : "+
         #             str(rankMinIndex)+" maxindex :"+str(rankMaxIndex)+" portIndex "+str(newPortIndex)+" Packet type "+(str(isDelete))+ " Bitmask "+str(bitmask))
@@ -136,11 +138,15 @@ class TopKPathManager:
         newPortIndex_metadata_field.metadata_id = 9
         newPortIndex_metadata_field.value = (newPortIndex).to_bytes(4,'big')
 
+        newPortIndex_metadata_field = packet_out.metadata.add()
+        newPortIndex_metadata_field.metadata_id = 10
+        newPortIndex_metadata_field.value = (torid).to_bytes(4,'big')
+
         packet_out.payload = rawPktContent
         packet_out_req.packet.CopyFrom(packet_out)
         return packet_out_req
 
-    def insertPort(self, port, k):
+    def insertPort(self, port, k, torId):
         '''
         This function inserts the port at K'th rank
         :param port:
@@ -151,7 +157,7 @@ class TopKPathManager:
             logger.error("given  rank is more than the system's available rank. so can't insert the port")
             return None
         if((self.rankToCounterMap.get(k) != None) and (self.rankToCounterMap.get(k) != None) and  (self.rankToCounterMap.get(k) >= (self.maxRank-1))):
-            print("Already k memebers in the group. Yoo may enter the port into next group")
+            logger.info("Already k memebers in the group. Yoo may enter the port into next group")
             return None
         oldRank = self.portToRankMap.get(port)
         if((oldRank != None) and (oldRank > ConfConst.INVALID) and  (oldRank != k)):
@@ -176,8 +182,9 @@ class TopKPathManager:
         #next we need to build the control message
         #row = k, column = self.rankToCounterMap[k]
         #kth bit in bitmask will be 1
-        pktForInsertPort = self.buildMetadataBasedPacketOut(isDelete=False,   rank = k, port = port, rankMinIndex=self.getMinIndex(k),
-                        rankMaxIndex = self.getMaxIndex(rank=k), newPortIndex=self.getMaxIndex(rank=k),bitmask = self.getBitmask())
+        pktForInsertPort = self.buildMetadataBasedPacketOut(isDelete=False,   rank = k, port = port, rankMinIndex=self.getMinIndex(k)+(torId*ConfConst.K*ConfConst.K),
+                        rankMaxIndex = self.getMaxIndex(rank=k)+(torId*ConfConst.K*ConfConst.K),
+                        newPortIndex=self.getMaxIndex(rank=k)+(torId*ConfConst.K*ConfConst.K),bitmask = self.getBitmask(), torid= torId)
         # logger.info("Inserting port: "+str(port)+" at rank: "+str(k)+" is done. rank to port map is "+str(self.rankToPort2dMap))
 
         return pktForInsertPort
@@ -199,7 +206,7 @@ class TopKPathManager:
         else:
             return rank * self.maxRank
 
-    def deletePort(self, port):
+    def deletePort(self, port, torId):
         '''
         This function deletes port from the CP data strucutre and  builds a control message to delete the port from data plane
         At any point of execution if it finds any inconsistency, it exits the thread at control plnae to keep consistency intact
@@ -240,8 +247,8 @@ class TopKPathManager:
         #When we delete the only element of the rank then newMaxIndexOfTheRank weill be -1. But we do not consider this as special case, because p4 programs will automatically
         #overlook those exception. so we do not think about that. but for other cases, this wil not be -1. so we are okay.
         pktForDeletePort = self.buildMetadataBasedPacketOut(isDelete=True, rank = oldRank, port = portAtMaxIndex,
-                            rankMinIndex=self.getMinIndex(oldRank), rankMaxIndex = self.getMaxIndex(rank=oldRank),
-                                                            newPortIndex= (oldRank * self.maxRank )+oldIndex,bitmask = self.getBitmask())
+                            rankMinIndex=self.getMinIndex(oldRank)+(torId*ConfConst.K*ConfConst.K), rankMaxIndex = self.getMaxIndex(rank=oldRank)+(torId*ConfConst.K*ConfConst.K),
+                                                            newPortIndex= (oldRank * self.maxRank )+oldIndex+(torId*ConfConst.K*ConfConst.K),bitmask = self.getBitmask(), torid=torId)
         # logger.info("Deleting port: "+str(port)+" from rank: "+str(oldRank)+" is done. rank to port map is "+str(self.rankToPort2dMap))
 
 

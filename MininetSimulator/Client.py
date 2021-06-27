@@ -58,8 +58,8 @@ try:
 	x = 0
 	for x in range(0, int(round(PACKETS_TO_SEND))):
 		s.send(bytes(MESSAGE, 'utf-8'))
-		if(TRAFFIC_CLASS == TUNNEL_TRAFFIC_CLASS):
-			sleep(1/BIT_RATE)
+		# if(TRAFFIC_CLASS == TUNNEL_TRAFFIC_CLASS):
+		# 	sleep(1/BIT_RATE)
 	logger.info("Data sending complete")
 	end=datetime.now()
 	sender = s.getsockname()
@@ -75,9 +75,12 @@ try:
 	fh.write("\n")
 	os.umask(original_umask)
 except Exception as e:
-	logger.error("Exception occurred in writing result for TCP_IP cLIENT . Exception is ", e)
+	logger.error("Exception occurred in writing result for TCP_IP cLIENT . Exception is ", str(sys.exc_info()))
+	# exc_type, exc_obj, exc_tb = sys.exc_info()
+	# fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+	# print(exc_type, fname, exc_tb.tb_lineno)
 except OSError as e:
-	logger.error("Error occurred in writing result for TCP_IP cLIENT . Exception is ", e)
+	logger.error("Error occurred in writing result for TCP_IP cLIENT . Exception is ",str(e.traceback.print_exc()) )
 finally:
 	if(fh != None):
 		fh.close()

@@ -66,7 +66,7 @@ TRAFFIC_CLASS_AS_LIST = [TRAFFIC_CLASS_LOW_DELAY, TRAFFIC_CLASS_MAXIMIZE_THROUGH
 #PERCENTAGE_OF_TOTAL_UPWARD_TRAFFIC_FOR_TRAFFIC_CLASS = [40, 70, 10]
 PERCENTAGE_OF_TOTAL_UPWARD_TRAFFIC_FOR_TRAFFIC_CLASS = [10,40, 5] # How much of the link capacity should a traffic class get.
 #======================thread control and timer related
-STATISTICS_PULLING_INTERVAL = 2# This means after each STATISTICS_PULLING_INTERVAL second controller will wake up the StatisticsPuller thread and collect stats from the switches
+STATISTICS_PULLING_INTERVAL = 1# This means after each STATISTICS_PULLING_INTERVAL second controller will wake up the StatisticsPuller thread and collect stats from the switches
 MULTITENANCY_RATE_RECONFIGURATION_INTERVAL = 1
 PORT_STATISTICS_HISTORY_LENGTH = 1000 # this means the history will be
 #======================= Different Test Scenarios
@@ -76,7 +76,7 @@ class DataplnaeAlgorithm(Enum):
     DP_ALGO_TOP_K_PATH = "DP_ALGO_TOP_K_PATH"
 
 #ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP
-ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_TOP_K_PATH
+ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP
 
 
 queueRateForHostFacingPortsOfLeafSwitch = 32
@@ -173,8 +173,8 @@ CLB_TESTER_DEVICE_NAME="device:p0l0"
 MAX_PORTS_IN_SWITCH = 8 #Maximum Supported ports in a switch to reflect the dataplane configuration
 MAX_TOR_SUBNET = 4;  #Maximum ToR supported by our simulation
 
-reservedPortList = [8]
-reservedRanks = [3]
+reservedPortList = [80]
+reservedRanks = [30]
 switchesOfreservedTunnel= ["p0l0", "p0l1"]
 
 specialTunnelStartingSwitch = "p0l0"

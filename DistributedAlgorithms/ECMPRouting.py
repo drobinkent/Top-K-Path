@@ -84,10 +84,10 @@ class ECMPRouting:
         This function setup all the relevant stuffs for running the algorithm
         '''
         self.p4dev.setupECMPUpstreamRouting()
-        if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
-            self.link_reconfiguration_thread = threading.Thread(target=self.linkReconfigurator, args=())
-            self.link_reconfiguration_thread.start()
-            logger.info("ECMP Routing link_reconfiguration_thread  started")
+        # if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
+        #     self.link_reconfiguration_thread = threading.Thread(target=self.linkReconfigurator, args=())
+        #     self.link_reconfiguration_thread.start()
+        #     logger.info("ECMP Routing link_reconfiguration_thread  started")
 
         return
 

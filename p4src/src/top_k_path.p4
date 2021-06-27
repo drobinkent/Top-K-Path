@@ -17,7 +17,7 @@ control k_path_selector(inout parsed_headers_t    hdr,
         local_metadata.flag_hdr.best_path_finderMat_hit = false;
     }
     action best_path_finder_action_with_param(bit<16> rank) {
-        local_metadata.best_path_rank = rank;
+        local_metadata.best_path_rank =(bit<32>) rank;
         local_metadata.flag_hdr.best_path_finderMat_hit = true;
     }
     table best_path_finder_mat {
@@ -32,7 +32,7 @@ control k_path_selector(inout parsed_headers_t    hdr,
     }
 
     action worst_path_finder_action_with_param(bit<16> rank) {
-        local_metadata.worst_path_rank =rank;
+        local_metadata.worst_path_rank =(bit<32>)rank;
         local_metadata.flag_hdr.worst_path_finderMat_hit = true;
 
     }
@@ -53,7 +53,7 @@ control k_path_selector(inout parsed_headers_t    hdr,
     }
 
     action kth_path_finder_action_with_param(bit<16> rank) {
-        local_metadata.kth_path_rank =rank;
+        local_metadata.kth_path_rank = (bit<32>)(rank);
         local_metadata.flag_hdr.kth_path_finderMat_hit = true;
     }
     action kth_path_finder_action_without_param() {
@@ -77,14 +77,12 @@ control k_path_selector(inout parsed_headers_t    hdr,
 
     apply {
          {
-            //destination calculation
-            //bit<32> destination_index = (bit<32>)hdr.ipv6.dst_addr[31:16] ; //rightmost 16 bit shows the ToR ID in our scheme. This basically dones nonthing. just a casting
-            //And used for doccumentatin purpose. we can directly use the 8 bits of tor id. no need to take xtra variable
 
+            bit<32> tor_id = (bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[31:16]) -1 ;
 
             bit<K> stored_bitmask_read_value = 0;
-            stored_bitmask.read(stored_bitmask_read_value, (bit<32>)0);
-            local_metadata.best_path_selector_bitmask =  ALL_1_256_BIT[K-1:0];
+            stored_bitmask.read(stored_bitmask_read_value, (bit<32>)local_metadata.tor_id);
+            //local_metadata.best_path_selector_bitmask =  ALL_1_256_BIT[K-1:0];
             //log_msg("traffic class is {}", {hdr.ipv6.traffic_class});
             //log_msg("Stored bitmask after read is {}",{stored_bitmask_read_value});
             //log_msg("kth path selector bitmask is {}",{local_metadata.kth_path_selector_bitmask});

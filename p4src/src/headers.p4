@@ -155,12 +155,13 @@ struct local_metadata_t {
     bit <K> kth_path_selector_bitmask;
 
     bit <8> rank_of_path_to_be_searched; //We are forced to keep this to 8 bit. Because in bmv2 this amount of right shift is limited to 8 bits
-    bit <16> best_path_rank;
-    bit <16> worst_path_rank;
-    bit <16> kth_path_rank;
+    bit <32> best_path_rank;
+    bit <32> worst_path_rank;
+    bit <32> kth_path_rank;
     bit<9>  ecmp_egress_spec;
     bit<9>  p4kp_egress_spec;
     bit<9>  hula_egress_spec;
+    bit<32> tor_id;
 
     //bit<32> linkLocation ;
 
@@ -213,7 +214,7 @@ header packet_in_t {
 header packet_out_t {
     port_num_t  egress_port;
     bit<7>      _pad;
-    //bit<16> tor_id;
+
     //Previous all fields are not necessary for CLB. TODO  at sometime we will trey to clean up them. But at this moment we are not focusing on that
     bit<8> top_k_path_flags; //Here we will keep various falgs for topKpath
     //--------bit-7--------|| If this bit is set then this is a delete port else this is a add port insturction
@@ -234,6 +235,7 @@ header packet_out_t {
     bit<32> rank_max_index;
     bit<32> rank_min_index;
     bit<32> new_port_index;
+    bit<32> tor_id;
 
 }
 
