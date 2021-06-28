@@ -11,7 +11,7 @@ import ConfigConst
 import ConfigConst as confConst
 import sys
 import TestConfig as tc
-from scipy.stats import uniform
+from scipy.stats import uniform, poisson
 
 logger = logging.getLogger('SSHDeployer')
 hdlr = logging.FileHandler('./log/TrafficflowGenerator.log')
@@ -39,7 +39,7 @@ def calculateFlowArrivalTimes(loadFactor, duration):
         # networkRateForFlowType.append((ConfigConst.FLOW_TYPE_LOAD_RATIO[i] * networkRate * duration * (len(ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB) - (i)))/100)
         networkRateForFlowType.append((ConfigConst.FLOW_TYPE_LOAD_RATIO[i] * networkRate * duration*ConfigConst.MAX_PORTS_IN_SWITCH/4 )/100)  #It shoould be divide by 4. bcz we want only 2 sets off flows
         totalFlowRequiredForFlowType.append(math.ceil((networkRateForFlowType[i])/((ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB[i]*1024)/(ConfigConst.PACKET_SIZE))))
-        lambdaForFlowType.append((1/totalFlowRequiredForFlowType[i]))
+        lambdaForFlowType.append((duration/totalFlowRequiredForFlowType[i]))
         totalFlowRequiredForFlowTypeOverWholeDuration.append(int(1/lambdaForFlowType[i]))
         # totalIterationForFlowType.append(duration/)
         # print(lambdaForFlowType)
@@ -48,13 +48,31 @@ def calculateFlowArrivalTimes(loadFactor, duration):
         # print(totalFlowRequiredForFlowTypeOverWholeDuration)
     flowArrivalTimesByflowType = []
     for i in range (0, len(ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB)):
-        data_uniform = uniform.rvs(size=totalFlowRequiredForFlowType[i], loc = 0, scale=duration)
-        flowArrivalTimesByflowType.append(data_uniform)
-        print("Per flow Flow volume"+str(ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB[i]))
-        print("Required nbumber of flow "+str(totalFlowRequiredForFlowType[i]))
+        # data_uniform = uniform.rvs(size=totalFlowRequiredForFlowType[i], loc = 0, scale=duration)
+        # flowArrivalTimesByflowType.append(data_uniform)
+        # print("Per flow Flow volume"+str(ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB[i]))
+        # print("Required nbumber of flow "+str(totalFlowRequiredForFlowType[i]))
+
+        for i in range (0, len(ConfigConst.FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB)):
+            # numbPoints = scipy.stats.poisson( int(totalFlowRequiredForFlowType[i])).rvs()#Poisson number of points
+            # #val = duration*scipy.stats.uniform.rvs(0,1,((numbPoints,1)))#x coordinates of Poisson points
+            # val = duration*numbPoints
+
+            val = poisson.rvs(lambdaForFlowType[i], size=totalFlowRequiredForFlowType[i])
+            val = np.sort(val, axis=None)
+            print("Poisson numbers" +str(val))
+            arrivalTimes = Cumulative(val)
+            print("ArrivalTimes "+str(arrivalTimes))
+            flowArrivalTimesByflowType.append(arrivalTimes)
 
     return flowArrivalTimesByflowType
 
+
+def Cumulative(lists):
+    cu_list = []
+    length = len(lists)
+    cu_list = [sum(lists[0:x:1]) for x in range(0, length+1)]
+    return cu_list[1:]
 # calculateFlowArrivalTimes(loadFactor=.3, duration = 200)
 
 
@@ -321,7 +339,7 @@ if __name__ == "__main__":
     #This is always the topology configuration.
     topologyConfigFilePath =  confConst.TOPOLOGY_CONFIG_FILE
     testEvaluator = TestCommandDeployer(topologyConfigFilePath = confConst.TOPOLOGY_CONFIG_FILE,resultFolder = "FlowInfos" , clientPortStart=confConst.IPERF3_CLIENT_PORT_START,
-                        serverPortStart=confConst.IPERF3_SERVER_PORT_START, testStartDelay=100)
+                        serverPortStart=confConst.IPERF3_SERVER_PORT_START, testStartDelay=10)
     testEvaluator.setupTestCaseFolder()
     testEvaluator.generateTestCommands( testCaseNAme= "WebSearchWorkLoad_load_factor_0.2",loadFactor=0.2,testDuration=200,maxPortcountInSwitch=ConfigConst.MAX_PORTS_IN_SWITCH/2)
 

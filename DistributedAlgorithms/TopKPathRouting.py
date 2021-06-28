@@ -24,9 +24,9 @@ logger.setLevel(logging.INFO)
 
 
 def getRank(pathRate):
-    if(pathRate >= 0) and (pathRate <= 0.325):
-        return 3
-    if(pathRate > 0.325) and (pathRate <= 0.45):
+    # if(pathRate >= 0) and (pathRate <= 0.325):
+    #     return 3
+    if(pathRate > 0) and (pathRate <= 0.45):
         return 2
     if(pathRate > 0.45) and (pathRate <= 0.575):
         return 1

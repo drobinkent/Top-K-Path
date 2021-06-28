@@ -1,4 +1,6 @@
 import random as rnd
+
+import ConfigConst
 import Testingconst as tstConst
 
 def generateRandomProbeResult(allPortsAsList = [5,6,7,8], minLinkRate=0.2, maxLinkRate=0.7):
@@ -19,6 +21,10 @@ def printRandomProbeResults(randomProberesult):
 
 def generateAndStoreRandomProbeResults(times):
     probeResultsAsList = []
+    # timeAsList = []
+    # for i in range(0, int(times/ConfigConst.MULTITENANCY_RATE_RECONFIGURATION_INTERVAL)):
+    #     x = rnd.uniform(minLinkRate, maxLinkRate)
+
     for i in range(0, times):
         probeResult = generateRandomProbeResult()
         probeResultsAsList.append(probeResult)

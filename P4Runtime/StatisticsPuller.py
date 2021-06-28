@@ -91,9 +91,10 @@ class StatisticsPuller:
             # logger.info("ECMP ALGORITHM: For switch "+ self.p4dev.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
             pass
         elif ((self.p4dev.dpAlgorithm == ConfConst.DataplnaeAlgorithm.DP_ALGO_BASIC_HULA) and (self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF)):
-            logger.info("HULA ALGORITHM: For switch "+ self.p4dev.devName+ "new Utilization data is  "+str(linkUtilStats))
-            logger.info("HULA ALGORITHM: For switch "+ self.p4dev.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
+            # logger.info("HULA ALGORITHM: For switch "+ self.p4dev.devName+ "new Utilization data is  "+str(linkUtilStats))
+            # logger.info("HULA ALGORITHM: For switch "+ self.p4dev.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
             self.p4dev.hulaUtilBasedReconfigureForLeafSwitches(linkUtilStats,oldLinkUtilStats)
+
         elif ((self.p4dev.dpAlgorithm == ConfConst.DataplnaeAlgorithm.DP_ALGO_TOP_K_PATH)  and (self.p4dev.fabric_device_config.switch_type == InternalConfig.SwitchType.LEAF)):
             # if(ConfConst.CLB_TESTER_DEVICE_NAME in self.p4dev.devName):
             # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "new Utilization data is  "+str(linkUtilStats))

@@ -35,6 +35,7 @@
 #include "top_k_path_control_message_processor.p4"
 #include "ingress_rate_monitor.p4"
 #endif
+#include "hula.p4"
 control VerifyChecksumImpl(inout parsed_headers_t hdr,
                            inout local_metadata_t meta)
 {
@@ -80,7 +81,9 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     k_path_selector() k_path_selector_control_block;
     ingress_rate_monitor() ingress_rate_monitor_control_block;
     #endif
-
+     #ifdef DP_ALGO_HULA
+    hula_load_balancing() hula_load_balancing_control_block;
+    #endif
 
     apply {
     local_metadata.flag_hdr.do_l3_l2=true;
@@ -138,11 +141,11 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                     // Here we will set the bitmasks for 3 experiemntal traffi classes
                     //In real life scenario other algorihtms will setup these bitmasks
                     if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_LOW_DELAY){
-                        local_metadata.kth_path_selector_bitmask = 0; //later it will find miss and use best path
-                    }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_HIGH_THROUGHPUT){
+                        local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 0;
+                    }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_LARGE_FLOW){
                          local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 2; //skip the first 2 best path as they are reserved by low delay and special custom traffic class
                          log_msg("Bitmask for high throughout traffic class is {}",{local_metadata.kth_path_selector_bitmask});
-                    }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_CUSTOM_QOS){
+                    }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_QUERY_RESULT_MEDIAUM_SIZE){
                         bit<K> tempMask = ALL_1_256_BIT[K-1:0] <<1;
                         local_metadata.kth_path_selector_bitmask = tempMask;
 
@@ -173,6 +176,9 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                     log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
                 }
 
+                #endif
+                #ifdef DP_ALGO_HULA
+                hula_load_balancing_control_block.apply(hdr, local_metadata, standard_metadata);
                 #endif
                 //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
             }

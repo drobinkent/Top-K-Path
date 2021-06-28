@@ -54,7 +54,7 @@ p4-leaf-hula: p4src/src/leaf.p4
 	@mkdir -p p4src/Build
 	p4c-bm2-ss --arch v1model -o p4src/Build/leaf.json \
 		--p4runtime-files p4src/Build/leaf_p4info.txt --Wdisable=unsupported \
-		p4src/src/leaf.p4 -Dports=256 -DENABLE_DEBUG_TABLES -DDP_ALGO_HULA
+		p4src/src/leaf.p4 -Dports=256 -DENABLE_DEBUG_TABLES -DDP_ALGO_HULA -DK=4
 	sudo cp ./p4src/Build/leaf.json /tmp/
 	sudo cp ./p4src/Build/leaf_p4info.txt /tmp/
 	@echo "*** P4 program for leaf switch compiled successfully! Output files are in p4src/Build"
@@ -64,7 +64,7 @@ p4-spine-hula: p4src/src/spine.p4
 	@mkdir -p p4src/Build
 	p4c-bm2-ss --arch v1model -o p4src/Build/spine.json \
 		--p4runtime-files p4src/Build/spine_p4info.txt --Wdisable=unsupported \
-		p4src/src/spine.p4 -Dports=256  -DENABLE_DEBUG_TABLES  -DDP_ALGO_HULA
+		p4src/src/spine.p4 -Dports=256  -DENABLE_DEBUG_TABLES  -DDP_ALGO_HULA -DK=4
 	sudo cp ./p4src/Build/spine.json /tmp/
 	sudo cp ./p4src/Build/spine_p4info.txt /tmp/
 	@echo "*** P4 program for spine switch compiled successfully! Output files are in p4src/Build"
@@ -93,6 +93,7 @@ create-result-folders:
 create-algowise-result-folder:
 	mkdir ./testAndMeasurement/TEST_RESULTS/ECMP_RESULTS
 	mkdir ./testAndMeasurement/TEST_RESULTS/P4KP_RESULTS
+	mkdir ./testAndMeasurement/TEST_RESULTS/HULA_RESULTS
 
 clear-logs:
 	sudo rm -rf /tmp/*

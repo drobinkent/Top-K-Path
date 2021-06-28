@@ -1,5 +1,11 @@
 import logging
 import logging.handlers
+import math
+import threading
+import time
+
+import ConfigConst
+import DistributedAlgorithms.Testingconst as tstConst
 import P4Runtime.P4DeviceManager as jp
 import P4Runtime.leafSwitchUtils as leafUtils
 import P4Runtime.spineSwitchUtils as  spineUtils
@@ -7,6 +13,7 @@ import P4Runtime.superSpineSwitchUtils as  superSpineUtils
 import P4Runtime.SwitchUtils as swUtils
 import InternalConfig
 import P4Runtime.shell as sh
+import InternalConfig as intCoonfig
 from DistributedAlgorithms.RoutingInfo import RoutingInfo
 import ConfigConst as ConfConst
 logger = logging.getLogger('Shell')
@@ -50,7 +57,32 @@ class HulaRouting:
         #     pass
         self.nameToSwitchMap = nameToSwitchMap
         self.p4dev.setupHULAUpstreamRouting(self.nameToSwitchMap)
+        if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
+            self.link_reconfiguration_thread = threading.Thread(target=self.linkReconfigurator, args=())
+            self.link_reconfiguration_thread.start()
+            logger.info("TopKpathrouting link_reconfiguration_thread  started")
         return
+
+    def linkReconfigurator(self):
+        time.sleep(25)
+        i = 0
+        # if(self.p4dev.devName != "device:p0l0"):
+        #     return
+        while(True):
+            j = i % len(tstConst.MULTI_TENANCY_PORT_RATE_CONFIGS)
+            portRates = tstConst.MULTI_TENANCY_PORT_RATE_CONFIGS[j]
+            logger.info("PortRates are : "+str(portRates))
+            rankInsertedIncurrentIteration = {}
+            for k in range (0,len(portRates)):
+                print(portRates[k])
+                port = portRates[k][0]
+                rate = int(math.floor(portRates[k][1] * ConfConst.queueRateForSpineFacingPortsOfLeafSwitch))
+                bufferSize = int(math.floor(ConfigConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR * rate))
+                if(bufferSize<200):
+                    bufferSize = 200
+                setPortQueueRatesAndDepth(dev = self.p4dev, port = port, queueRate = rate , bufferSize = ConfigConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
+            time.sleep(ConfigConst.MULTITENANCY_RATE_RECONFIGURATION_INTERVAL)
+            i=i+1
 
     def processFeedbackPacket(self, parsedPkt, dev):
         #print("Called the algo")
@@ -81,5 +113,14 @@ class HulaRouting:
         #     print("Valid path_delay_event_type :"+str(parsedPkt.path_delay_event_type))
         pass
 
-
+def setPortQueueRatesAndDepth(dev, port, queueRate, bufferSize):
+    cmdString = ""
+    cmdString = cmdString+  "set_queue_rate "+str(queueRate)+ " "+str(port)+"\n"
+    dev.executeCommand(cmdString)
+    cmdString = ""
+    cmdString = cmdString+  "set_queue_depth "+str(bufferSize)+ " "+str(port)+"\n"
+    dev.executeCommand(cmdString)
+    # logger.info("Executing queuerate and depth setup commmand for device "+ str(dev))
+    # logger.info("command is: "+cmdString)
+    #dev.executeCommand(cmdString)
 

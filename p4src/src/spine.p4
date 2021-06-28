@@ -35,6 +35,7 @@
 #include "top_k_path.p4"
 #endif
 #include "ingress_rate_monitor.p4"
+#include "hula.p4"
 
 // *** V1MODEL
 //
@@ -104,6 +105,9 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     k_path_selector() k_path_selector_control_block;
     ingress_rate_monitor() ingress_rate_monitor_control_block;
     #endif
+    #ifdef DP_ALGO_HULA
+    hula_load_balancing() hula_load_balancing_control_block;
+    #endif
 
     // *** APPLY BLOCK STATEMENT
     apply {
@@ -154,6 +158,9 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 //Here we are showing how to use k'th path
                 rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)local_metadata.kth_path_rank);
                 //standard_metadata.egress_spec = port_num;
+                #endif
+                #ifdef DP_ALGO_HULA
+                hula_load_balancing_control_block.apply(hdr, local_metadata, standard_metadata);
                 #endif
             //log_msg("egress spec is {} and egress port is {}",{standard_metadata.egress_spec , standard_metadata.egress_port});
             }
