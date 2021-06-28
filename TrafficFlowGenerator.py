@@ -116,15 +116,8 @@ def l2StridePatternTestPairCreator(nameToHostMap, maxPortcountInSwitch):
 
         if(count>=((len(nameToHostMap)))):
             break;
-    tempList = srcList.copy()
-    tempList.reverse()
-    srcList= srcList + tempList
 
-    tempList = destList.copy()
-    tempList.reverse()
-    destList = destList+ destList
-    for h in srcList:
-        print(h.hostName)
+
     return srcList, destList
 def getStrideDeploymentPairs(nameToHostMap,maxPortcountInSwitch,testCaseName, loadFactor, testDuration,testStartDelay ):
     # foreach scrc-dest-pair
@@ -361,7 +354,7 @@ if __name__ == "__main__":
     testEvaluator = TestCommandDeployer(topologyConfigFilePath = confConst.TOPOLOGY_CONFIG_FILE,resultFolder = "FlowInfos" , clientPortStart=confConst.IPERF3_CLIENT_PORT_START,
                                         serverPortStart=confConst.IPERF3_SERVER_PORT_START, testStartDelay=10)
     testEvaluator.setupTestCaseFolder()
-    testEvaluator.generateTestCommands( testCaseNAme= "WebSearchWorkLoad_load_factor_2.0",loadFactor=2,testDuration=200,maxPortcountInSwitch=ConfigConst.MAX_PORTS_IN_SWITCH/2)
+    testEvaluator.generateTestCommands( testCaseNAme= "WebSearchWorkLoad_load_factor_1.0",loadFactor=1,testDuration=200,maxPortcountInSwitch=ConfigConst.MAX_PORTS_IN_SWITCH/2)
 
 
     # #--------------------

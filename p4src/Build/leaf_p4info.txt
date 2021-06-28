@@ -778,13 +778,6 @@ actions {
     alias: "kth_path_finder_action_without_param"
   }
 }
-actions {
-  preamble {
-    id: 31891621
-    name: "IngressPipeImpl.p4kp_lookup_flowlet_map"
-    alias: "p4kp_lookup_flowlet_map"
-  }
-}
 counters {
   preamble {
     id: 312468779
@@ -794,18 +787,7 @@ counters {
   spec {
     unit: PACKETS
   }
-  size: 8
-}
-counters {
-  preamble {
-    id: 314169715
-    name: "destination_util_counter"
-    alias: "destination_util_counter"
-  }
-  spec {
-    unit: BYTES
-  }
-  size: 32
+  size: 256
 }
 direct_counters {
   preamble {
@@ -921,11 +903,6 @@ controller_packet_metadata {
     name: "new_port_index"
     bitwidth: 32
   }
-  metadata {
-    id: 10
-    name: "tor_id"
-    bitwidth: 32
-  }
 }
 registers {
   preamble {
@@ -940,7 +917,7 @@ registers {
       }
     }
   }
-  size: 4
+  size: 1
 }
 registers {
   preamble {
@@ -955,7 +932,7 @@ registers {
       }
     }
   }
-  size: 16
+  size: 4
 }
 registers {
   preamble {
@@ -970,7 +947,7 @@ registers {
       }
     }
   }
-  size: 16
+  size: 4
 }
 registers {
   preamble {
@@ -985,52 +962,7 @@ registers {
       }
     }
   }
-  size: 64
-}
-registers {
-  preamble {
-    id: 373708958
-    name: "IngressPipeImpl.p4kp_flowlet_id_map"
-    alias: "p4kp_flowlet_id_map"
-  }
-  type_spec {
-    bitstring {
-      bit {
-        bitwidth: 16
-      }
-    }
-  }
-  size: 8192
-}
-registers {
-  preamble {
-    id: 381472542
-    name: "IngressPipeImpl.p4kp_flowlet_lasttime_map"
-    alias: "p4kp_flowlet_lasttime_map"
-  }
-  type_spec {
-    bitstring {
-      bit {
-        bitwidth: 48
-      }
-    }
-  }
-  size: 8192
-}
-registers {
-  preamble {
-    id: 369497234
-    name: "IngressPipeImpl.p4kp_flowlet_lastused_port_map"
-    alias: "p4kp_flowlet_lastused_port_map"
-  }
-  type_spec {
-    bitstring {
-      bit {
-        bitwidth: 9
-      }
-    }
-  }
-  size: 8192
+  size: 16
 }
 type_info {
 }

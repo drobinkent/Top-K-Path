@@ -24,9 +24,8 @@
 #define CPU_CLONE_SESSION_ID 255
 
 
-const bit<32> MAX_PORTS_IN_SWITCH = 8;
+const bit<32> MAX_PORTS_IN_SWITCH = 256;
 const bit<32> MAX_FLOW_TYPES = 64;  //traffic class 6 bits. so at most 64 types of flow can be there.
-const bit<32> MAX_TOR_SUBNET = 4;
 //------------------------------------------------------------------------------
 // TYPEDEF DECLARATIONS
 // To favor readability.
@@ -63,8 +62,8 @@ const bit<32> NDP_FLAG_OVERRIDE = 0x20000000;
 
 //============= traffic class constants
 const bit<6> TRAFFIC_CLASS_LOW_DELAY = 0x04; //0x10 becomes 0x04
-const bit<6> TRAFFIC_CLASS_HIGH_THROUGHPUT= 0x03;  //in iperf3 0x08 turns into 0x02 bcz of last 2 bit is ecn
-const bit<6> TRAFFIC_CLASS_CUSTOM_QOS= 0x02;  //in iperf3 0x04 turns into 0x01 bcz of last 2 bit is ecn
+const bit<6> TRAFFIC_CLASS_HIGH_THROUGHPUT= 0x02;  //in iperf3 0x08 turns into 0x02 bcz of last 2 bit is ecn
+const bit<6> TRAFFIC_CLASS_CUSTOM_QOS= 0x01;  //in iperf3 0x04 turns into 0x01 bcz of last 2 bit is ecn
 // These definitions are derived from the numerical values of the enum
 // named "PktInstanceType" in the p4lang/behavioral-model source file
 // targets/simple_switch/simple_switch.h
@@ -173,13 +172,12 @@ const bit<8> WINDOW_INCREASE_RATIO = 8;
 //counter((bit<32>)1, CounterType.packets) load_balancer_missed_counter;
 const bit<256> ALL_1_256_BIT = 0b11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111;
 #ifdef DP_ALGO_TOP_K_PATH
-@name("stored_bitmask")register<bit<K>>(1*MAX_TOR_SUBNET) stored_bitmask;
-@name("rank_to_max_index")register<bit<32>>(K*MAX_TOR_SUBNET) rank_to_max_index;
-@name("rank_to_min_index")register<bit<32>>(K*MAX_TOR_SUBNET) rank_to_min_index;
-@name("rank_to_port_map")register<bit<9>>(K*K*MAX_TOR_SUBNET) rank_to_port_map;
+@name("stored_bitmask")register<bit<K>>(1) stored_bitmask;
+@name("rank_to_max_index")register<bit<32>>(K) rank_to_max_index;
+@name("rank_to_min_index")register<bit<32>>(K) rank_to_min_index;
+@name("rank_to_port_map")register<bit<9>>(K*K) rank_to_port_map;
 
 
-const bit<32> INVALID_RANK = (bit<32>)-1;
+const bit<16> INVALID_RANK = -1;
 #endif
-counter((bit<32>)MAX_PORTS_IN_SWITCH*MAX_TOR_SUBNET, CounterType.bytes) destination_util_counter;
 #endif

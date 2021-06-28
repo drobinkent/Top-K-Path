@@ -9,7 +9,7 @@ from time import sleep
 import ClosConstants
 import ClosConstants as cc
 logger = logging.getLogger('TrafficDeployer')
-hdlr = logging.FileHandler('./log/TRAFFIC_DEPLOYER.log')
+hdlr = logging.FileHandler('./log/TCPIP_CLIENT.log')
 formatter = logging.Formatter('[%(asctime)s] p%(process)s {%(pathname)s:%(lineno)d} %(levelname)s - %(message)s','%m-%d %H:%M:%S')
 hdlr.setFormatter(formatter)
 logger.addHandler(hdlr)
@@ -39,18 +39,15 @@ def deployClientCommands(myhostName):
             #h1p0l0 python Client.py 2001:1:1:1:0:0000:0001:0002 42006  50 /home/deba/Desktop/CLB/testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.2/2001:1:1:1:0:0000:0000:0001_32006_2001:1:1:1:0:0000:0001:0002_42006 31.89037466952145
             tokens = l.split()
             host = tokens[0]
-            logger.info("tokens are "+str(tokens))
             if(host == myhostName):
                 # command = "sudo python3 ./MininetSimulator/Server.py "+tokens[3] + " "+tokens[4]+" \n"
                 command = "sudo python3 ./MininetSimulator/Client.py "+tokens[3] + " "+tokens[4]+ " "+tokens[5]+" "+tokens[6]+ " "+str(float(tokens[7])+float(TEST_START_DELAY))+ " "+ tokens[8]+ " "+ tokens[9]+"\n"
                 logger.info("Client side command for host "+myhostName+ "is :"+command)
                 out = os.popen(command)
     except OSError as oe:
-        # exc_type, exc_obj, exc_tb = sys.exc_info()
-        logger.info("Oserror ocurred in "+myhostName+" for executing Client command "+command+" error is "++str(sys.exc_info()))
+        logger.info("Oserror ocurred in "+myhostName+" for executing Client command "+command+" error is "+str(oe))
     except Exception as e:
-        # logger.info("Exception ocurred in "+myhostName+" for executing Client command "+command+" error is "+str(e))
-        logger.info("exception ocurred in "+myhostName+" error is "+str(sys.exc_info()))
+        logger.info("Exception ocurred in "+myhostName+" for executing Client command "+command+" error is "+str(e))
 
 
 

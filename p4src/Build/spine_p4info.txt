@@ -776,18 +776,7 @@ counters {
   spec {
     unit: PACKETS
   }
-  size: 8
-}
-counters {
-  preamble {
-    id: 314169715
-    name: "destination_util_counter"
-    alias: "destination_util_counter"
-  }
-  spec {
-    unit: BYTES
-  }
-  size: 32
+  size: 256
 }
 direct_counters {
   preamble {
@@ -892,11 +881,6 @@ controller_packet_metadata {
     name: "new_port_index"
     bitwidth: 32
   }
-  metadata {
-    id: 10
-    name: "tor_id"
-    bitwidth: 32
-  }
 }
 registers {
   preamble {
@@ -911,7 +895,7 @@ registers {
       }
     }
   }
-  size: 4
+  size: 1
 }
 registers {
   preamble {
@@ -926,7 +910,7 @@ registers {
       }
     }
   }
-  size: 16
+  size: 4
 }
 registers {
   preamble {
@@ -941,7 +925,7 @@ registers {
       }
     }
   }
-  size: 16
+  size: 4
 }
 registers {
   preamble {
@@ -956,7 +940,7 @@ registers {
       }
     }
   }
-  size: 64
+  size: 16
 }
 type_info {
 }

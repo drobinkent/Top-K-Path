@@ -5,13 +5,10 @@
       "id" : 0,
       "fields" : [
         ["tmp", 4, false],
-        ["tmp_0", 32, false],
-        ["tmp_1", 32, false],
+        ["tmp_0", 9, false],
+        ["tmp_1", 4, false],
         ["tmp_2", 9, false],
-        ["tmp_3", 4, false],
-        ["tmp_4", 32, false],
-        ["tmp_5", 32, false],
-        ["tmp_6", 9, false],
+        ["tmp_3", 32, false],
         ["ndp_processing_control_block_host_ipv6_tmp", 128, false],
         ["k_path_selector_control_block_stored_bitmask_read_value", 4, false],
         ["userMetadata.l4_src_port", 16, false],
@@ -27,13 +24,12 @@
         ["userMetadata.worst_path_selector_bitmask", 4, false],
         ["userMetadata.kth_path_selector_bitmask", 4, false],
         ["userMetadata.rank_of_path_to_be_searched", 8, false],
-        ["userMetadata.best_path_rank", 32, false],
-        ["userMetadata.worst_path_rank", 32, false],
-        ["userMetadata.kth_path_rank", 32, false],
+        ["userMetadata.best_path_rank", 16, false],
+        ["userMetadata.worst_path_rank", 16, false],
+        ["userMetadata.kth_path_rank", 16, false],
         ["userMetadata.ecmp_egress_spec", 9, false],
         ["userMetadata.p4kp_egress_spec", 9, false],
-        ["userMetadata.hula_egress_spec", 9, false],
-        ["userMetadata.tor_id", 32, false]
+        ["userMetadata.hula_egress_spec", 9, false]
       ]
     },
     {
@@ -71,8 +67,7 @@
         ["port", 32, false],
         ["rank_max_index", 32, false],
         ["rank_min_index", 32, false],
-        ["new_port_index", 32, false],
-        ["tor_id", 32, false]
+        ["new_port_index", 32, false]
       ]
     },
     {
@@ -747,23 +742,11 @@
       "id" : 3,
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
-        "line" : 157,
+        "line" : 156,
         "column" : 59,
         "source_fragment" : "egressPortCounter"
       },
-      "size" : 8,
-      "is_direct" : false
-    },
-    {
-      "name" : "destination_util_counter",
-      "id" : 4,
-      "source_info" : {
-        "filename" : "p4src/src/spine.p4",
-        "line" : 22,
-        "column" : 72,
-        "source_fragment" : "destination_util_counter"
-      },
-      "size" : 32,
+      "size" : 256,
       "is_direct" : false
     }
   ],
@@ -773,11 +756,11 @@
       "id" : 0,
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
-        "line" : 176,
-        "column" : 58,
-        "source_fragment" : "@name(\\\"stored_bitmask\\\")register<bit<4>>(1*MAX_TOR_SUBNET) stored_bitmask;"
+        "line" : 175,
+        "column" : 43,
+        "source_fragment" : "@name(\\\"stored_bitmask\\\")register<bit<4>>(1) stored_bitmask;"
       },
-      "size" : 4,
+      "size" : 1,
       "bitwidth" : 4
     },
     {
@@ -785,11 +768,11 @@
       "id" : 1,
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
-        "line" : 177,
-        "column" : 62,
-        "source_fragment" : "@name(\\\"rank_to_max_index\\\")register<bit<32>>(4*MAX_TOR_SUBNET) rank_to_max_index;"
+        "line" : 176,
+        "column" : 47,
+        "source_fragment" : "@name(\\\"rank_to_max_index\\\")register<bit<32>>(4) rank_to_max_index;"
       },
-      "size" : 16,
+      "size" : 4,
       "bitwidth" : 32
     },
     {
@@ -797,11 +780,11 @@
       "id" : 2,
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
-        "line" : 178,
-        "column" : 62,
-        "source_fragment" : "@name(\\\"rank_to_min_index\\\")register<bit<32>>(4*MAX_TOR_SUBNET) rank_to_min_index;"
+        "line" : 177,
+        "column" : 47,
+        "source_fragment" : "@name(\\\"rank_to_min_index\\\")register<bit<32>>(4) rank_to_min_index;"
       },
-      "size" : 16,
+      "size" : 4,
       "bitwidth" : 32
     },
     {
@@ -809,11 +792,11 @@
       "id" : 3,
       "source_info" : {
         "filename" : "p4src/src/CONSTANTS.p4",
-        "line" : 179,
-        "column" : 62,
-        "source_fragment" : "@name(\\\"rank_to_port_map\\\")register<bit<9>>(4*4*MAX_TOR_SUBNET) rank_to_port_map;"
+        "line" : 178,
+        "column" : 47,
+        "source_fragment" : "@name(\\\"rank_to_port_map\\\")register<bit<9>>(4*4) rank_to_port_map;"
       },
-      "size" : 64,
+      "size" : 16,
       "bitwidth" : 9
     }
   ],
@@ -1198,7 +1181,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/CONSTANTS.p4",
-            "line" : 54,
+            "line" : 53,
             "column" : 33,
             "source_fragment" : "0x33_33_00_00_00_01; ..."
           }
@@ -1274,7 +1257,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/CONSTANTS.p4",
-            "line" : 50,
+            "line" : 49,
             "column" : 31,
             "source_fragment" : "58; ..."
           }
@@ -1293,7 +1276,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/CONSTANTS.p4",
-            "line" : 57,
+            "line" : 56,
             "column" : 29,
             "source_fragment" : "136; ..."
           }
@@ -1331,7 +1314,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/CONSTANTS.p4",
-            "line" : 58,
+            "line" : 57,
             "column" : 38,
             "source_fragment" : "2; ..."
           }
@@ -1413,28 +1396,15 @@
               "value" : ["scalars", "userMetadata.kth_path_rank"]
             },
             {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "local",
-                    "value" : 0
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
+              "type" : "runtime_data",
+              "value" : 0
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
             "line" : 56,
             "column" : 8,
-            "source_fragment" : "local_metadata.kth_path_rank = (bit<32>)(rank)"
+            "source_fragment" : "local_metadata.kth_path_rank =rank"
           }
         },
         {
@@ -1482,7 +1452,7 @@
             },
             {
               "type" : "hexstr",
-              "value" : "0x00000000"
+              "value" : "0x0000"
             }
           ],
           "source_info" : {
@@ -1553,7 +1523,7 @@
           "parameters" : [
             {
               "type" : "string",
-              "value" : "Values in the message are rank-{} port- {} rank_max_index -{} rank_minIndex- {}, new_port_index-{} bitmask -- {} torid {}"
+              "value" : "Values in the message are rank-{} port- {} rank_max_index -{} rank_minIndex- {}, new_port_index-{} bitmask -- {}"
             },
             {
               "type" : "parameters_vector",
@@ -1581,10 +1551,6 @@
                 {
                   "type" : "field",
                   "value" : ["packet_out", "bitmask"]
-                },
-                {
-                  "type" : "field",
-                  "value" : ["packet_out", "tor_id"]
                 }
               ]
             }
@@ -1593,7 +1559,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 19,
             "column" : 12,
-            "source_fragment" : "            log_msg(\\\"Values in the message are rank-{} port- {} rank_max_index -{} rank_minIndex- {}, new_port_index-{} bitmask -- {} torid {}\\\","
+            "source_fragment" : "            log_msg(\\\"Values in the message are rank-{} port- {} rank_max_index -{} rank_minIndex- {}, new_port_index-{} bitmask -- {}\\\","
           }
         },
         {
@@ -1624,7 +1590,7 @@
           "source_info" : {
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 21,
-            "column" : 66,
+            "column" : 46,
             "source_fragment" : "hdr.packet_out.bitmask[4 - 1 :0]"
           }
         },
@@ -1636,8 +1602,8 @@
               "value" : "stored_bitmask"
             },
             {
-              "type" : "field",
-              "value" : ["packet_out", "tor_id"]
+              "type" : "hexstr",
+              "value" : "0x00000000"
             },
             {
               "type" : "field",
@@ -1648,69 +1614,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 21,
             "column" : 12,
-            "source_fragment" : "stored_bitmask.write( (bit<32>)hdr.packet_out.tor_id, hdr.packet_out.bitmask[4 - 1 :0])"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_0"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "expression",
-                    "value" : {
-                      "op" : "+",
-                      "left" : {
-                        "type" : "field",
-                        "value" : ["packet_out", "rank"]
-                      },
-                      "right" : {
-                        "type" : "expression",
-                        "value" : {
-                          "op" : "&",
-                          "left" : {
-                            "type" : "expression",
-                            "value" : {
-                              "op" : "<<",
-                              "left" : {
-                                "type" : "field",
-                                "value" : ["packet_out", "tor_id"]
-                              },
-                              "right" : {
-                                "type" : "hexstr",
-                                "value" : "0x2"
-                              }
-                            }
-                          },
-                          "right" : {
-                            "type" : "hexstr",
-                            "value" : "0xffffffff"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path_control_message_processor.p4",
-            "line" : 22,
-            "column" : 46,
-            "source_fragment" : "hdr.packet_out.rank+ (hdr.packet_out.tor_id * 4)"
+            "source_fragment" : "stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[4 - 1 :0])"
           }
         },
         {
@@ -1722,7 +1626,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_0"]
+              "value" : ["packet_out", "rank"]
             },
             {
               "type" : "field",
@@ -1733,69 +1637,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 22,
             "column" : 12,
-            "source_fragment" : "rank_to_max_index.write((bit<32>)(hdr.packet_out.rank+ (hdr.packet_out.tor_id * 4)), hdr.packet_out.rank_max_index)"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_1"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "expression",
-                    "value" : {
-                      "op" : "+",
-                      "left" : {
-                        "type" : "field",
-                        "value" : ["packet_out", "rank"]
-                      },
-                      "right" : {
-                        "type" : "expression",
-                        "value" : {
-                          "op" : "&",
-                          "left" : {
-                            "type" : "expression",
-                            "value" : {
-                              "op" : "<<",
-                              "left" : {
-                                "type" : "field",
-                                "value" : ["packet_out", "tor_id"]
-                              },
-                              "right" : {
-                                "type" : "hexstr",
-                                "value" : "0x2"
-                              }
-                            }
-                          },
-                          "right" : {
-                            "type" : "hexstr",
-                            "value" : "0xffffffff"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path_control_message_processor.p4",
-            "line" : 23,
-            "column" : 46,
-            "source_fragment" : "hdr.packet_out.rank+ (hdr.packet_out.tor_id * 4)"
+            "source_fragment" : "rank_to_max_index.write((bit<32>)hdr.packet_out.rank, hdr.packet_out.rank_max_index)"
           }
         },
         {
@@ -1807,7 +1649,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_1"]
+              "value" : ["packet_out", "rank"]
             },
             {
               "type" : "field",
@@ -1818,7 +1660,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 23,
             "column" : 12,
-            "source_fragment" : "rank_to_min_index.write((bit<32>)(hdr.packet_out.rank+ (hdr.packet_out.tor_id * 4)), hdr.packet_out.rank_min_index)"
+            "source_fragment" : "rank_to_min_index.write((bit<32>)hdr.packet_out.rank, hdr.packet_out.rank_min_index)"
           }
         },
         {
@@ -1826,7 +1668,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_2"]
+              "value" : ["scalars", "tmp_0"]
             },
             {
               "type" : "expression",
@@ -1866,7 +1708,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_2"]
+              "value" : ["scalars", "tmp_0"]
             }
           ],
           "source_info" : {
@@ -1952,7 +1794,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_3"]
+              "value" : ["scalars", "tmp_1"]
             },
             {
               "type" : "expression",
@@ -1975,7 +1817,7 @@
           "source_info" : {
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 32,
-            "column" : 66,
+            "column" : 46,
             "source_fragment" : "hdr.packet_out.bitmask[4 - 1 :0]"
           }
         },
@@ -1987,81 +1829,19 @@
               "value" : "stored_bitmask"
             },
             {
-              "type" : "field",
-              "value" : ["packet_out", "tor_id"]
+              "type" : "hexstr",
+              "value" : "0x00000000"
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_3"]
+              "value" : ["scalars", "tmp_1"]
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 32,
             "column" : 12,
-            "source_fragment" : "stored_bitmask.write( (bit<32>)hdr.packet_out.tor_id, hdr.packet_out.bitmask[4 - 1 :0])"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_4"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "expression",
-                    "value" : {
-                      "op" : "+",
-                      "left" : {
-                        "type" : "field",
-                        "value" : ["packet_out", "rank"]
-                      },
-                      "right" : {
-                        "type" : "expression",
-                        "value" : {
-                          "op" : "&",
-                          "left" : {
-                            "type" : "expression",
-                            "value" : {
-                              "op" : "<<",
-                              "left" : {
-                                "type" : "field",
-                                "value" : ["packet_out", "tor_id"]
-                              },
-                              "right" : {
-                                "type" : "hexstr",
-                                "value" : "0x2"
-                              }
-                            }
-                          },
-                          "right" : {
-                            "type" : "hexstr",
-                            "value" : "0xffffffff"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path_control_message_processor.p4",
-            "line" : 33,
-            "column" : 46,
-            "source_fragment" : "hdr.packet_out.rank+ (hdr.packet_out.tor_id * 4)"
+            "source_fragment" : "stored_bitmask.write( (bit<32>)0, hdr.packet_out.bitmask[4 - 1 :0])"
           }
         },
         {
@@ -2073,7 +1853,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_4"]
+              "value" : ["packet_out", "rank"]
             },
             {
               "type" : "field",
@@ -2084,69 +1864,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 33,
             "column" : 12,
-            "source_fragment" : "rank_to_max_index.write((bit<32>)(hdr.packet_out.rank+ (hdr.packet_out.tor_id * 4)), hdr.packet_out.rank_max_index)"
-          }
-        },
-        {
-          "op" : "assign",
-          "parameters" : [
-            {
-              "type" : "field",
-              "value" : ["scalars", "tmp_5"]
-            },
-            {
-              "type" : "expression",
-              "value" : {
-                "type" : "expression",
-                "value" : {
-                  "op" : "&",
-                  "left" : {
-                    "type" : "expression",
-                    "value" : {
-                      "op" : "+",
-                      "left" : {
-                        "type" : "field",
-                        "value" : ["packet_out", "rank"]
-                      },
-                      "right" : {
-                        "type" : "expression",
-                        "value" : {
-                          "op" : "&",
-                          "left" : {
-                            "type" : "expression",
-                            "value" : {
-                              "op" : "<<",
-                              "left" : {
-                                "type" : "field",
-                                "value" : ["packet_out", "tor_id"]
-                              },
-                              "right" : {
-                                "type" : "hexstr",
-                                "value" : "0x2"
-                              }
-                            }
-                          },
-                          "right" : {
-                            "type" : "hexstr",
-                            "value" : "0xffffffff"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "right" : {
-                    "type" : "hexstr",
-                    "value" : "0xffffffff"
-                  }
-                }
-              }
-            }
-          ],
-          "source_info" : {
-            "filename" : "p4src/src/top_k_path_control_message_processor.p4",
-            "line" : 34,
-            "column" : 46,
-            "source_fragment" : "hdr.packet_out.rank+ (hdr.packet_out.tor_id * 4)"
+            "source_fragment" : "rank_to_max_index.write((bit<32>)hdr.packet_out.rank, hdr.packet_out.rank_max_index)"
           }
         },
         {
@@ -2158,7 +1876,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_5"]
+              "value" : ["packet_out", "rank"]
             },
             {
               "type" : "field",
@@ -2169,7 +1887,7 @@
             "filename" : "p4src/src/top_k_path_control_message_processor.p4",
             "line" : 34,
             "column" : 12,
-            "source_fragment" : "rank_to_min_index.write((bit<32>)(hdr.packet_out.rank+ (hdr.packet_out.tor_id * 4)), hdr.packet_out.rank_min_index)"
+            "source_fragment" : "rank_to_min_index.write((bit<32>)hdr.packet_out.rank, hdr.packet_out.rank_min_index)"
           }
         },
         {
@@ -2177,7 +1895,7 @@
           "parameters" : [
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_6"]
+              "value" : ["scalars", "tmp_2"]
             },
             {
               "type" : "expression",
@@ -2217,7 +1935,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "tmp_6"]
+              "value" : ["scalars", "tmp_2"]
             }
           ],
           "source_info" : {
@@ -2539,7 +2257,7 @@
       ]
     },
     {
-      "name" : "top_k_path84",
+      "name" : "top_k_path86",
       "id" : 21,
       "runtime_data" : [],
       "primitives" : [
@@ -2574,15 +2292,34 @@
               "value" : "stored_bitmask"
             },
             {
-              "type" : "field",
-              "value" : ["scalars", "userMetadata.tor_id"]
+              "type" : "hexstr",
+              "value" : "0x00000000"
             }
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 84,
+            "line" : 86,
             "column" : 12,
-            "source_fragment" : "stored_bitmask.read(stored_bitmask_read_value, (bit<32>)local_metadata.tor_id)"
+            "source_fragment" : "stored_bitmask.read(stored_bitmask_read_value, (bit<32>)0)"
+          }
+        },
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "userMetadata.best_path_selector_bitmask"]
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x0f"
+            }
+          ],
+          "source_info" : {
+            "filename" : "p4src/src/top_k_path.p4",
+            "line" : 87,
+            "column" : 12,
+            "source_fragment" : "local_metadata.best_path_selector_bitmask = ALL_1_256_BIT[4 -1:0]"
           }
         },
         {
@@ -2612,7 +2349,7 @@
           ],
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 91,
+            "line" : 93,
             "column" : 12,
             "source_fragment" : "local_metadata.kth_path_selector_bitmask = stored_bitmask_read_value & local_metadata.kth_path_selector_bitmask"
           }
@@ -2624,6 +2361,38 @@
       "id" : 22,
       "runtime_data" : [],
       "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["scalars", "tmp_3"]
+            },
+            {
+              "type" : "expression",
+              "value" : {
+                "type" : "expression",
+                "value" : {
+                  "op" : "&",
+                  "left" : {
+                    "type" : "field",
+                    "value" : ["scalars", "userMetadata.kth_path_rank"]
+                  },
+                  "right" : {
+                    "type" : "hexstr",
+                    "value" : "0xffffffff"
+                  }
+                }
+              }
+            }
+          ],
+          "source_info" : {
+            "filename" : "p4src/src/spine.p4",
+            "line" : 155,
+            "column" : 69,
+            "source_fragment" : "(bit<32>)local_metadata.kth_path_rank"
+          }
+        },
         {
           "op" : "register_read",
           "parameters" : [
@@ -2637,7 +2406,7 @@
             },
             {
               "type" : "field",
-              "value" : ["scalars", "userMetadata.kth_path_rank"]
+              "value" : ["scalars", "tmp_3"]
             }
           ],
           "source_info" : {
@@ -3414,13 +3183,13 @@
           }
         },
         {
-          "name" : "tbl_top_k_path84",
+          "name" : "tbl_top_k_path86",
           "id" : 15,
           "source_info" : {
             "filename" : "p4src/src/top_k_path.p4",
-            "line" : 84,
+            "line" : 86,
             "column" : 12,
-            "source_fragment" : "stored_bitmask.read(stored_bitmask_read_value, (bit<32>)local_metadata.tor_id); ..."
+            "source_fragment" : "stored_bitmask.read(stored_bitmask_read_value, (bit<32>)0); ..."
           },
           "key" : [],
           "match_type" : "exact",
@@ -3430,10 +3199,10 @@
           "support_timeout" : false,
           "direct_meters" : null,
           "action_ids" : [21],
-          "actions" : ["top_k_path84"],
+          "actions" : ["top_k_path86"],
           "base_default_next" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat",
           "next_tables" : {
-            "top_k_path84" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
+            "top_k_path86" : "IngressPipeImpl.k_path_selector_control_block.kth_path_finder_mat"
           },
           "default_entry" : {
             "action_id" : 21,
@@ -4018,7 +3787,7 @@
             }
           },
           "true_next" : "node_24",
-          "false_next" : "tbl_top_k_path84"
+          "false_next" : "tbl_top_k_path86"
         },
         {
           "name" : "node_24",

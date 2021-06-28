@@ -46,9 +46,9 @@ def tcpServerDeployer(myhostName, TCP_IP, TCP_PORT, SLEEP_TIME):
         # exit(1)
         return
     except OSError as oe:
-        logger.info("Oserror ocurred in "+myhostName+" for opening TCPserver socket on "+str(TCP_IP) + "at port " + str(TCP_PORT)+" error is "+str(e.traceback.print_exc()))
+        logger.info("Oserror ocurred in "+myhostName+" for opening TCPserver socket on "+str(TCP_IP) + "at port " + str(TCP_PORT)+" error is "+str(oe))
     except Exception as e:
-        logger.info("exception ocurred in "+myhostName+" error is "+str(e.traceback.print_exc()))
+        logger.info("exception ocurred in "+myhostName+" error is "+str(e))
 
 
 def deployServerCommands(myhostName):

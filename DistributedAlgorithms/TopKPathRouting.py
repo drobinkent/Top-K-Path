@@ -37,18 +37,12 @@ def getRank(pathRate):
 
 class TopKPathRouting:
 
-
     def __init__(self, dev):
         self.p4dev = dev
         self.testOperationIndex =0
-        self.torIdToKpathManagerMap = {}
-        self.rankToPortMapForPreviousIteration = {}
         if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
-            for i in range (0,ConfConst.MAX_TOR_SUBNET):
-                topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K)
-                self.torIdToKpathManagerMap[i] = topKPathManager
-            for i in range (0, ConfConst.MAX_TOR_SUBNET):
-                self.rankToPortMapForPreviousIteration[i] = []
+            #self.topKPathManager = TopKPathManager(dev = self.p4dev, k=len(self.p4dev.portToSpineSwitchMap.keys()))
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K)
         elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
             # self.topKPathManager = TopKPathManager(dev = self.p4dev, k=len(self.p4dev.portToSuperSpineSwitchMap.keys()))
             self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K)
@@ -76,102 +70,32 @@ class TopKPathRouting:
     def p4kpUtilBasedReconfigureForLeafSwitches(self, linkUtilStats, oldLinkUtilStats):
         # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "new Utilization data is  "+str(linkUtilStats))
         # logger.info("CLB ALGORITHM: For switch "+ self.p4dev.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
-
-        for i in range (0, ConfConst.MAX_TOR_SUBNET):
-            index = i* ConfConst.MAX_PORTS_IN_SWITCH
-            pathUtilList = []
-            rankToTotalUtilizationINpreviousIteration = {0:0,1:0,2:0,3:0}
-            totalUtil = 1
-            for j in range (int(ConfConst.MAX_PORTS_IN_SWITCH/2), int(ConfConst.MAX_PORTS_IN_SWITCH)):
-                port = index + j
-                # if((linkUtilStats[port] -  oldLinkUtilStats[port])<=0):
-                #     utilInLastInterval = 1
-                # else:
-                utilInLastInterval = linkUtilStats[port] -  oldLinkUtilStats[port]
-                pathUtilList.append((j+1,utilInLastInterval))
-                totalUtil = totalUtil + utilInLastInterval
-                oldRank = self.torIdToKpathManagerMap.get(i).getPortsCurrentRank(j+1)
-                rankToTotalUtilizationINpreviousIteration[oldRank] = rankToTotalUtilizationINpreviousIteration.get(oldRank) + utilInLastInterval
-
-            rankWiseSortedUtilization =  [(k, v) for k, v in rankToTotalUtilizationINpreviousIteration.items()]
-            rankWiseSortedUtilization.sort(key=lambda x:x[1])
-            logger.info("Rankwise utilization in last interval is "+str(rankWiseSortedUtilization))
-            rankWiseSortedUtilization.reverse()
-            logger.info("Rankwise utilization in last interval after reversing is "+str(rankWiseSortedUtilization))
-            rankWiseWeight= []
-            rankWiseUtilizationCDF= []
-            for p in range(0, len(rankWiseSortedUtilization)):
-                utilizationInLastInterval = rankWiseSortedUtilization[p][1]
-                rankWiseUtilizationCDF.append( (rankWiseSortedUtilization[p][0], utilizationInLastInterval/totalUtil))
-            temp=0
-            logger.info("Rankwise  utilization cdf :"+str(rankWiseUtilizationCDF))
-            sumWeight = 0
-            for p in range(0, len(rankWiseUtilizationCDF)):
-                r = rankWiseUtilizationCDF[p][0]
-                utilizationInLastInterval = rankWiseUtilizationCDF[p][1]
-                if(utilizationInLastInterval>=0.4):
-                    if(sumWeight <= (len(rankWiseUtilizationCDF)-3)):
-                        rankWiseWeight.append((r,3))
-                        sumWeight = sumWeight + 3
-                        logger.info("Utilizationin last interval was "+str(utilizationInLastInterval)+ "AWeight assigned "+str(2))
-                    else:
-                        rankWiseWeight.append((r,len(rankWiseUtilizationCDF)-sumWeight))
-                        sumWeight = sumWeight + 1
-                        logger.info("Utilizationin last interval was "+str(utilizationInLastInterval)+ "AWeight assigned "+str(1))
-                elif(utilizationInLastInterval>=0.3):
-                    if(sumWeight <= (len(rankWiseUtilizationCDF)-2)):
-                        rankWiseWeight.append((r,2))
-                        sumWeight = sumWeight + 2
-                        logger.info("Utilizationin last interval was "+str(utilizationInLastInterval)+ "AWeight assigned "+str(2))
-                    else:
-                        rankWiseWeight.append((r,len(rankWiseUtilizationCDF)-sumWeight))
-                        sumWeight = sumWeight + 1
-                        logger.info("Utilizationin last interval was "+str(utilizationInLastInterval)+ "AWeight assigned "+str(1))
-                else:
-                    if(sumWeight <= (len(rankWiseUtilizationCDF)-1)):
-                        rankWiseWeight.append((r,1))
-                        sumWeight = sumWeight + 1
-                        logger.info("Utilizationin last interval was "+str(utilizationInLastInterval)+ "AWeight assigned "+str(1))
-
-            logger.info("Rankwise  weight  :"+str(rankWiseWeight))
-            q=0
-            while q< len(pathUtilList):
-
-                for k in range(0, len(rankWiseWeight)):
-                    num = rankWiseWeight[k][1]
-                    r = rankWiseWeight[k][0]
-
-                    for l in range (0,num):
-                        port  = pathUtilList[q+l-1][0]
-                        dltPkt = self.torIdToKpathManagerMap.get(i).deletePort(port,i)
-                        self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt )
-                        insertPkt = self.torIdToKpathManagerMap.get(i).insertPort(port, r, i )
-                        self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
-                        # logger.info("Deleted port "+str(port)+ " and inserted into rank new rank "+str(r))
-                        q= q+ 1
-
-            # pathUtilList.sort(key=lambda x:x[1])
-            # rankInsertedIncurrentIteration = {}
-            # logger.info("Device "+str(self.p4dev.devName)+" Util data is "+str(pathUtilList))
-            # j=0
-            # rankArray= [2,2,1,0]
-            # while j< len(pathUtilList):
-            #     port = pathUtilList[j][0]
-            #     rank = rankArray[j]
-            #     # if(rankInsertedIncurrentIteration.get(rank)== None):
-            #     dltPkt = self.torIdToKpathManagerMap.get(i).deletePort(port,i)
-            #     self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt )
-            #     rankInsertedIncurrentIteration[rank] = rank
-            #     logger.info("INserting rank "+str(rank)+" and port "+str(port))
-            #     insertPkt = self.torIdToKpathManagerMap.get(i).insertPort(port, rank, i )
-            #     self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
-            #     self.rankToPortMapForPreviousIteration[rank]
-            #     j=j+1
-
-
-
-
-
+        pathAndUtilist = []
+        for i in range (int(ConfConst.MAX_PORTS_IN_SWITCH/2), ConfConst.MAX_PORTS_IN_SWITCH):
+            if((i+1) in ConfigConst.reservedPortList) and ((ConfigConst.specialTunnelStartingSwitch in self.p4dev.devName) or (ConfigConst.specialTunnelEndingSwitch in self.p4dev.devName)):
+                continue
+            else:
+                index = i
+                utilInLastInterval = linkUtilStats[index] -  oldLinkUtilStats[index]
+                pathAndUtilist.append((i+1,utilInLastInterval))
+        pathAndUtilist.sort(key=lambda x:x[1])
+        controlPacketList = []
+        rankInsertedIncurrentIteration = {}
+        i=0
+        extraIncrementToAvoidReserverRank = 0
+        while i< len(pathAndUtilist):
+            if (i in ConfigConst.reservedRanks) and ((ConfigConst.specialTunnelStartingSwitch in self.p4dev.devName) or (ConfigConst.specialTunnelEndingSwitch in self.p4dev.devName)):
+                extraIncrementToAvoidReserverRank = extraIncrementToAvoidReserverRank + 1
+            port = pathAndUtilist[i][0]
+            rank = i + extraIncrementToAvoidReserverRank
+            if(rankInsertedIncurrentIteration.get(rank)== None):
+                dltPkt = self.topKPathManager.deletePort(port)
+                self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt)
+            rankInsertedIncurrentIteration[rank] = rank
+            # print("INserting rank "+str(rank)+" and port "+str(port))
+            insertPkt = self.topKPathManager.insertPort(port, rank)
+            self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
+            i=i+1
 
     def processFeedbackPacket(self, parsedPkt, dev):
         #print("Called the algo")
@@ -186,23 +110,67 @@ class TopKPathRouting:
         startingRankForTestingTopKPathProblem = 0
         self.initMAT(self.p4dev, ConfConst.K)
         if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
-            for i  in range (0, ConfConst.MAX_TOR_SUBNET):
-                j=0
-                for k in self.p4dev.portToSpineSwitchMap.keys():
-                    pkt = self.torIdToKpathManagerMap.get(i).insertPort(port = int(k), k = startingRankForTestingTopKPathProblem+j, torId= i)
+            for k in self.p4dev.portToSpineSwitchMap.keys():
+                if(k in ConfigConst.reservedPortList) and ((ConfigConst.specialTunnelStartingSwitch in self.p4dev.devName) or (ConfigConst.specialTunnelEndingSwitch in self.p4dev.devName)):
+                    continue
+                else:
+                    pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
                     self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
-                    j=j+1
-        # elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
-        #     for k in self.p4dev.portToSuperSpineSwitchMap.keys():
-        #         pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
-        #         self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
-        # elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
-        #     self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K) # by default add space for 16 ports in super spine. This is not actually used in our simulation
-        #     pass
-
+            i=0
+            while i< len(ConfigConst.reservedPortList):
+                pkt = self.topKPathManager.insertPort(port = int(ConfigConst.reservedPortList[i]), k = ConfigConst.reservedRanks[i])
+                self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+                i=i+1
+        elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SPINE:
+            for k in self.p4dev.portToSuperSpineSwitchMap.keys():
+                if(k in ConfigConst.reservedPortList):
+                    continue
+                else:
+                    pkt = self.topKPathManager.insertPort(port = int(k), k = startingRankForTestingTopKPathProblem)
+                    self.p4dev.send_already_built_control_packet_for_top_k_path(pkt)
+        elif self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.SUPER_SPINE:
+            self.topKPathManager = TopKPathManager(dev = self.p4dev, k=ConfConst.K) # by default add space for 16 ports in super spine. This is not actually used in our simulation
+            pass
+        if self.p4dev.fabric_device_config.switch_type == intCoonfig.SwitchType.LEAF:
+            self.link_reconfiguration_thread = threading.Thread(target=self.linkReconfigurator, args=())
+            self.link_reconfiguration_thread.start()
+            logger.info("TopKpathrouting link_reconfiguration_thread  started")
+        #else we do not need this process for spine switches because we are simulatin only layer 2 fat tree
         return
 
 
+    def linkReconfigurator(self):
+        time.sleep(25)
+        i = 0
+        # if(self.p4dev.devName != "device:p0l0"):
+        #     return
+        while(True):
+            j = i % len(tstConst.MULTI_TENANCY_PORT_RATE_CONFIGS)
+            portRates = tstConst.MULTI_TENANCY_PORT_RATE_CONFIGS[j]
+            logger.info("PortRates are : "+str(portRates))
+            rankInsertedIncurrentIteration = {}
+            for k in range (0,len(portRates)):
+                print(portRates[k])
+                port = portRates[k][0]
+                rate = int(math.floor(portRates[k][1] * ConfConst.queueRateForSpineFacingPortsOfLeafSwitch))
+                bufferSize = int(math.floor(ConfigConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR * rate))
+                if(bufferSize<200):
+                    bufferSize = 200
+                rank = getRank(portRates[k][1])
+                # logger.info("Port "+str(port)+ " rate :"+str(portRates[k][1])+" rank:"+str(rank))
+                setPortQueueRatesAndDepth(dev = self.p4dev, port = port, queueRate = rate , bufferSize = ConfigConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
+                # if(rankInsertedIncurrentIteration.get(rank)== None):
+                #     dltPkt = self.topKPathManager.deletePort(port)
+                #     self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt)
+                dltPkt = self.topKPathManager.deletePort(port)
+                if(dltPkt != None):
+                    self.p4dev.send_already_built_control_packet_for_top_k_path(dltPkt)
+                rankInsertedIncurrentIteration[rank] = rank
+                # print("INserting rank "+str(rank)+" and port "+str(port))
+                insertPkt = self.topKPathManager.insertPort(port, rank)
+                self.p4dev.send_already_built_control_packet_for_top_k_path(insertPkt)
+            time.sleep(ConfigConst.MULTITENANCY_RATE_RECONFIGURATION_INTERVAL)
+            i=i+1
 
 
 
