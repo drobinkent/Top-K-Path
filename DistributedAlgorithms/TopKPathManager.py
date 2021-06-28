@@ -146,6 +146,8 @@ class TopKPathManager:
         packet_out_req.packet.CopyFrom(packet_out)
         return packet_out_req
 
+    def getPortsCurrentRank(self, port):
+        return self.portToRankMap.get(int(port))
     def insertPort(self, port, k, torId):
         '''
         This function inserts the port at K'th rank

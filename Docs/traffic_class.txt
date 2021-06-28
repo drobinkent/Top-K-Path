@@ -93,3 +93,18 @@ Algorithms Nanme : ECMP
 2048 --  675.449037
 3200 --  0
 Average FCT  =  623.1359094367034
+
+
+------
+go back to variable linkspeed
+
+we will compare, hula, ecmp, p4kp and range tcam.
+
+then we will say ecmp can not cope with link variation hence not usable for qos aware schemes
+
+then we will go for hula and ecmp range.
+
+-------------------------
+we have tio say qos is mainly imp[lemenyed in data center through overtlay networking. we evaluated p4kp in such a settings.
+
+

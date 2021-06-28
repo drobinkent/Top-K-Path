@@ -66,7 +66,7 @@ TRAFFIC_CLASS_AS_LIST = [TRAFFIC_CLASS_LOW_DELAY, TRAFFIC_CLASS_MAXIMIZE_THROUGH
 #PERCENTAGE_OF_TOTAL_UPWARD_TRAFFIC_FOR_TRAFFIC_CLASS = [40, 70, 10]
 PERCENTAGE_OF_TOTAL_UPWARD_TRAFFIC_FOR_TRAFFIC_CLASS = [10,40, 5] # How much of the link capacity should a traffic class get.
 #======================thread control and timer related
-STATISTICS_PULLING_INTERVAL = 1# This means after each STATISTICS_PULLING_INTERVAL second controller will wake up the StatisticsPuller thread and collect stats from the switches
+STATISTICS_PULLING_INTERVAL = 0.25# This means after each STATISTICS_PULLING_INTERVAL second controller will wake up the StatisticsPuller thread and collect stats from the switches
 MULTITENANCY_RATE_RECONFIGURATION_INTERVAL = 1
 PORT_STATISTICS_HISTORY_LENGTH = 1000 # this means the history will be
 #======================= Different Test Scenarios
@@ -76,7 +76,7 @@ class DataplnaeAlgorithm(Enum):
     DP_ALGO_TOP_K_PATH = "DP_ALGO_TOP_K_PATH"
 
 #ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP
-ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP
+ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_TOP_K_PATH
 
 
 queueRateForHostFacingPortsOfLeafSwitch = 32
@@ -114,7 +114,7 @@ EGRESS_QUEUE_DEPTH_DELAY_LEVELS_LINEAR = [(0, 2, 0, 0),(3,5,1,0), (6, 10,2,00)]
 FLOW_TYPE_IDENTIFIER_BY_FLOW_VOLUME_IN_KB = [ 50, 256,2048]  # These means in our experiments we will consider 2 types of traffic . one with 50 KB size another 1 MB or 1024 KB
 FLOW_TYPE_TRAFFIC_CLASS= [ 18, 10, 14]
 FLOW_TYPE_LOAD_RATIO = [ 20,20, 60]
-FLOW_TYPE_BITRATE= [ 8192, 10240, 12288]
+FLOW_TYPE_BITRATE= [ 12288, 12288, 10240]
 FLOW_VOLUME_IDENTIFIER_VARIATION_LIMIT_IN_PERCENTAGE = 80 # this means any flow size within range of 15% defined in previous array will be categorized as flow of same type. 80 percent is configured to acoomdate both 10kb and 50 kb flow
 PACKET_SIZE = 1024 # Each packet will be 1200 Byte size
 

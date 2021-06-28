@@ -86,12 +86,12 @@ def getPercentileFCTByFolder(folderName):
         # print(str(f) + " -- ",flowTypeVsFCTMap.get(f)/flowTypeVsFlowCountMap.get(f))
         totalFlowsize= totalFlowsize+ float(f)
 
-        # totalOfFlowSizeMultipliedByAvgFct = totalOfFlowSizeMultipliedByAvgFct + ( float(f) * np.average(flowTypeVsFCTMap.get(f)))
-        # print(str(f) + " -- ",np.average(flowTypeVsFCTMap.get(f)))
-        # print(str(f) + " -- ",np.std(flowTypeVsFCTMap.get(f)))
+        totalOfFlowSizeMultipliedByAvgFct = totalOfFlowSizeMultipliedByAvgFct + ( float(f) * np.average(flowTypeVsFCTMap.get(f)))
+        print(str(f) + " -- ",np.average(flowTypeVsFCTMap.get(f)))
+        print(str(f) + " -- ",np.std(flowTypeVsFCTMap.get(f)))
 
-        totalOfFlowSizeMultipliedByAvgFct = totalOfFlowSizeMultipliedByAvgFct + ( float(f) * np.percentile(flowTypeVsFCTMap.get(f),100))
-        print(str(f) + " -- ",np.percentile(flowTypeVsFCTMap.get(f),100))
+        # totalOfFlowSizeMultipliedByAvgFct = totalOfFlowSizeMultipliedByAvgFct + ( float(f) * np.percentile(flowTypeVsFCTMap.get(f),90))
+        # print(str(f) + " -- ",np.percentile(flowTypeVsFCTMap.get(f),90))
     print("Average FCT  = ", totalOfFlowSizeMultipliedByAvgFct/totalFlowsize)
 
     pass
@@ -112,7 +112,7 @@ print("For WebSearch Workload, with Load Factor 0.8")
 # print("Algorithms Nanme : HULA ")
 # getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/HULA_RESULTS/WebSearchWorkLoad_load_factor_0.8")
 print("Algorithms Nanme : P4KP ")
-getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/P4KP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
+getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/WebSearchWorkLoad_load_factor_0.8")
 print("Algorithms Nanme : ECMP ")
 getPercentileFCTByFolder("/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/ECMP_RESULTS/WebSearchWorkLoad_load_factor_0.8")
 print("\n\n\n")

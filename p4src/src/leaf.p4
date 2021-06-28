@@ -167,15 +167,14 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                 if (local_metadata.flow_inter_packet_gap  > FLOWLET_INTER_PACKET_GAP_THRESHOLD){
                     bit<32> rankMinLocation = 0;
                     bit<32> rankMaxLocation = 0;
-                    rank_to_min_index.read(rankMinLocation, (bit<32>)local_metadata.kth_path_rank);
-                    rank_to_max_index.read(rankMaxLocation, (bit<32>)local_metadata.kth_path_rank);
+                    rank_to_min_index.read(rankMinLocation, (bit<32>)(local_metadata.kth_path_rank + local_metadata.tor_id * K));
+                    rank_to_max_index.read(rankMaxLocation, (bit<32>)(local_metadata.kth_path_rank + local_metadata.tor_id*K));
                     bit<32> linkLocation = 0;
                     hash(linkLocation, HashAlgorithm.crc32, (bit<32>)rankMinLocation, { hdr.ipv6.src_addr, hdr.ipv6.dst_addr,hdr.ipv6.next_hdr, hdr.tcp.src_port, hdr.tcp.dst_port,local_metadata.flowlet_id }, (bit<32>)(rankMaxLocation-rankMinLocation));
                     rank_to_port_map.read(standard_metadata.egress_spec, (bit<32>)linkLocation);
                     log_msg("Using Kth path");
                     log_msg("Rank min loc: {} -- rank max loc -- {} hash based location {} final port is{}. ", {rankMinLocation,rankMaxLocation,linkLocation,standard_metadata.egress_spec  } );
-
-                            p4kp_flowlet_lastused_port_map.write((bit<32>)local_metadata.flowlet_map_index, standard_metadata.egress_spec);
+                    p4kp_flowlet_lastused_port_map.write((bit<32>)local_metadata.flowlet_map_index, standard_metadata.egress_spec);
                 }else{
                        p4kp_flowlet_lastused_port_map.read(standard_metadata.egress_spec, (bit<32>)local_metadata.flowlet_map_index);
                 }
