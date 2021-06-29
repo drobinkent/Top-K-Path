@@ -104,6 +104,9 @@ clear-logs:
 	rm -rf result/*
 	sudo pkill -f iperf
 
+clear-deployment-logs:
+	rm -rf log/*
+
 clear-iperf-processes:
 	sudo pkill -f iperf
 

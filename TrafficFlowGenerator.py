@@ -137,6 +137,30 @@ def l2StridePatternTestPairCreator(nameToHostMap, maxPortcountInSwitch):
 
 
     return srcList, destList
+
+def buildOneDeploymentPair(nameToHostMap, srcName, dstName, testCaseName, testStartDelay, flowsizeInpacket, trafficClass, rateInKBPS):
+    src = nameToHostMap.get(srcName)
+    dst = nameToHostMap.get(dstName)
+    newDeploymentPair = tc.IPerfDeplymentPair(src, dst, src.getNextIPerf3ClientPort(),
+                                              dst.getNextIPerf3ServerPort(), testCaseName = testCaseName,
+                                              srcHostName=src.hostName, destHostName= dst.hostName,
+                                              startTime=float(testStartDelay), flowSizeinPackets= flowsizeInpacket,
+                                              trafficClass = trafficClass, bitrate = rateInKBPS)
+    return newDeploymentPair
+
+def getQoSTestDeploymentDeploymentPairs(nameToHostMap,testCaseName, testDuration,testStartDelay ):
+    deploymentPairList = []
+    deploymentPairList.append(buildOneDeploymentPair(nameToHostMap, srcName="h0p0l0", dstName="h0p0l2", testCaseName=testCaseName, testStartDelay=testStartDelay,
+                           flowsizeInpacket = 8*testDuration, trafficClass = ConfigConst.QOS_TRAFFIC_CLASS[0], rateInKBPS= 10240))
+    deploymentPairList.append(buildOneDeploymentPair(nameToHostMap, srcName="h1p0l0", dstName="h1p0l2", testCaseName=testCaseName, testStartDelay=testStartDelay,
+                         flowsizeInpacket = 16*testDuration, trafficClass = ConfigConst.QOS_TRAFFIC_CLASS[1], rateInKBPS= 8192))
+
+    # deploymentPairList.append(buildOneDeploymentPair(nameToHostMap, srcName="h2p0l0", dstName="h2p0l2", testCaseName=testCaseName, testStartDelay=testStartDelay,
+    #                                                  flowsizeInpacket = 8*testDuration, trafficClass = ConfigConst.QOS_TRAFFIC_CLASS[0], rateInKBPS= 8192))
+    # deploymentPairList.append(buildOneDeploymentPair(nameToHostMap, srcName="h3p0l0", dstName="h2p0l2", testCaseName=testCaseName, testStartDelay=testStartDelay,
+    #                                                  flowsizeInpacket = 16*testDuration, trafficClass = ConfigConst.QOS_TRAFFIC_CLASS[1], rateInKBPS= 32768))
+    return deploymentPairList
+
 def getStrideDeploymentPairs(nameToHostMap,maxPortcountInSwitch,testCaseName, loadFactor, testDuration,testStartDelay ):
     # foreach scrc-dest-pair
     #       login to src
@@ -165,6 +189,10 @@ def getStrideDeploymentPairs(nameToHostMap,maxPortcountInSwitch,testCaseName, lo
                                   startTime= flowArrivalTimesByflowType[i][j]+float(testStartDelay),flowSizeinPackets= flowsizeAsPacketCount,
                                   trafficClass = ConfigConst.FLOW_TYPE_TRAFFIC_CLASS[i], bitrate = ConfigConst.FLOW_TYPE_BITRATE[i])
                 deploymentPairList.append(newDeploymentPair)
+        testDurationScaled = loadFactor * 2 * testDuration
+        qosDeploymentPair = getQoSTestDeploymentDeploymentPairs(nameToHostMap,testCaseName, testDuration=testDurationScaled,testStartDelay= testStartDelay)
+        for k in qosDeploymentPair:
+            deploymentPairList.append(k)
         # src = nameToHostMap.get("h0p0l0")
         # dst = nameToHostMap.get("h1p0l1")
         # flowSize = testDuration * ConfigConst.queueRateForSpineFacingPortsOfLeafSwitch

@@ -8,7 +8,8 @@ import sys
 from datetime import datetime
 from time import sleep
 
-TUNNEL_TRAFFIC_CLASS = 20
+QOS_TRAFFIC_CLASS1 = 10
+QOS_TRAFFIC_CLASS2 = 14
 SEND_BUF_SIZE = 8192
 logger = logging.getLogger('TRAFFIC_DEPLOYER_CLIET.py')
 hdlr = logging.FileHandler('./log/TRAFFIC_DEPLOYER_CLIENT.log')
@@ -31,19 +32,28 @@ if len(sys.argv) < 4 :	# not enough arguments specified
 #print 'sent '+str(PACKETS_TO_SEND)+' packets at '+str(bw)+' Mbps rate'
 #sender sender_port receiver flow_size start_time end_time FCT bw
 
+
 try:
 	TCP_IP = sys.argv[1]	# server address
 	TCP_PORT = int(sys.argv[2])
 	BUFFER_SIZE = 1024
-	# PACKETS_TO_SEND = float(sys.argv[3])/BUFFER_SIZE;
-	PACKETS_TO_SEND = float(sys.argv[3])
+	BIT_RATE = int(sys.argv[7])
+	INTER_PACKET_DELAY = int(BIT_RATE/BUFFER_SIZE)
+	FLOW_SIZE = (float(sys.argv[3])) * 1024 # KB to Byte
+	PACKETS_TO_SEND = (FLOW_SIZE/BUFFER_SIZE)
+
 	RESULT_FILE = sys.argv[4]
 	START_DELAY = float(sys.argv[5])
 	TRAFFIC_CLASS = int(sys.argv[6])
-	BIT_RATE = int(sys.argv[7])/BUFFER_SIZE
 	MESSAGE = "d" * BUFFER_SIZE		# packet to send
+	logger.info("BIT_RATE "+str(BIT_RATE))
+	logger.info("Flow size  "+str(FLOW_SIZE))
+	logger.info("PACKETS_TO_SEND "+str(PACKETS_TO_SEND))
+	logger.info("TRAFFIc class "+str(TRAFFIC_CLASS))
+	logger.info("INTER_PACKET_DELAY "+str(INTER_PACKET_DELAY))
 	sleep(START_DELAY)
 	start=datetime.now()
+
 	s = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
 	s.setsockopt(
 		socket.IPPROTO_IPV6,
@@ -58,8 +68,8 @@ try:
 	x = 0
 	for x in range(0, int(round(PACKETS_TO_SEND))):
 		s.send(bytes(MESSAGE, 'utf-8'))
-		if(TRAFFIC_CLASS == TUNNEL_TRAFFIC_CLASS):
-			sleep(1/BIT_RATE)
+		# if(TRAFFIC_CLASS == TUNNEL_TRAFFIC_CLASS):
+		sleep(1/INTER_PACKET_DELAY)
 	logger.info("Data sending complete")
 	end=datetime.now()
 	sender = s.getsockname()
@@ -75,13 +85,16 @@ try:
 	fh.write("\n")
 	os.umask(original_umask)
 except Exception as e:
-	logger.error("Exception occurred in writing result for TCP_IP cLIENT . Exception is ", e)
+	logger.error("Exception occurred in writing result for TCP_IP cLIENT . Exception is ", str(sys.exc_info()))
+# exc_type, exc_obj, exc_tb = sys.exc_info()
+# fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+# print(exc_type, fname, exc_tb.tb_lineno)
 except OSError as e:
-	logger.error("Error occurred in writing result for TCP_IP cLIENT . Exception is ", e)
+	logger.error("Error occurred in writing result for TCP_IP cLIENT . Exception is ",str(e.traceback.print_exc()) )
 finally:
 	if(fh != None):
 		fh.close()
-		# print("clientdat file closed ")
+	# print("clientdat file closed ")
 
 # print( sender[0]+'\t'+str(sender[1])+'\t'+receiver[0]+'\t'+str(flow_size)+'\t'+str(start)+'\t'+str(end)+'\t'+str(fct)+'\t'+str(bw))
 s.close()	# close connection

@@ -35,6 +35,20 @@ def getRank(pathRate):
 
     return 0
 
+def getRankFromPPSRate(pathRate):
+    # if(pathRate >= 0) and (pathRate <= 0.325):
+    #     return 3
+    if(pathRate > .75*ConfConst.queueRateForSpineFacingPortsOfLeafSwitch) :
+        return 0
+    elif(pathRate > .5*ConfConst.queueRateForSpineFacingPortsOfLeafSwitch) :
+        return 1
+    if(pathRate > .25*ConfConst.queueRateForSpineFacingPortsOfLeafSwitch) :
+        return 2
+    if(pathRate > 0) :
+        return 3
+
+    return 3
+
 class TopKPathRouting:
 
     def __init__(self, dev):
@@ -156,7 +170,7 @@ class TopKPathRouting:
                 bufferSize = int(math.floor(ConfigConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR * rate))
                 if(bufferSize<200):
                     bufferSize = 200
-                rank = getRank(portRates[k][1])
+                rank = getRankFromPPSRate(rate)
                 # logger.info("Port "+str(port)+ " rate :"+str(portRates[k][1])+" rank:"+str(rank))
                 setPortQueueRatesAndDepth(dev = self.p4dev, port = port, queueRate = rate , bufferSize = ConfigConst.QUEUE_RATE_TO_QUEUE_DEPTH_FACTOR)
                 # if(rankInsertedIncurrentIteration.get(rank)== None):

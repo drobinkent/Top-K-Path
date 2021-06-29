@@ -1,18 +1,22 @@
 import random as rnd
 
+import numpy as np
+
 import ConfigConst
 import Testingconst as tstConst
 
-def generateRandomProbeResult(allPortsAsList = [5,6,7,8], minLinkRate=0.2, maxLinkRate=0.7):
+def generateRandomProbeResult(allPortsAsList = [5,6,7,8], minLinkRate=0.4, maxLinkRate=0.9):
     totalNormalizedRate = len(allPortsAsList)
     newPortRateList = []
+    onlyRatelist = []
     for i in range(0, len(allPortsAsList)):
         x = rnd.uniform(minLinkRate, maxLinkRate)
         x = round(x, 1)
+        onlyRatelist.append(x)
         tple1 = (allPortsAsList[i], x)
         newPortRateList.append(tple1)
     newPortRateList.sort(key=lambda x: x[1], reverse=False)
-    return newPortRateList
+    return newPortRateList, onlyRatelist
 
 
 def printRandomProbeResults(randomProberesult):
@@ -25,11 +29,15 @@ def generateAndStoreRandomProbeResults(times):
     # for i in range(0, int(times/ConfigConst.MULTITENANCY_RATE_RECONFIGURATION_INTERVAL)):
     #     x = rnd.uniform(minLinkRate, maxLinkRate)
 
+    allRateList = []
     for i in range(0, times):
-        probeResult = generateRandomProbeResult()
+        probeResult, onlyRateList = generateRandomProbeResult()
+        for j in onlyRateList:
+            allRateList.append(j)
         probeResultsAsList.append(probeResult)
 
     print(probeResultsAsList)
+    print(np.average(allRateList))
     return probeResultsAsList
         #printRandomProbeResults(probeResultsAsList)
 
