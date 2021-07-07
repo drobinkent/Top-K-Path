@@ -76,7 +76,7 @@ class DataplnaeAlgorithm(Enum):
     DP_ALGO_TOP_K_PATH = "DP_ALGO_TOP_K_PATH"
 
 #ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP
-ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP
+ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_HULA
 
 
 queueRateForHostFacingPortsOfLeafSwitch = 32

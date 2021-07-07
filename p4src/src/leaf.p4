@@ -251,9 +251,10 @@ control EgressPipeImpl (inout parsed_headers_t hdr,
 
 
     if(standard_metadata.deq_qdepth > ECN_THRESHOLD) hdr.ipv6.ecn = 3; //setting ecm mark
-
-    egressPortCounter.count((bit<32>)standard_metadata.egress_port);
-
+    #ifdef DP_ALGO_HULA
+    bit<32> counter_index = (bit<32>)standard_metadata.egress_port + (MAX_PORTS_IN_SWITCH* (bit<32>)hdr.ipv6.dst_addr[31:16]) -1 ; //rightmost 16 bit shows the ToR ID in our scheme.
+    destination_util_counter.count((bit<32>)counter_index);
+    #endif
 
     }
 }

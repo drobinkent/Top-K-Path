@@ -527,10 +527,10 @@ class Device:
                                      fieldValue=leafSubnetAsIP, prefixLength=leafSubnetPrefixLength,
                                      actionName = "IngressPipeImpl.hula_load_balancing_control_block.hula_set_upstream_egress_port",
                                      actionParamName="port_num", oldActionParamValue = None, newActionParamValue= str(minUtilPort))
-            # logger.info("Hula path update done for destination "+str(leafSubnetAsIP))
-            logger.info("HULA ALGORITHM: For switch "+ self.devName+ "new Utilization data is  "+str(linkUtilStats))
-            logger.info("HULA ALGORITHM: For switch "+ self.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
-            logger.info("For torid"+ str(torID)+ ' Minutil is '+str(minUtil)+ "Minutilport is "+str(minUtilPort)+ " index is "+str(index))
+            # # logger.info("Hula path update done for destination "+str(leafSubnetAsIP))
+            # logger.info("HULA ALGORITHM: For switch "+ self.devName+ "new Utilization data is  "+str(linkUtilStats))
+            # logger.info("HULA ALGORITHM: For switch "+ self.devName+ "old Utilization data is  "+str(oldLinkUtilStats))
+            # logger.info("For torid"+ str(torID)+ ' Minutil is '+str(minUtil)+ "Minutilport is "+str(minUtilPort)+ " index is "+str(index))
 
     pass
 

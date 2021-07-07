@@ -26,6 +26,7 @@
 
 const bit<32> MAX_PORTS_IN_SWITCH = 256;
 const bit<32> MAX_FLOW_TYPES = 64;  //traffic class 6 bits. so at most 64 types of flow can be there.
+const bit<32> MAX_TOR_SUBNET = 4;
 //------------------------------------------------------------------------------
 // TYPEDEF DECLARATIONS
 // To favor readability.
@@ -180,4 +181,6 @@ const bit<256> ALL_1_256_BIT = 0b11111111111111111111111111111111111111111111111
 
 const bit<16> INVALID_RANK = -1;
 #endif
+counter((bit<32>)MAX_PORTS_IN_SWITCH*MAX_TOR_SUBNET, CounterType.bytes) destination_util_counter;
+
 #endif
