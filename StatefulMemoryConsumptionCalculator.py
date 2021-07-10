@@ -11,7 +11,7 @@ def findStatefulMemoryConsumption(P,K,W,L,Q,R,D):
     print((P*L + K*K)/(8*1024))
 
     print("P4KP based schemes SRAM consumption is ")
-    print((P*R + P*K + 2*P*K*D + K*P*Q)/(8*1024))
+    print((P*R + P*K + K*D + 2*P*K*D + K*P*Q)/(8*1024))
 
 
 R=20

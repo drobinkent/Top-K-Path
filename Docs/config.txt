@@ -1,30 +1,29 @@
-in constnat.p4 configure these 2 values
+in constant.p4 configure these 2 values
 
-    const bit<32> MAX_FLOW_TYPES = 64;  //traffic class 6 bits. so at most 64 types of flow can be there.
-    const bit<32> MAX_TOR_SUBNET = 8;  //Maximum ToR supported by our simulation
+    const bit<32> MAX_TOR_SUBNET = 4;  //Maximum ToR supported by our simulation
 
 
-In /home/deba/Desktop/Top-K-Path/MininetSimulator/ClosConstants.py
+In Top-K-Path/MininetSimulator/ClosConstants.py
 
-    CLOS_MAX_PORT_NUMBER = 16
+    CLOS_MAX_PORT_NUMBER = 8
 
 Run make state_clos a single time then stop the mininet. This will generate the topologyconfig file
 
-Then in /home/deba/Desktop/Top-K-Path/ConfigConst.py change the follwoing two values
+Then in Top-K-Path/ConfigConst.py change the follwoing two values
 
-    MAX_PORTS_IN_SWITCH = 16 #Maximum Supported ports in a switch to reflect the dataplane configuration
-    MAX_TOR_SUBNET = 8;  #Maximum ToR supported by our simulation
+    MAX_PORTS_IN_SWITCH = 8 #Maximum Supported ports in a switch to reflect the dataplane configuration
+    MAX_TOR_SUBNET = 4;  #Maximum ToR supported by our simulation
 
 
-then in  /home/deba/Desktop/Top-K-Path/ConfigConst.py change  the data plane algorithm you want to use
+then in  Top-K-Path/ConfigConst.py change  the data plane algorithm you want to use
 
     ALGORITHM_IN_USE = DataplnaeAlgorithm.DP_ALGO_BASIC_ECMP
 
 
 In /home/deba/Desktop/Top-K-Path/MininetSimulator/ClosConstants.py file change the file name that you want to use the simulate the traffic
 
-    TCP_SERVER_COMAND_FILE = "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/FlowInfos/WebSearchWorkLoad_load_factor_1.0.serverdat"
-    TCP_CLIENT_COMAND_FILE = "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/FlowInfos/WebSearchWorkLoad_load_factor_1.0.clientdat"
+    TCP_SERVER_COMAND_FILE = "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/FlowInfos/WebSearchWorkLoad_load_factor_0.8.serverdat"
+    TCP_CLIENT_COMAND_FILE = "/home/deba/Desktop/Top-K-Path/testAndMeasurement/TEST_RESULTS/FlowInfos/WebSearchWorkLoad_load_factor_0.8.clientdat"
 
 
 

@@ -85,6 +85,9 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
     hula_load_balancing() hula_load_balancing_control_block;
     #endif
 
+    #ifdef RANGE_TCAM_ROUTING
+    range_tcam_upstream_routing() range_tcam_control_block;
+    #endif
     apply {
     local_metadata.flag_hdr.do_l3_l2=true;
     local_metadata.flag_hdr.downstream_routing_table_hit = false;
@@ -144,8 +147,7 @@ control IngressPipeImpl (inout parsed_headers_t    hdr,
                         local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 2;
                     }else
                     if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_QOS1){
-                         local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 0; //skip the first 2 best path as they are reserved by low delay and special custom traffic class
-                         //log_msg("Bitmask for high throughout traffic class is {}",{local_metadata.kth_path_selector_bitmask});
+                         local_metadata.kth_path_selector_bitmask =  ALL_1_256_BIT[K-1:0] << 0;
                     }else if (hdr.ipv6.traffic_class == TRAFFIC_CLASS_QOS2){
                         bit<K> tempMask = ALL_1_256_BIT[K-1:0] <<1;
                         local_metadata.kth_path_selector_bitmask = tempMask;
